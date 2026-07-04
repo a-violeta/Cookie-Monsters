@@ -1,29 +1,40 @@
 package main;
 
 import main.model.User;
-
-import java.util.Scanner;
+import main.service.AccountManager;
 
 public class Main {
     public static void main(String[] args) {
-        // creates test user using keyboard input
-        Scanner scanner = new Scanner(System.in);
+        // attempts to create test user account
+        try{
+            User firstUser = AccountManager.createAccount("test", "@test_1!", "first test user");
 
-        System.out.print("Enter username: ");
-        String username = scanner.nextLine();
+            if (firstUser != null) {
+                System.out.println(firstUser);
+            }
+        }
+        catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
 
-        System.out.print("Enter password: ");
-        String password = scanner.nextLine();
+        // attempts to create second user account with duplicate username
+        try {
+            User duplicateUser = AccountManager.createAccount("test", "test123!", "duplicate username");
 
-        System.out.print("Enter description: ");
-        String description = scanner.nextLine();
+            if (duplicateUser == null) {
+                System.out.println("\nUsername is already taken");
+            }
+        }
+        catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
 
-        User firstUser = new User(username, password, description);
-        System.out.println(firstUser);
-
-        // creates second user using hardcoded parameters and checks id incrementation
-        User secondUser = new User("test2", "@test_2!", "second test user");
-        System.out.println(secondUser);
-
+        // attempts to create account for invalid user
+        try {
+            User invalidUser = AccountManager.createAccount("a", "test123!", "invalid username (too short)");
+        }
+        catch (IllegalArgumentException e) {
+            System.out.println("\nException caught: " + e.getMessage());
+        }
     }
 }
