@@ -69,7 +69,14 @@ public class Post {
 
     @Override
     public String toString() {
-        return super.toString();
+        return "Post{" +
+                "postId=" + postId +
+                ", communityId=" + communityId +
+                ", userId=" + userId +
+                ", title='" + title + '\'' +
+                ", text='" + text + '\'' +
+                ", commentList=" + commentList +
+                '}';
     }
 
     void addComment(Comment comment){
