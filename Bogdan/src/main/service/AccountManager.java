@@ -15,7 +15,7 @@ public class AccountManager {
     public static User createAccount(String username, String password, String description) {
         for (User user : applicationUsers) {
             if (Objects.equals(user.getUsername(), username)) {
-                return null;
+                throw new IllegalArgumentException("Username is already taken");
             }
         }
 

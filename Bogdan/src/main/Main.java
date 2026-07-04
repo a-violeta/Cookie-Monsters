@@ -9,10 +9,7 @@ public class Main {
         // attempts to create test user account
         try {
             User firstUser = AccountManager.createAccount("test", "@test_1!", "first test user");
-
-            if (firstUser != null) {
-                System.out.println(firstUser);
-            }
+            System.out.println(firstUser);
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
         }
@@ -20,12 +17,8 @@ public class Main {
         // attempts to create second user account with duplicate username
         try {
             User duplicateUser = AccountManager.createAccount("test", "test123!", "duplicate username");
-
-            if (duplicateUser == null) {
-                System.out.println("\nUsername is already taken");
-            }
         } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
+            System.out.println("\nException caught: " + e.getMessage());
         }
 
         // attempts to create account for invalid user
@@ -39,16 +32,11 @@ public class Main {
         try {
             User testUser = AccountManager.createAccount("test_logging", "test123!", "test user login");
 
-            if (testUser != null) {
-                Logger.logIn(testUser.getUsername(), testUser.getPassword());
-                System.out.println("\nActive user: " + Logger.getActiveUser());
+            Logger.logIn(testUser.getUsername(), testUser.getPassword());
+            System.out.println("\nActive user: " + Logger.getActiveUser());
 
-                Logger.logOut(testUser.getUsername());
-                System.out.println("\nActive user: " + Logger.getActiveUser());
-            } else {
-                System.out.println("\nUsername is already taken");
-
-            }
+            Logger.logOut(testUser.getUsername());
+            System.out.println("\nActive user: " + Logger.getActiveUser());
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
         }
