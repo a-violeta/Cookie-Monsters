@@ -1,5 +1,7 @@
 package main;
 
+import main.model.Comment;
+import main.model.Post;
 import main.model.User;
 import main.service.AccountManager;
 import main.service.Logger;
@@ -35,10 +37,29 @@ public class Main {
             Logger.logIn(testUser.getUsername(), testUser.getPassword());
             System.out.println("\nActive user: " + Logger.getActiveUser());
 
+            // tests posts
+            Post testPost = new Post("TEST", "test post", Logger.getActiveUser().getUserId());
+            System.out.println(testPost);
+
+            // tests adding and removing comments
+            Comment firstComment = testPost.addComment("test comment", Logger.getActiveUser().getUserId());
+            Comment secondComment = testPost.addComment("test comment 2", Logger.getActiveUser().getUserId());
+            System.out.println(testPost);
+
+            testPost.removeComment(firstComment.getCommentId());
+            System.out.println(testPost);
+
+            // tests removing comments when comment id does not exist in comments list
+            try {
+                testPost.removeComment(3);
+            } catch (IllegalArgumentException e) {
+                System.out.println("\nException caught: " + e.getMessage());
+            }
+
             Logger.logOut(testUser.getUsername());
             System.out.println("\nActive user: " + Logger.getActiveUser());
         } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
+            System.out.println("\nException caught: " + e.getMessage());
         }
     }
 }
