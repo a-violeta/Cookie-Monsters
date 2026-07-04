@@ -8,6 +8,7 @@ import java.util.List;
 
 public class CommunityManager {
     private List<Community> applicationCommunities;
+    // list of all the communitites
 
     //private constructor for singleton design pattern
     private CommunityManager() {
