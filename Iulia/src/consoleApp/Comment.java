@@ -51,6 +51,11 @@ public class Comment {
 
     @Override
     public String toString() {
-        return super.toString();
+        return "Comment{" +
+                "commentId=" + commentId +
+                ", text='" + text + '\'' +
+                ", userId=" + userId +
+                ", postId=" + postId +
+                '}';
     }
 }
