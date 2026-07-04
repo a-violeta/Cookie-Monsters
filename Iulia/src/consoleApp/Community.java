@@ -97,4 +97,15 @@ public class Community {
             }
         }
     }
+
+    @Override
+    public String toString() {
+        return "Community{" +
+                "communityId=" + communityId +
+                ", communityName='" + communityName + '\'' +
+                ", description='" + description + '\'' +
+                ", communityUsers=" + communityUsers +
+                ", communityPosts=" + communityPosts +
+                '}';
+    }
 }
