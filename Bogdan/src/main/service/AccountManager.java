@@ -24,4 +24,14 @@ public class AccountManager {
 
         return newUser;
     }
+
+    public static User getUserByUsername(String username) {
+        for (User user : applicationUsers) {
+            if (Objects.equals(user.getUsername(), username)) {
+                return user;
+            }
+        }
+
+        return null;
+    }
 }
