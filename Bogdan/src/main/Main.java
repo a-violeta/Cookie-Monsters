@@ -1,9 +1,11 @@
 package main;
 
 import main.model.Comment;
+import main.model.Community;
 import main.model.Post;
 import main.model.User;
 import main.service.AccountManager;
+import main.service.CommunityManager;
 import main.service.Logger;
 
 public class Main {
@@ -32,22 +34,52 @@ public class Main {
 
         // tests login and logout
         try {
-            User testUser = AccountManager.createAccount("test_logging", "test123!", "test user login");
+            User testCreator = AccountManager.createAccount("test_logging", "test123!", "test community creator");
 
-            Logger.logIn(testUser.getUsername(), testUser.getPassword());
+            Logger.logIn(testCreator.getUsername(), testCreator.getPassword());
             System.out.println("\nActive user: " + Logger.getActiveUser());
 
-            // tests posts
-            Post testPost = new Post("TEST", "test post", Logger.getActiveUser().getUserId());
-            System.out.println(testPost);
+            // tests community creation
+            Community testCommunity = CommunityManager.createCommunity("Test", "Test community");
+            System.out.println(testCommunity);
+
+            // attempts to create community with duplicate name
+            try {
+                Community duplicateCommunity = CommunityManager.createCommunity("Test", "Duplicate community");
+            } catch (IllegalArgumentException e) {
+                System.out.println("\nException caught: " + e.getMessage());
+            }
+
+            User testMember = AccountManager.createAccount("test_member", "@test_1!", "test community member");
+
+            // tests adding members to community
+            User newMember = testCommunity.addMember(testMember);
+
+            // attempts to create community when user is not logged in
+            Logger.logOut(testCreator.getUsername());
+
+            try {
+                Community invalidCommunity = CommunityManager.createCommunity("Test2", "Invalid community creator");
+            } catch (IllegalArgumentException e) {
+                System.out.println("\nException caught: " + e.getMessage());
+            }
+
+            // tests adding and removing posts
+            Logger.logIn(testCreator.getUsername(), testCreator.getPassword());
+
+            Post testPost = testCommunity.addPost("TEST", "test post", Logger.getActiveUser().getUserId());
+            System.out.println(testCommunity);
+
+            testCommunity.removePost(testPost.getPostId());
+            System.out.println(testCommunity);
 
             // tests adding and removing comments
             Comment firstComment = testPost.addComment("test comment", Logger.getActiveUser().getUserId());
             Comment secondComment = testPost.addComment("test comment 2", Logger.getActiveUser().getUserId());
-            System.out.println(testPost);
+            System.out.println(testCommunity);
 
             testPost.removeComment(firstComment.getCommentId());
-            System.out.println(testPost);
+            System.out.println(testCommunity);
 
             // tests removing comments when comment id does not exist in comments list
             try {
@@ -56,7 +88,7 @@ public class Main {
                 System.out.println("\nException caught: " + e.getMessage());
             }
 
-            Logger.logOut(testUser.getUsername());
+            Logger.logOut(testCreator.getUsername());
             System.out.println("\nActive user: " + Logger.getActiveUser());
         } catch (IllegalArgumentException e) {
             System.out.println("\nException caught: " + e.getMessage());
