@@ -8,90 +8,230 @@ import main.service.AccountManager;
 import main.service.CommunityManager;
 import main.service.Logger;
 
+import java.util.Scanner;
+
 public class Main {
     public static void main(String[] args) {
-        // attempts to create test user account
-        try {
-            User firstUser = AccountManager.createAccount("test", "@test_1!", "first test user");
-            System.out.println(firstUser);
-        } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
-        }
+        Scanner scanner = new Scanner(System.in);
 
-        // attempts to create second user account with duplicate username
-        try {
-            User duplicateUser = AccountManager.createAccount("test", "test123!", "duplicate username");
-        } catch (IllegalArgumentException e) {
-            System.out.println("\nException caught: " + e.getMessage());
-        }
+        System.out.println("=== H4XXOR2 Reddit ===");
 
-        // attempts to create account for invalid user
-        try {
-            User invalidUser = AccountManager.createAccount("a", "test123!", "invalid username (too short)");
-        } catch (IllegalArgumentException e) {
-            System.out.println("\nException caught: " + e.getMessage());
-        }
-
-        // tests login and logout
-        try {
-            User testCreator = AccountManager.createAccount("test_logging", "test123!", "test community creator");
-
-            Logger.logIn(testCreator.getUsername(), testCreator.getPassword());
-            System.out.println("\nActive user: " + Logger.getActiveUser());
-
-            // tests community creation
-            Community testCommunity = CommunityManager.createCommunity("Test", "Test community");
-            System.out.println(testCommunity);
-
-            // attempts to create community with duplicate name
+        while (true) {
             try {
-                Community duplicateCommunity = CommunityManager.createCommunity("Test", "Duplicate community");
-            } catch (IllegalArgumentException e) {
-                System.out.println("\nException caught: " + e.getMessage());
+                printMenu();
+                System.out.print("\nSelect an option: ");
+                int choice = Integer.parseInt(scanner.nextLine());
+
+                switch (choice) {
+                    case 1 -> {
+                        System.out.print("Username: ");
+                        String username = scanner.nextLine();
+                        System.out.print("Password: ");
+                        String password = scanner.nextLine();
+                        System.out.print("Description: ");
+                        String desc = scanner.nextLine();
+
+                        AccountManager.createAccount(username, password, desc);
+                        System.out.println("Account created successfully.");
+                    }
+
+                    case 2 -> {
+                        System.out.print("Username: ");
+                        String loginUsername = scanner.nextLine();
+                        System.out.print("Password: ");
+                        String loginPassword = scanner.nextLine();
+
+                        Logger.logIn(loginUsername, loginPassword);
+
+                        if (Logger.getActiveUser() != null) {
+                            System.out.println("Logged in as " + Logger.getActiveUser().getUsername());
+                        } else {
+                            System.out.println("Wrong username or password.");
+                        }
+                    }
+
+                    case 3 -> {
+                        if (Logger.getActiveUser() != null) {
+                            String activeUser = Logger.getActiveUser().getUsername();
+                            Logger.logOut(activeUser);
+                            System.out.println("Logged out " + activeUser);
+                        } else {
+                            System.out.println("You are not logged in.");
+                        }
+                    }
+
+                    case 4 -> {
+                        System.out.print("Community name: ");
+                        String communityName = scanner.nextLine();
+                        System.out.print("Description: ");
+                        String description = scanner.nextLine();
+
+                        CommunityManager.createCommunity(communityName, description);
+                        System.out.println("Community created successfully.");
+                    }
+
+                    case 5 -> {
+                        System.out.print("Community name: ");
+                        String communityName = scanner.nextLine();
+
+                        Community community = CommunityManager.getCommunityByName(communityName);
+
+                        if (community != null) {
+                            System.out.println(community);
+                        } else {
+                            System.out.println("Community " + communityName + " not found.");
+                        }
+                    }
+
+                    case 6 -> {
+                        System.out.print("Community name: ");
+                        String communityName = scanner.nextLine();
+
+                        Community community = CommunityManager.getCommunityByName(communityName);
+
+                        if (community != null) {
+                            System.out.print("Member username: ");
+                            String memberUsername = scanner.nextLine();
+
+                            User newMember = AccountManager.getUserByUsername(memberUsername);
+
+                            if (newMember != null) {
+                                community.addMember(newMember);
+                                System.out.println("Member added successfully.");
+                            } else {
+                                System.out.println("User " + memberUsername + " not found.");
+                            }
+                        } else {
+                            System.out.println("Community " + communityName + " not found.");
+                        }
+                    }
+
+                    case 7 -> {
+                        System.out.print("Community name: ");
+                        String communityName = scanner.nextLine();
+
+                        Community community = CommunityManager.getCommunityByName(communityName);
+
+                        if (community != null) {
+                            System.out.print("Title: ");
+                            String title = scanner.nextLine();
+                            System.out.print("Text: ");
+                            String text = scanner.nextLine();
+
+                            User activeUser = Logger.getActiveUser();
+
+                            if (activeUser != null) {
+                                Post newPost = community.addPost(title, text, activeUser.getUserId());
+                                System.out.println("Post added successfully.");
+                            } else {
+                                System.out.println("You are not logged in.");
+                            }
+                        } else {
+                            System.out.println("Community " + communityName + " not found.");
+                        }
+                    }
+
+                    case 8 -> {
+                        System.out.print("Community name: ");
+                        String communityName = scanner.nextLine();
+
+                        Community community = CommunityManager.getCommunityByName(communityName);
+
+                        if (community != null) {
+                            System.out.print("Post id: ");
+                            int postId = Integer.parseInt(scanner.nextLine());
+
+                            community.removePost(postId);
+                            System.out.println("Post removed successfully.");
+                        } else {
+                            System.out.println("Community " + communityName + " not found.");
+                        }
+                    }
+
+                    case 9 -> {
+                        System.out.print("Community name: ");
+                        String communityName = scanner.nextLine();
+                        Community community = CommunityManager.getCommunityByName(communityName);
+
+                        if (community != null) {
+                            System.out.print("Post title: ");
+                            String title = scanner.nextLine();
+
+                            for (Post post : community.getPosts()) {
+                                if (post.getTitle().equalsIgnoreCase(title)) {
+                                    User activeUser = Logger.getActiveUser();
+
+                                    if (activeUser != null) {
+                                        System.out.print("Comment text: ");
+                                        String text = scanner.nextLine();
+
+                                        post.addComment(text, activeUser.getUserId());
+                                        System.out.println("Comment added successfully.");
+                                    } else {
+                                        System.out.println("You are not logged in.");
+                                    }
+                                }
+                            }
+                        } else {
+                            System.out.println("Community " + communityName + " not found.");
+                        }
+                    }
+
+                    case 10 -> {
+                        System.out.print("Community name: ");
+                        String communityName = scanner.nextLine();
+                        Community community = CommunityManager.getCommunityByName(communityName);
+
+                        if (community != null) {
+                            System.out.print("Post title: ");
+                            String title = scanner.nextLine();
+
+                            for (Post post : community.getPosts()) {
+                                if (post.getTitle().equalsIgnoreCase(title)) {
+                                    User activeUser = Logger.getActiveUser();
+
+                                    if (activeUser != null) {
+                                        System.out.print("Comment id: ");
+                                        int commentId = Integer.parseInt(scanner.nextLine());
+
+                                        post.removeComment(commentId);
+                                        System.out.println("Comment removed successfully.");
+                                    } else {
+                                        System.out.println("You are not logged in.");
+                                    }
+                                }
+                            }
+                        } else {
+                            System.out.println("Community " + communityName + " not found.");
+                        }
+                    }
+
+                    case 0 -> {
+                        System.out.println("Goodbye!");
+                        return;
+                    }
+
+                    default -> System.out.println("Invalid option.");
+                }
+            } catch (Exception e) {
+                System.out.println("Error: " + e.getMessage());
             }
-
-            User testMember = AccountManager.createAccount("test_member", "@test_1!", "test community member");
-
-            // tests adding members to community
-            User newMember = testCommunity.addMember(testMember);
-
-            // attempts to create community when user is not logged in
-            Logger.logOut(testCreator.getUsername());
-
-            try {
-                Community invalidCommunity = CommunityManager.createCommunity("Test2", "Invalid community creator");
-            } catch (IllegalArgumentException e) {
-                System.out.println("\nException caught: " + e.getMessage());
-            }
-
-            // tests adding and removing posts
-            Logger.logIn(testCreator.getUsername(), testCreator.getPassword());
-
-            Post testPost = testCommunity.addPost("TEST", "test post", Logger.getActiveUser().getUserId());
-            System.out.println(testCommunity);
-
-            testCommunity.removePost(testPost.getPostId());
-            System.out.println(testCommunity);
-
-            // tests adding and removing comments
-            Comment firstComment = testPost.addComment("test comment", Logger.getActiveUser().getUserId());
-            Comment secondComment = testPost.addComment("test comment 2", Logger.getActiveUser().getUserId());
-            System.out.println(testCommunity);
-
-            testPost.removeComment(firstComment.getCommentId());
-            System.out.println(testCommunity);
-
-            // tests removing comments when comment id does not exist in comments list
-            try {
-                testPost.removeComment(3);
-            } catch (IllegalArgumentException e) {
-                System.out.println("\nException caught: " + e.getMessage());
-            }
-
-            Logger.logOut(testCreator.getUsername());
-            System.out.println("\nActive user: " + Logger.getActiveUser());
-        } catch (IllegalArgumentException e) {
-            System.out.println("\nException caught: " + e.getMessage());
         }
+    }
+
+    private static void printMenu() {
+        System.out.println("\nActive user: " +
+                (Logger.getActiveUser() != null ? Logger.getActiveUser().getUsername() : "None"));
+        System.out.println("\n1. Create account");
+        System.out.println("2. Login");
+        System.out.println("3. Logout");
+        System.out.println("4. Create community");
+        System.out.println("5. Display community");
+        System.out.println("6. Add member to community");
+        System.out.println("7. Add post");
+        System.out.println("8. Remove post");
+        System.out.println("9. Add comment");
+        System.out.println("10. Remove comment");
+        System.out.println("0. Exit");
     }
 }

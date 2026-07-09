@@ -34,4 +34,14 @@ public class CommunityManager {
 
         return newCommunity;
     }
+
+    public static Community getCommunityByName(String communityName) {
+        for (Community community : communities) {
+            if (Objects.equals(communityName, community.getCommunityName())) {
+                return community;
+            }
+        }
+
+        return null;
+    }
 }
