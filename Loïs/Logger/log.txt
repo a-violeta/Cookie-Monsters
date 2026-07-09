@@ -1,0 +1,8 @@
+APP / It works ! Ce message va dans la console ET dans le fichier.
+Test / Log Test
+Test / Log Test
+2026-07-09T10:03:06.883971400Test / Log Test
+2026-07-09T10:03:38.549594200 / Test / Log Test
+2026-07-09 / Test / Log Test
+2026-07-09 / WARNING / Log Test
+2026-07-09 / WARNING / Log Test
