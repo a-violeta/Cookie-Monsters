@@ -1,16 +1,28 @@
-public class LoggerFactory {
-    private static Logger instance;
+import java.util.HashMap;
+import java.util.Map;
 
-    // Configuration du logger au démarrage de l'application
-    public static void configure(Logger logger) {
-        instance = logger;
+public class LoggerFactory {
+
+    private static Map<String, Logger> registry = new HashMap<>();
+
+    static {
+        registry.put("console", new ConsoleLogger("CONSOLE"));
+        registry.put("file", new FileLogger("FILE"));
     }
 
-    public static Logger getLogger() {
-        if (instance == null) {
+    // Configuration du logger au démarrage de l'application
+    public static void register(String name, Logger logger) {
+        registry.put(name, logger);
+    }
+
+    public static Logger getLogger(String name) {
+
+        Logger foundLogger = registry.get(name);
+
+        if (foundLogger == null) {
             // Un comportement par défaut très clair si on a oublié de le configurer
-            instance = new ConsoleLogger("DEFAULT");
+            return new ConsoleLogger("DEFAULT");
         }
-        return instance;
+        return foundLogger;
     }
 }

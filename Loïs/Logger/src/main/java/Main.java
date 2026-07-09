@@ -1,14 +1,10 @@
 public class Main {
-    public static void main() {
+    public static void main(String[] args) {
 
-        // Configuration : tu choisis comment tu veux logger pour toute l'app
-        Logger configBoth = new CompositeLogger(
-                new ConsoleLogger("DATE-TEST"),
-                new FileLogger("DATE-TEST")
-        );
+        Logger fileLogger = LoggerFactory.getLogger("file");
+        Logger consoleLogger = LoggerFactory.getLogger("console");
 
-        LoggerFactory.configure(configBoth);
-        Logger logger = LoggerFactory.getLogger();
-        logger.log("Log Test");
+        fileLogger.log(LogLevel.CRITICAL, "Log Test");
+        consoleLogger.log(LogLevel.OK, "Console Log Test");
     }
 }

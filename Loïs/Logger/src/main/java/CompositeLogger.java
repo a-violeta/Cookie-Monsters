@@ -10,10 +10,10 @@ public class CompositeLogger implements Logger {
     }
 
     @Override
-    public void log(String message) {
+    public void log(LogLevel logLevel, String message) {
         // Appelle la méthode log de chaque logger de la liste
         for (Logger logger : loggers) {
-            logger.log(message);
+            logger.log(logLevel, message);
         }
     }
 }
