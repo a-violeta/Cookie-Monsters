@@ -68,4 +68,22 @@ public class User {
                 ", description='" + description + '\'' +
                 '}';
     }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(userId);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof User)) {
+            return false;
+        }
+
+        User other = (User) obj;
+        return userId == other.userId;
+    }
 }

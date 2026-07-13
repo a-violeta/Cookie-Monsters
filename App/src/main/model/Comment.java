@@ -58,4 +58,22 @@ public class Comment {
                 ", postId=" + postId +
                 '}';
     }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(commentId);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+            if (!(obj instanceof Comment)) {
+            return false;
+        }
+
+        Comment other = (Comment) obj;
+        return commentId == other.commentId;
+    }
 }

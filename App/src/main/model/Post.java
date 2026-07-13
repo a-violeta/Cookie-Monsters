@@ -108,4 +108,22 @@ public class Post {
             }
         }
     }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(postId);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Post)) {
+            return false;
+        }
+
+        Post other = (Post) obj;
+        return postId == other.postId;
+    }
 }

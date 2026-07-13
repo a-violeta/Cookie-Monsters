@@ -117,4 +117,22 @@ public class Community {
                 ", communityPosts=" + communityPosts +
                 '}';
     }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(communityId);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Community)) {
+            return false;
+        }
+
+        Community other = (Community) obj;
+        return communityId == other.communityId;
+    }
 }
