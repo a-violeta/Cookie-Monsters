@@ -1,3 +1,5 @@
+package fr.lois.loglibrary;
+
 public class ConsoleLogger implements Logger {
     private String prefix;
     public ConsoleLogger(String prefix) {

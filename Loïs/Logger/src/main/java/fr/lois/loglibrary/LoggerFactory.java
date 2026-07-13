@@ -1,3 +1,5 @@
+package fr.lois.loglibrary;
+
 import java.util.HashMap;
 import java.util.Map;
 

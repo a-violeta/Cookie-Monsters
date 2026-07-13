@@ -1,3 +1,5 @@
+package fr.lois.loglibrary;
+
 //Interface, declaration of a contract
 public interface Logger {
 
