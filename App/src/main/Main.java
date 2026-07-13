@@ -229,26 +229,55 @@ public class Main {
                                 break;
                             }
 
+                            // check the current user is part of the community with that post
                             Post post = postsList.get(chosenUserIndex-1);
 
-                            scanner.nextLine(); // consume newline
-                            System.out.println("\nType the text: ");
-                            String text = scanner.nextLine();
+                            // search for the community of said post
+                            long communityIdOfPost = post.getCommunityId();
+                            Community communityOfPost = null;
 
-                            if(!text.isEmpty()){
-                                Comment comment = new Comment(text, loggedInUser.getUserId(), post.getPostId());
-                                post.getCommentList().add(comment);
-                                // there is no list of all comments yet
-                                System.out.println("\nComment made successfully!");
+                            for(Community c: communityService.getApplicationCommunities()){
+                                if(c.getCommunityId()==communityIdOfPost){
+                                    communityOfPost = c;
+                                    break;
+                                }
+                            }
+
+                            // now check if current user is part of that community
+                            boolean userIsInCommunity = false;
+                            for(User u: communityOfPost.getCommunityUsers()){
+                                if(u.getUserId()==loggedInUser.getUserId()){
+                                    userIsInCommunity = true;
+                                    break;
+                                }
+                            }
+
+                            if(userIsInCommunity){
+
+                                scanner.nextLine(); // consume newline
+                                System.out.println("\nType the text: ");
+                                String text = scanner.nextLine();
+
+                                if(!text.isEmpty()){
+                                    Comment comment = new Comment(text, loggedInUser.getUserId(), post.getPostId());
+                                    post.getCommentList().add(comment);
+                                    // there is no list of all comments yet
+                                    System.out.println("\nComment made successfully!");
+                                }
+                                else{
+                                    System.out.println("\nText empty!");
+                                }
                             }
                             else{
-                                System.out.println("\nText empty!");
+                                System.out.println("The user is not part of the community where they want to comment!");
                             }
                         }
                     }
                     else{
                         System.out.println("\nThere is no user who can comment!");
                     }
+
+                    System.out.println();
                 }
 
                 case 6 -> {
