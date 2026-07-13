@@ -54,6 +54,15 @@ public class Community {
     public void setDescription(String description) {
         this.description = description;
     }
+    public void setCommunityName(String communityName) {
+        this.communityName = communityName;
+    }
+    public void setCommunityPosts(List<Post> communityPosts) {
+        this.communityPosts = communityPosts;
+    }
+    public void setCommunityUsers(List<User> communityUsers) {
+        this.communityUsers = communityUsers;
+    }
 
     void addPost(Post post){
         if(!post.getTitle().isEmpty()

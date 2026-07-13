@@ -32,23 +32,29 @@ public class CommunityService {
         return applicationCommunities;
     }
 
-    public void addCommunity(Community community){
-        if(community.getCommunityId()!=0
-            && !community.getCommunityName().isEmpty()
-            && !community.getDescription().isEmpty()
-            && !community.getCommunityUsers().isEmpty()){
+    public boolean validateCommunity(Community community){
+        if(community.getCommunityId()==0
+                || !community.getCommunityName().isEmpty()
+                || !community.getDescription().isEmpty()
+                || !community.getCommunityUsers().isEmpty()) {
             // validate id, name, description and number of users (there should be at least 1, the creator)
+            System.out.println("Community not valid. Check id, name and description!");
+            return false;
+        }
+        return true;
+    }
+
+    public void addCommunity(Community community){
+        if(validateCommunity(community)){
+
+            for(Community c: applicationCommunities){
+                if(c.getCommunityName().equalsIgnoreCase(community.getCommunityName())){
+                    System.out.println("Community name already exists!");
+                    return;
+                }
+            }
 
             applicationCommunities.add(community);
-        }
-        else {
-            System.out.println("Id, name, description or user list invalid!");
-
-            // print them all to see the problem
-            System.out.println(community.getCommunityId());
-            System.out.println(community.getCommunityName());
-            System.out.println(community.getDescription());
-            System.out.println(community.getCommunityUsers().isEmpty());
         }
     }
 
