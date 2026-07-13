@@ -22,14 +22,14 @@ public class User {
         return idIncrementor;
     }
 
-    User(){
+    public User(){
         this.userId = incrementId();
         this.username="";
         this.password="";
         this.description="";
     }
 
-    User(String username, String password, String description){
+    public User(String username, String password, String description){
         this.userId = incrementId();
         this.username=username;
         this.password=password;

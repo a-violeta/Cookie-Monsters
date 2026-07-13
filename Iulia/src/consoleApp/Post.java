@@ -18,7 +18,7 @@ public class Post {
 
     // validations not made in post constructors
 
-    Post(){
+    public Post(){
         this.postId= incrementId();
         this.communityId=0;
         this.userId=0;
@@ -27,7 +27,7 @@ public class Post {
         this.commentList=null;
     }
 
-    Post(long communityId, long userId, String title, String text, List<Comment> commentList){
+    public Post(long communityId, long userId, String title, String text, List<Comment> commentList){
         this.postId=incrementId();
         this.communityId=communityId;
         this.userId=userId;

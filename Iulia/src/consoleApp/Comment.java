@@ -18,14 +18,14 @@ public class Comment {
         return idIncrementor;
     }
 
-    Comment(){
+    public Comment(){
         this.commentId = incrementId();
         this.text="";
         this.userId=0;
         this.postId=0;
     }
 
-    Comment(String text, long userId, long postId){
+    public Comment(String text, long userId, long postId){
         this.commentId=incrementId();
         this.text=text;
         this.userId=userId;

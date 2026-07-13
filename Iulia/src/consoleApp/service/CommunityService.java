@@ -1,17 +1,19 @@
-package consoleApp;
+package consoleApp.service;
 
 // singleton class, there is no need for more than 1 entity that manages communities
+
+import consoleApp.Community;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class CommunityManager {
+public class CommunityService {
     private List<Community> applicationCommunities;
-    // list of all the communitites
+    // list of all the communities
 
     //private constructor for singleton design pattern
-    private CommunityManager() {
+    private CommunityService() {
         this.applicationCommunities = new ArrayList<>();
     }
 
@@ -19,11 +21,11 @@ public class CommunityManager {
     // so we call method getInstance() once and it spawns 1 CommunityManager
     // if we call the method again it returns the same CommunityManager made earlier
     private static class Holder {
-        private static final CommunityManager INSTANCE = new CommunityManager();
+        private static final CommunityService INSTANCE = new CommunityService();
     }
 
-    public static CommunityManager getInstance() {
-        return CommunityManager.Holder.INSTANCE;
+    public static CommunityService getInstance() {
+        return CommunityService.Holder.INSTANCE;
     }
 
     public List<Community> getApplicationCommunities() {
@@ -41,6 +43,8 @@ public class CommunityManager {
         }
         else {
             System.out.println("Id, name, description or user list invalid!");
+
+            // print them all to see the problem
             System.out.println(community.getCommunityId());
             System.out.println(community.getCommunityName());
             System.out.println(community.getDescription());

@@ -19,7 +19,7 @@ public class Community {
     private List<User> communityUsers;
     private List<Post> communityPosts;
 
-    Community(){
+    public Community(){
         this.communityId=incrementId();
         this.communityName="";
         this.description="";
@@ -27,7 +27,7 @@ public class Community {
         this.communityPosts=null;
     }
 
-    Community(String communityName, String description, List<User> communityUsers, List<Post> communityPosts){
+    public Community(String communityName, String description, List<User> communityUsers, List<Post> communityPosts){
         this.communityId=incrementId();
         this.communityName=communityName;
         this.description=description;

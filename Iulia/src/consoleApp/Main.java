@@ -1,5 +1,8 @@
 package consoleApp;
 
+import consoleApp.service.UserService;
+import consoleApp.service.CommunityService;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -7,13 +10,13 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args){
         Scanner scanner = new Scanner(System.in);
-        AccountManager accountManager = AccountManager.getInstance();
+        UserService accountManager = UserService.getInstance();
         // Logger logger = Logger.getInstance();
         // Logger should also be a singleton class
         // potential singleton class PostManager: manages a list of all posts, edits them, deletes them
         // potential singleton class CommentManager: manages a list of all comments, edits them, deletes them
 
-        CommunityManager communityManager = CommunityManager.getInstance();
+        CommunityService communityManager = CommunityService.getInstance();
 
         while(true){
             System.out.println("1. Create account");
