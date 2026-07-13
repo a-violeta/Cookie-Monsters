@@ -66,6 +66,15 @@ public class Post {
     public void setTitle(String title) {
         this.title = title;
     }
+    public void setCommentList(List<Comment> commentList) {
+        this.commentList = commentList;
+    }
+    public void setUserId(long userId) {
+        this.userId = userId;
+    }
+    public void setCommunityId(long communityId) {
+        this.communityId = communityId;
+    }
 
     @Override
     public String toString() {
