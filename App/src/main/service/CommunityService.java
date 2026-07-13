@@ -34,9 +34,9 @@ public class CommunityService {
 
     public boolean validateCommunity(Community community){
         if(community.getCommunityId()==0
-                || !community.getCommunityName().isEmpty()
-                || !community.getDescription().isEmpty()
-                || !community.getCommunityUsers().isEmpty()) {
+                || community.getCommunityName().isEmpty()
+                || community.getDescription().isEmpty()
+                || community.getCommunityUsers().isEmpty()) {
             // validate id, name, description and number of users (there should be at least 1, the creator)
             System.out.println("Community not valid. Check id, name and description!");
             return false;
@@ -81,6 +81,7 @@ public class CommunityService {
     }
 
     public void listCommunities(){
+
         if(applicationCommunities.isEmpty()){
             System.out.println("No communities to list!");
             return;
