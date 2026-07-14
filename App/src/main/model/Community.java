@@ -64,7 +64,7 @@ public class Community {
         this.communityUsers = communityUsers;
     }
 
-    void addPost(Post post){
+    public void addPost(Post post){
         if(!post.getTitle().isEmpty()
                 && !post.getText().isEmpty()
                 && post.getCommunityId()==this.getCommunityId()
@@ -74,7 +74,7 @@ public class Community {
         }
     }
 
-    void removePost(long postId){
+    public void removePost(long postId){
         Iterator<Post> it = communityPosts.iterator();
         // removing from list by using iterator
         while(it.hasNext()){
@@ -86,7 +86,7 @@ public class Community {
         }
     }
 
-    void addUser(User user){
+    public void addUser(User user){
         if(!user.getUsername().isEmpty()
                 && !user.getPassword().isEmpty()
                 && user.getDescription().isEmpty()){
@@ -95,7 +95,7 @@ public class Community {
         }
     }
 
-    void removeUser(long userId){
+    public void removeUser(long userId){
         Iterator<User> it = communityUsers.iterator();
         // removing from list by using iterator
         while(it.hasNext()){
