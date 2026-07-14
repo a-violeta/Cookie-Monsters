@@ -3,6 +3,7 @@ package main.service;
 // singleton class, there is no need for more than 1 entity that manages communities
 
 import main.model.Community;
+import main.model.User;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -90,4 +91,34 @@ public class CommunityService {
             System.out.println(c);
         }
     }
+
+    public void joinCommunity(Community community, User user){
+
+        // right now, join means immediate approval into the community since we don't have admins or moderators yet
+
+        community.addUser(user);
+    }
+
+    public void exitCommunity(Community community, User user){
+
+        // exiting doesn't need approval
+        // if the community has only one user then delete the community
+
+        // check that the person is part of the community
+        if(community.findUserById(user.getUserId())!=null){
+
+            if(community.getCommunityUsers().size()==1){
+                System.out.println("Community " + community.getCommunityName() + " will be empty if you exit!");
+                System.out.println("Choose to delete the community instead!");
+            }
+            else{
+
+                // exit means removing person from community s communityUsers list
+                community.removeUser(user.getUserId());
+            }
+        }
+    }
+
+    // edit community stuff
+
 }
