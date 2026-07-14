@@ -86,6 +86,19 @@ public class Community {
         }
     }
 
+    public Post findPostById(long postId){
+
+        // if there are any posts at all, we search
+        if(this.getCommunityPosts()!=null && !this.getCommunityPosts().isEmpty()) {
+            for (Post p : this.getCommunityPosts()) {
+                if(p.getPostId()==postId){
+                    return p;
+                }
+            }
+        }
+        return null;
+    }
+
     public void addUser(User user){
         if(!user.getUsername().isEmpty()
                 && !user.getPassword().isEmpty()
@@ -105,6 +118,19 @@ public class Community {
                 break;
             }
         }
+    }
+
+    public User findUserById(long userId){
+
+        // if there are any users at all, we search
+        if(this.getCommunityUsers()!=null && !this.getCommunityUsers().isEmpty()) {
+            for (User u : this.getCommunityUsers()) {
+                if(u.getUserId()==userId){
+                    return u;
+                }
+            }
+        }
+        return null;
     }
 
     @Override
