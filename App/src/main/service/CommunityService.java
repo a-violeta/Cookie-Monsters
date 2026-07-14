@@ -3,6 +3,8 @@ package main.service;
 // singleton class, there is no need for more than 1 entity that manages communities
 
 import main.model.Community;
+import main.model.Post;
+import main.model.User;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -23,7 +25,6 @@ public class CommunityService {
     private static class Holder {
         private static final CommunityService INSTANCE = new CommunityService();
     }
-
     public static CommunityService getInstance() {
         return CommunityService.Holder.INSTANCE;
     }
@@ -88,6 +89,112 @@ public class CommunityService {
         }
         for(Community c: applicationCommunities){
             System.out.println(c);
+        }
+    }
+
+    public void joinCommunity(Community community, User user){
+
+        // right now, join means immediate approval into the community since we don't have admins or moderators yet
+
+        if(!user.getUsername().isEmpty()
+                && !user.getPassword().isEmpty()
+                && !user.getDescription().isEmpty()) {
+            // validate fields for business logic
+
+            community.addUser(user);
+        }
+    }
+
+    public void exitCommunity(Community community, User user){
+
+        // exiting doesn't need approval
+        // if the community has only one user then delete the community
+
+        // check that the person is part of the community
+        if(community.findUserById(user.getUserId())!=null){
+
+            if(community.getCommunityUsers().size()==1){
+                System.out.println("Community " + community.getCommunityName() + " will be empty if you exit!");
+                System.out.println("Choose to delete the community instead!");
+            }
+            else{
+
+                // exit means removing person from community s communityUsers list
+                community.removeUser(user.getUserId());
+            }
+        }
+    }
+
+    public void addPostToCommunity(Community community, Post post){
+        if(!post.getTitle().isEmpty()
+                && !post.getText().isEmpty()
+                && post.getCommunityId()==community.getCommunityId()
+                && post.getUserId()!=0){
+                // validate fields for business logic
+
+            community.addPost(post);
+        }
+    }
+
+    public void removePostFromCommunity(Community community, Post post){
+        community.removePost(post.getPostId());
+    }
+
+    public void addUserToCommunity(Community community, User user){
+        if(!user.getUsername().isEmpty()
+                && !user.getPassword().isEmpty()
+                && !user.getDescription().isEmpty()){
+                // validate fields for business logic
+
+            community.addUser(user);
+        }
+    }
+
+    public void removeUserFromCommunity(Community community, User user){
+        community.removeUser(user.getUserId());
+    }
+
+    public void editCommunityName(Community community, String newName){
+
+        // check the newname is not empty and not the same name
+        if(!newName.isEmpty()){
+            if(!community.getCommunityName().equalsIgnoreCase(newName)){
+
+                // use regex to validate the newname
+                // length, minimum number of letters (can't be just symbols)
+                // etc
+
+                community.setCommunityName(newName);
+                System.out.println("Name changed!");
+            }
+            else{
+                System.out.println("The name is the same!");
+            }
+        }
+        else{
+            System.out.println("The name is empty!");
+        }
+    }
+
+    public void editCommunityDescription(Community community, String newDescription){
+
+        // check the description is not empty and not the same
+        if(!newDescription.isEmpty()){
+            if(!community.getDescription().equalsIgnoreCase(newDescription)){
+
+                // use regex to validate the description
+                // length, minimum number of letters (can't be just symbols)
+                // etc
+
+                community.setDescription(newDescription);
+                System.out.println("Description changed!");
+            }
+            else{
+                System.out.println("The description is the same!");
+            }
+        }
+        else{
+            System.out.println("The description is empty!");
         }
     }
 }

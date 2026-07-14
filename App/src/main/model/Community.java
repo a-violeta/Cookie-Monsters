@@ -26,7 +26,6 @@ public class Community {
         this.communityUsers=null;
         this.communityPosts=null;
     }
-
     public Community(String communityName, String description, List<User> communityUsers, List<Post> communityPosts){
         this.communityId=incrementId();
         this.communityName=communityName;
@@ -50,7 +49,6 @@ public class Community {
     public String getCommunityName() {
         return communityName;
     }
-
     public void setDescription(String description) {
         this.description = description;
     }
@@ -65,13 +63,7 @@ public class Community {
     }
 
     public void addPost(Post post){
-        if(!post.getTitle().isEmpty()
-                && !post.getText().isEmpty()
-                && post.getCommunityId()==this.getCommunityId()
-                && post.getUserId()!=0){
-            // validate fields
-            communityPosts.add(post);
-        }
+        communityPosts.add(post);
     }
 
     public void removePost(long postId){
@@ -86,13 +78,21 @@ public class Community {
         }
     }
 
-    public void addUser(User user){
-        if(!user.getUsername().isEmpty()
-                && !user.getPassword().isEmpty()
-                && user.getDescription().isEmpty()){
-            // validate fields
-            communityUsers.add(user);
+    public Post findPostById(long postId){
+
+        // if there are any posts at all, we search
+        if(this.getCommunityPosts()!=null && !this.getCommunityPosts().isEmpty()) {
+            for (Post p : this.getCommunityPosts()) {
+                if(p.getPostId()==postId){
+                    return p;
+                }
+            }
         }
+        return null;
+    }
+
+    public void addUser(User user){
+        communityUsers.add(user);
     }
 
     public void removeUser(long userId){
@@ -107,6 +107,19 @@ public class Community {
         }
     }
 
+    public User findUserById(long userId){
+
+        // if there are any users at all, we search
+        if(this.getCommunityUsers()!=null && !this.getCommunityUsers().isEmpty()) {
+            for (User u : this.getCommunityUsers()) {
+                if(u.getUserId()==userId){
+                    return u;
+                }
+            }
+        }
+        return null;
+    }
+
     @Override
     public String toString() {
         return "Community{" +
@@ -117,12 +130,10 @@ public class Community {
                 ", communityPosts=" + communityPosts +
                 '}';
     }
-
     @Override
     public int hashCode() {
         return Long.hashCode(communityId);
     }
-
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
