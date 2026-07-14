@@ -88,7 +88,7 @@ public class Post {
                 '}';
     }
 
-    void addComment(Comment comment){
+    public void addComment(Comment comment){
         if(!comment.getText().isEmpty() && comment.getPostId()!=this.getPostId() && comment.getUserId()!=0)
             // validates text not empty, post is the same, user is not nonexistent
 
@@ -97,7 +97,7 @@ public class Post {
             System.out.println("Cannot add invalid comment! Check comment text, user and post");
     }
 
-    void removeComment(long commentId){
+    public void removeComment(long commentId){
         Iterator<Comment> it = commentList.iterator();
         // removing from list by using iterator
         while(it.hasNext()){
