@@ -7,6 +7,7 @@ import main.model.User;
 import main.service.CommunityService;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 
@@ -63,7 +64,7 @@ public class Main {
         post1.setCommentList(commentList1);
 
         while(true){
-            System.out.println("1. Create account");
+            System.out.println("1. Create user");
             System.out.println("2. Log into account");
             System.out.println("3. Log out of account");
             System.out.println("4. Post (just text)");
@@ -73,6 +74,10 @@ public class Main {
             System.out.println("8. List posts");
             System.out.println("9. List comments");
             System.out.println("10. List communities");
+            System.out.println("11. Delete user");
+            System.out.println("12. Delete post");
+            System.out.println("13. Delete comment");
+            System.out.println("14. Delete community");
             System.out.println("0. Exit\n");
 
             System.out.print("Choose option: ");
@@ -86,7 +91,7 @@ public class Main {
                     // read username, password, description
                     // put a user in users list
 
-                    System.out.println("--Creating account--");
+                    System.out.println("--Create user--");
                     System.out.println("\nType a username: ");
                     String username = scanner.nextLine();
                     System.out.println("\nType a password: ");
@@ -366,6 +371,292 @@ public class Main {
                     System.out.println();
 
                     communityService.listCommunities();
+                    System.out.println();
+                }
+
+                case 11 -> {
+                    System.out.println("--Delete user--");
+                    System.out.println();
+
+                    // action for admin, but admin doesn't exist yet
+                    // so there will need to be an additional check that loggedInUser is admin
+
+                    // there needs to be someone logged in to do this action at least
+                    if(loggedInUser!=null){
+
+                        System.out.println("Type the username: ");
+                        String username = scanner.nextLine().trim();
+
+                        // search the user and delete from memory
+                        // memory in this case is usersList
+
+                        // user should also be deleted from all communities they are part of
+                        // and if any one of those communities is now empty => delete it too
+                        // right now it doesn't do that
+
+                        // we can keep their posts and comments
+                        // either we let them be and whenever we can't fetch the user (coz he doesn't exist) we display 'unknown user'
+                        // or we make the userId from posts and comments be 0 or -1 or something distinct
+                        // so we don't assume that not finding a user automatically means he s been deleted
+
+                        boolean userFound = false;
+                        Iterator<User> it = usersList.iterator();
+                        // removing from list by using iterator
+                        while(it.hasNext()){
+                            User u = it.next();
+                            if(u.getUsername().equals(username)){
+                                it.remove();
+                                userFound = true;
+                                System.out.println("User found and deleted successfully!");
+                                break;
+                            }
+                        }
+
+                        if(!userFound){
+                            System.out.println("User not found!");
+                        }
+                    }
+                    else{
+                        System.out.println("No logged-in user!");
+                    }
+
+                    System.out.println();
+                }
+
+                case 12 -> {
+                    System.out.println("--Delete post--");
+                    System.out.println();
+
+                    // action for admin or community moderator or person who wrote the post
+                    // but admin and moderator don't exist yet
+                    // so there will need to be an additional check that loggedInUser is in role
+
+                    // there needs to be someone logged in to do this action at least
+                    if(loggedInUser!=null){
+
+                        // check if there are any posts to delete
+                        if(postsList.isEmpty()){
+                            System.out.println("There is no post to delete!");
+                        }
+                        else{
+                            // choose post to delete
+
+                            for (int i = 0; i < postsList.size(); i++) {
+                                System.out.println(i+1 + ": " + postsList.get(i));
+                            }
+
+                            // check the number chosen for validity
+                            System.out.println("Type post id: ");
+                            int chosenUserIndex = scanner.nextInt();
+                            if (chosenUserIndex < 1 || chosenUserIndex > postsList.size()) {
+                                System.out.println("\nInvalid index!");
+                                break;
+                            }
+
+                            // check the current user is the one who wrote it
+                            // or that current user has a role (admin or moderator within that community)
+                            // but for now this is the only check
+
+                            Post post = postsList.get(chosenUserIndex-1);
+
+                            // check that current user wrote the post
+                            if(post.getUserId()==loggedInUser.getUserId()){
+
+                                scanner.nextLine(); // consume newline
+
+                                // search for the post and delete from memory
+                                // memory in this case is postsList
+                                // and delete the post from its community
+
+                                boolean foundPostInPostsList = false;
+                                Iterator<Post> it = postsList.iterator();
+                                // removing from list by using iterator
+                                while(it.hasNext()){
+                                    Post p = it.next();
+                                    if(p.equals(post)){
+                                        it.remove();
+                                        foundPostInPostsList = true;
+                                        break;
+                                    }
+                                }
+
+                                // search for that community and delete the post from there too
+                                boolean foundPostInCommunity = false;
+                                for(Community c: communityService.getApplicationCommunities()){
+                                    if(c.getCommunityId()==post.getCommunityId()){
+                                        // found the community with that post
+
+                                        Iterator<Post> it2 = c.getCommunityPosts().iterator();
+                                        // removing from list by using iterator
+                                        while(it2.hasNext()){
+                                            Post p = it2.next();
+                                            if(p.equals(post)){
+                                                it2.remove();
+                                                foundPostInCommunity = true;
+                                                break;
+                                            }
+                                        }
+
+                                    }
+                                }
+
+                                if(foundPostInCommunity && foundPostInPostsList){
+                                    System.out.println("Post found and deleted successfully!");
+                                }
+                                else{
+                                    System.out.println("Post missing from either the community or the postsList!");
+                                }
+
+                            }
+                            else{
+                                System.out.println("The user is not the one who wrote the post!");
+                            }
+                        }
+                    }
+                    else{
+                        System.out.println("\nThere is no logged-in user!");
+                    }
+
+                    System.out.println();
+                }
+
+                case 13 -> {
+                    System.out.println("--Delete comment--");
+                    System.out.println();
+
+                    // action for admin or community moderator or person who wrote the comment
+                    // but admin and moderator don't exist yet
+                    // so there will need to be an additional check that loggedInUser is in role
+
+                    // there needs to be someone logged in to do this action at least
+                    if(loggedInUser!=null){
+
+                        // check if there are any posts (no post means no comment)
+                        if(postsList.isEmpty()){
+                            System.out.println("There is no comment to delete!");
+                        }
+                        else{
+
+                            // print all comments and let the person type the corresponding commentId
+
+                            for(Post p: postsList){
+                                // for each post get the comments list and print
+                                if(p.getCommentList()!=null && !p.getCommentList().isEmpty()) {
+                                    for (Comment c : p.getCommentList()) {
+                                        System.out.println(c);
+                                    }
+                                }
+                            }
+
+                            System.out.println("Type the comment id: ");
+                            long deletingCommentId = scanner.nextLong();
+
+                            // find that comment
+                            Comment deletingComment = null;
+                            Post postWithDeletingComment = null;
+
+                            boolean foundComment = false;
+                            for(Post p: postsList){
+                                // for each post get the comments list and search for the comment
+                                if(p.getCommentList()!=null && !p.getCommentList().isEmpty()) {
+                                    for (Comment c : p.getCommentList()) {
+                                        if(c.getCommentId()==deletingCommentId){
+                                            foundComment = true;
+                                            deletingComment = c;
+                                            postWithDeletingComment = p;
+                                        }
+                                    }
+                                }
+                            }
+
+                            if(foundComment){
+
+                                // check the current user is the one who wrote it
+                                // or that current user has a role (admin or moderator within that community)
+                                // but for now this is the only check
+
+                                // check that current user wrote the post
+                                if(deletingComment.getUserId()==loggedInUser.getUserId()) {
+
+                                    scanner.nextLine(); // consume newline
+
+                                    // search for the comment and delete from memory
+                                    // memory in this case is the list of comments from the post
+
+                                    Iterator<Comment> it = postWithDeletingComment.getCommentList().iterator();
+                                    // removing from list by using iterator
+                                    while(it.hasNext()){
+                                        Comment c = it.next();
+                                        if(c.equals(deletingComment)){
+                                            it.remove();
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            else{
+                                System.out.println("Comment not found!");
+                            }
+                        }
+                    }
+                    else{
+                        System.out.println("\nThere is no logged-in user!");
+                    }
+
+                    System.out.println();
+                }
+
+                case 14 -> {
+                    System.out.println("--Delete community--");
+                    System.out.println();
+
+                    // action for admin or community moderator or person who created the community
+                    // but admin and moderator don't exist yet, and we don't know who made the community
+                    // so there will need to be an additional check that loggedInUser is in role
+
+                    // there needs to be someone logged in to do this action at least
+                    if(loggedInUser!=null){
+
+                        // print all communities and let person type the corresponding id
+                        communityService.listCommunities();
+
+                        System.out.println("Type the community id: ");
+                        long deletingCommunityId = scanner.nextLong();
+
+                        // find community by id
+                        Community deletingCommunity = communityService.findCommunity(deletingCommunityId);
+
+                        // check that the community is found
+                        if(deletingCommunity!=null){
+
+                            // check if current user is part of the community
+                            boolean userIsInCommunity = false;
+                            for(User u: deletingCommunity.getCommunityUsers()){
+                                if(u.getUserId()==loggedInUser.getUserId()){
+                                    userIsInCommunity = true;
+                                    break;
+                                }
+                            }
+
+                            if(userIsInCommunity){
+
+                                // delete from communitiesList using communityId
+                                communityService.removeCommunity(deletingCommunityId);
+
+                                System.out.println("Community deleted successfully!");
+
+                            }else{
+                                System.out.println("User cannot delete a community they are not a part of!");
+                            }
+                        }
+                        else{
+                            System.out.println("Wrong community id!");
+                        }
+                    }
+                    else{
+                        System.out.println("\nThere is no logged-in user!");
+                    }
+
                     System.out.println();
                 }
 
