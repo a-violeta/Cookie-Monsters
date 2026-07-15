@@ -1,15 +1,25 @@
 package com.app.model;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
+
+@Getter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Comment {
 
+    @EqualsAndHashCode.Include
     private static long idIncrementor = 0;
     // for id uniqueness, ids given will be 1, then 2, 3 ...
 
-    private long commentId;
+    private final long commentId;
+    @Setter
     private String text;
-    private long userId;
-    private long postId;
-    // missing date for now
+    private final long userId;
+    private final long postId;
+    private LocalDateTime createdAt;
 
     // validations not made here
 
@@ -23,6 +33,7 @@ public class Comment {
         this.text="";
         this.userId=0;
         this.postId=0;
+        this.createdAt=LocalDateTime.now();
     }
 
     public Comment(String text, long userId, long postId){
@@ -32,21 +43,12 @@ public class Comment {
         this.postId=postId;
     }
 
-    public long getUserId() {
-        return userId;
-    }
-    public long getPostId() {
-        return postId;
-    }
-    public String getText() {
-        return text;
-    }
-    public long getCommentId() {
-        return commentId;
-    }
-
-    public void setText(String text) {
-        this.text = text;
+    public Comment(String text, long userId, long postId, LocalDateTime createdAt){
+        this.commentId=incrementId();
+        this.text=text;
+        this.userId=userId;
+        this.postId=postId;
+        this.createdAt=createdAt;
     }
 
     @Override
@@ -56,24 +58,7 @@ public class Comment {
                 ", text='" + text + '\'' +
                 ", userId=" + userId +
                 ", postId=" + postId +
+                ", createdAt=" + createdAt +
                 '}';
-    }
-
-    @Override
-    public int hashCode() {
-        return Long.hashCode(commentId);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-            if (!(obj instanceof Comment)) {
-            return false;
-        }
-
-        Comment other = (Comment) obj;
-        return commentId == other.commentId;
     }
 }

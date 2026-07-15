@@ -1,10 +1,18 @@
 package com.app.model;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
 import java.util.Iterator;
 import java.util.List;
 
+@Getter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Community {
 
+    @EqualsAndHashCode.Include
     private static long idIncrementor = 0;
     // for id uniqueness, ids given will be 1, then 2, 3 ...
 
@@ -13,11 +21,16 @@ public class Community {
         return idIncrementor;
     }
 
-    private long communityId;
+    private final long communityId;
+    @Setter
     private String communityName;
+    @Setter
     private String description;
+    @Setter
     private List<User> communityUsers;
+    @Setter
     private List<Post> communityPosts;
+    private LocalDateTime createdAt;
 
     public Community(){
         this.communityId=incrementId();
@@ -25,7 +38,9 @@ public class Community {
         this.description="";
         this.communityUsers=null;
         this.communityPosts=null;
+        this.createdAt=LocalDateTime.now();
     }
+
     public Community(String communityName, String description, List<User> communityUsers, List<Post> communityPosts){
         this.communityId=incrementId();
         this.communityName=communityName;
@@ -34,32 +49,13 @@ public class Community {
         this.communityPosts=communityPosts;
     }
 
-    public long getCommunityId() {
-        return communityId;
-    }
-    public String getDescription() {
-        return description;
-    }
-    public List<Post> getCommunityPosts() {
-        return communityPosts;
-    }
-    public List<User> getCommunityUsers() {
-        return communityUsers;
-    }
-    public String getCommunityName() {
-        return communityName;
-    }
-    public void setDescription(String description) {
-        this.description = description;
-    }
-    public void setCommunityName(String communityName) {
-        this.communityName = communityName;
-    }
-    public void setCommunityPosts(List<Post> communityPosts) {
-        this.communityPosts = communityPosts;
-    }
-    public void setCommunityUsers(List<User> communityUsers) {
-        this.communityUsers = communityUsers;
+    public Community(String communityName, String description, List<User> communityUsers, List<Post> communityPosts, LocalDateTime createdAt){
+        this.communityId=incrementId();
+        this.communityName=communityName;
+        this.description=description;
+        this.communityUsers=communityUsers;
+        this.communityPosts=communityPosts;
+        this.createdAt=createdAt;
     }
 
     public void addPost(Post post){
@@ -128,22 +124,7 @@ public class Community {
                 ", description='" + description + '\'' +
                 ", communityUsers=" + communityUsers +
                 ", communityPosts=" + communityPosts +
+                ", createdAt=" + createdAt +
                 '}';
-    }
-    @Override
-    public int hashCode() {
-        return Long.hashCode(communityId);
-    }
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (!(obj instanceof Community)) {
-            return false;
-        }
-
-        Community other = (Community) obj;
-        return communityId == other.communityId;
     }
 }

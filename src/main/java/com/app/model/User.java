@@ -1,21 +1,34 @@
 package com.app.model;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
+
+@Getter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User {
 
+    @EqualsAndHashCode.Include
     private static long idIncrementor = 0;
     // it s static so that all Users objects have the same idIncrementor
     // and the static method incrementId() is called in the constructors to give a 'bigger' id everytime
     // so ids are unique
     // so the ids returned will be 1 for the first User created, then 2, 3...
 
-    private long userId;
+    private final long userId;
+    @Setter
     private String username;
+    @Setter
     private String password;
+    @Setter
     private String description;
-    // missing: creationDate
+    @Setter
+    private LocalDateTime createdAt;
 
-    // the validations for username and password can be made in AccountManager class
-    // and for now that s how I did it
+    // the validations for username and password can be made in UserService class
+    // it is business logic
 
     private static long incrementId(){
         idIncrementor++;
@@ -27,6 +40,7 @@ public class User {
         this.username="";
         this.password="";
         this.description="";
+        this.createdAt=LocalDateTime.now();
     }
 
     public User(String username, String password, String description){
@@ -36,27 +50,12 @@ public class User {
         this.description=description;
     }
 
-    public String getDescription() {
-        return description;
-    }
-    public String getPassword() {
-        return password;
-    }
-    public String getUsername() {
-        return username;
-    }
-    public long getUserId() {
-        return userId;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-    public void setPassword(String password) {
-        this.password = password;
-    }
-    public void setUsername(String username) {
-        this.username = username;
+    public User(String username, String password, String description, LocalDateTime createdAt){
+        this.userId = incrementId();
+        this.username=username;
+        this.password=password;
+        this.description=description;
+        this.createdAt=createdAt;
     }
 
     @Override
@@ -66,24 +65,7 @@ public class User {
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", description='" + description + '\'' +
+                ", createdAt=" + createdAt +
                 '}';
-    }
-
-    @Override
-    public int hashCode() {
-        return Long.hashCode(userId);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (!(obj instanceof User)) {
-            return false;
-        }
-
-        User other = (User) obj;
-        return userId == other.userId;
     }
 }

@@ -1,20 +1,31 @@
 package com.app.model;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
 import java.util.Iterator;
 import java.util.List;
 
+@Getter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Post {
 
+    @EqualsAndHashCode.Include
     private static long idIncrementor = 0;
     // for id uniqueness, ids given will be 1, then 2, 3 ...
 
-    private long postId;
-    private long communityId;
-    private long userId;
+    private final long postId;
+    private final long communityId;
+    private final long userId;
+    @Setter
     private String title;
+    @Setter
     private String text;
+    @Setter
     private List<Comment> commentList;
-    // missing creatinDate
+    private LocalDateTime createdAt;
 
     // validations not made in post constructors
 
@@ -25,6 +36,7 @@ public class Post {
         this.title="";
         this.text="";
         this.commentList=null;
+        this.createdAt=LocalDateTime.now();
     }
 
     public Post(long communityId, long userId, String title, String text, List<Comment> commentList){
@@ -36,44 +48,19 @@ public class Post {
         this.commentList=commentList;
     }
 
+    public Post(long communityId, long userId, String title, String text, List<Comment> commentList, LocalDateTime createdAt){
+        this.postId=incrementId();
+        this.communityId=communityId;
+        this.userId=userId;
+        this.title=title;
+        this.text=text;
+        this.commentList=commentList;
+        this.createdAt=createdAt;
+    }
+
     private static long incrementId(){
         idIncrementor++;
         return idIncrementor;
-    }
-
-    public long getCommunityId() {
-        return communityId;
-    }
-    public List<Comment> getCommentList() {
-        return commentList;
-    }
-    public long getPostId() {
-        return postId;
-    }
-    public long getUserId() {
-        return userId;
-    }
-    public String getText() {
-        return text;
-    }
-    public String getTitle() {
-        return title;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-    public void setTitle(String title) {
-        this.title = title;
-    }
-    public void setCommentList(List<Comment> commentList) {
-        this.commentList = commentList;
-    }
-    public void setUserId(long userId) {
-        this.userId = userId;
-    }
-    public void setCommunityId(long communityId) {
-        this.communityId = communityId;
     }
 
     @Override
@@ -85,16 +72,14 @@ public class Post {
                 ", title='" + title + '\'' +
                 ", text='" + text + '\'' +
                 ", commentList=" + commentList +
+                ", createdAt=" + createdAt +
                 '}';
     }
 
     public void addComment(Comment comment){
-        if(!comment.getText().isEmpty() && comment.getPostId()!=this.getPostId() && comment.getUserId()!=0)
-            // validates text not empty, post is the same, user is not nonexistent
 
-            commentList.add(comment);
-        else
-            System.out.println("Cannot add invalid comment! Check comment text, user and post");
+        // moved all validations to services
+        commentList.add(comment);
     }
 
     public void removeComment(long commentId){
@@ -107,23 +92,5 @@ public class Post {
                 break;
             }
         }
-    }
-
-    @Override
-    public int hashCode() {
-        return Long.hashCode(postId);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (!(obj instanceof Post)) {
-            return false;
-        }
-
-        Post other = (Post) obj;
-        return postId == other.postId;
     }
 }
