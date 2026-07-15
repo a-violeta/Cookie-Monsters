@@ -68,12 +68,9 @@ public class Post {
     }
 
     public void addComment(Comment comment){
-        if(!comment.getText().isEmpty() && comment.getPostId()!=this.getPostId() && comment.getUserId()!=0)
-            // validates text not empty, post is the same, user is not nonexistent
 
-            commentList.add(comment);
-        else
-            System.out.println("Cannot add invalid comment! Check comment text, user and post");
+        // moved all validations to services
+        commentList.add(comment);
     }
 
     public void removeComment(long commentId){
