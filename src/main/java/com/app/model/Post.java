@@ -39,6 +39,15 @@ public class Post {
         this.createdAt=LocalDateTime.now();
     }
 
+    public Post(long communityId, long userId, String title, String text, List<Comment> commentList){
+        this.postId=incrementId();
+        this.communityId=communityId;
+        this.userId=userId;
+        this.title=title;
+        this.text=text;
+        this.commentList=commentList;
+    }
+
     public Post(long communityId, long userId, String title, String text, List<Comment> commentList, LocalDateTime createdAt){
         this.postId=incrementId();
         this.communityId=communityId;

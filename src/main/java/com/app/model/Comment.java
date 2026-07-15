@@ -36,7 +36,12 @@ public class Comment {
         this.createdAt=LocalDateTime.now();
     }
 
-
+    public Comment(String text, long userId, long postId){
+        this.commentId=incrementId();
+        this.text=text;
+        this.userId=userId;
+        this.postId=postId;
+    }
 
     public Comment(String text, long userId, long postId, LocalDateTime createdAt){
         this.commentId=incrementId();

@@ -43,6 +43,13 @@ public class User {
         this.createdAt=LocalDateTime.now();
     }
 
+    public User(String username, String password, String description){
+        this.userId = incrementId();
+        this.username=username;
+        this.password=password;
+        this.description=description;
+    }
+
     public User(String username, String password, String description, LocalDateTime createdAt){
         this.userId = incrementId();
         this.username=username;
