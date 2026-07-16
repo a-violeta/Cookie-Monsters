@@ -24,13 +24,12 @@ public class CLIMenu implements CommandLineRunner {
 
     @Override
     public void run(String... args){
-        Scanner scanner = new Scanner(System.in);
+        //Scanner scanner = new Scanner(System.in);
 
         List<User> usersList = new ArrayList<>();
         List<Post> postsList = new ArrayList<>();
-
         User loggedInUser = null;
-        // temporarily, this class will keep track of the user who is currently logged in
+        // temporarily, Main class will keep track of the user who is currently logged in
 
         // seed data for testing:
 
@@ -72,7 +71,13 @@ public class CLIMenu implements CommandLineRunner {
         commentList1.add(comment2);
         post1.setCommentList(commentList1);
 
-        while(true){
+        ConsoleReader consoleReader = new ConsoleReader();
+
+        InputParser inputParser = new InputParser(consoleReader, communityService);
+
+        inputParser.startListening();
+
+        /*while(true){
             System.out.println("1. Create user");
             System.out.println("2. Log into account");
             System.out.println("3. Log out of account");
@@ -307,7 +312,8 @@ public class CLIMenu implements CommandLineRunner {
                 }
 
                 case 6 -> {
-                    System.out.println("--Create community--");
+
+                    /*System.out.println("--Create community--");
 
                     // create description and members list
 
@@ -691,6 +697,6 @@ public class CLIMenu implements CommandLineRunner {
 
                 default -> System.out.println("Invalid option.");
             }
-        }
+        }*/
     }
 }
