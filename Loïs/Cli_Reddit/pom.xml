@@ -10,16 +10,16 @@
 
     <dependencies>
         <dependency>
-            <groupId>at.favre.lib</groupId>
-            <artifactId>bcrypt</artifactId>
-            <version>{latest-version}</version>
+            <groupId>fr.lois.logLibrary</groupId>
+            <artifactId>Logger</artifactId>
+            <version>1.2</version>
         </dependency>
     </dependencies>
 
 
     <properties>
-        <maven.compiler.source>26</maven.compiler.source>
-        <maven.compiler.target>26</maven.compiler.target>
+        <maven.compiler.source>25</maven.compiler.source>
+        <maven.compiler.target>25</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
