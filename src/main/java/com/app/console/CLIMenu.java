@@ -30,9 +30,7 @@ public class CLIMenu implements CommandLineRunner {
         List<Post> postsList = new ArrayList<>();
 
         User loggedInUser = null;
-        // temporarily, Main class will keep track of the user who is currently logged in
-
-        CommunityService communityService = CommunityService.getInstance();
+        // temporarily, this class will keep track of the user who is currently logged in
 
         // seed data for testing:
 

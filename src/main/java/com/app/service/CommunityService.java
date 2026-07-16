@@ -5,36 +5,20 @@ package com.app.service;
 import com.app.model.Community;
 import com.app.model.Post;
 import com.app.model.User;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+@Getter
 @Service
 public class CommunityService {
 
     private List<Community> applicationCommunities = new ArrayList<>();
     // list of all the communities
-
-    //private constructor for singleton design pattern
-    private CommunityService() {
-        this.applicationCommunities = new ArrayList<>();
-    }
-
-    // holder implementation for singleton
-    // so we call method getInstance() once and it spawns 1 CommunityManager
-    // if we call the method again it returns the same CommunityManager made earlier
-    private static class Holder {
-        private static final CommunityService INSTANCE = new CommunityService();
-    }
-    public static CommunityService getInstance() {
-        return CommunityService.Holder.INSTANCE;
-    }
-
-    public List<Community> getApplicationCommunities() {
-        return applicationCommunities;
-    }
 
     public boolean validateCommunity(Community community){
         if(community.getCommunityId()==0
