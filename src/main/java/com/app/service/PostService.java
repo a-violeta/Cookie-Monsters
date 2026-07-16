@@ -1,46 +1,73 @@
 package com.app.service;
 
-// singleton class, there is no need for more than 1 entity that manages posts
-
-import com.app.model.Comment;
 import com.app.model.Post;
 import lombok.Getter;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 @Getter
 @Service
 public class PostService {
 
-    private List<Post> applicationPosts;
+    private List<Post> applicationPosts = new ArrayList<>();
     // list of all the posts
 
-    //private constructor for singleton design pattern
-    private PostService() {
-        this.applicationPosts = new ArrayList<>();
+    public void validatePost(String title, String text) {
+        if (title == null || title.isBlank()) {
+            throw new IllegalArgumentException("Title is required");
+        }
+
+        if (text == null || text.isBlank()) {
+            throw new IllegalArgumentException("Text is required");
+        }
     }
 
-    // holder implementation for singleton
-    // so we call method getInstance() once and it spawns 1 obj
-    // if we call the method again it returns the same obj made earlier
-    private static class Holder {
-        private static final PostService INSTANCE = new PostService();
+    public Post addPost(long communityId, String title, String text, long userId) {
+        validatePost(title, text);
+        Post post = new Post(communityId, userId, title, text, new ArrayList<>());
+        this.applicationPosts.add(post);
+        return post;
     }
 
-    public static PostService getInstance() {
-        return PostService.Holder.INSTANCE;
+    public Post findPostById(long postId) {
+        for (Post post : applicationPosts) {
+            if (post.getPostId() == postId) {
+                return post;
+            }
+        }
+
+        return null;
     }
 
-    public void addCommentToPost(Post post, Comment comment){
-        if(!comment.getText().isEmpty()
-                && comment.getPostId()!=post.getPostId()
-                && comment.getUserId()!=0)
-                // validates text not empty, post is the same, user is not nonexistent
+    public void editPost(long postId, String newText) {
+        Post post = findPostById(postId);
 
-            post.addComment(comment);
-        else
-            System.out.println("Cannot add invalid comment! Check comment text, user and post");
+        if (post != null) {
+            validatePost(post.getTitle(), newText);
+            post.setText(newText);
+        } else {
+            throw new IllegalArgumentException("Post with id " + postId + " not found");
+        }
+    }
+
+    public void removePost(long postId) {
+        boolean found = false;
+        Iterator<Post> it = applicationPosts.iterator();
+        // removing from list by using iterator
+        while (it.hasNext()) {
+            Post post = it.next();
+            if (post.getPostId() == postId) {
+                found = true;
+                it.remove();
+                break;
+            }
+        }
+
+        if (!found) {
+            throw new IllegalArgumentException("Post with id " + postId + " not found");
+        }
     }
 }
