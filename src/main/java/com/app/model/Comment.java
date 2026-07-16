@@ -41,6 +41,7 @@ public class Comment {
         this.text=text;
         this.userId=userId;
         this.postId=postId;
+        this.createdAt=LocalDateTime.now();
     }
 
     public Comment(String text, long userId, long postId, LocalDateTime createdAt){

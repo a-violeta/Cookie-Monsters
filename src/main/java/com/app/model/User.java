@@ -48,6 +48,7 @@ public class User {
         this.username=username;
         this.password=password;
         this.description=description;
+        this.createdAt=LocalDateTime.now();
     }
 
     public User(String username, String password, String description, LocalDateTime createdAt){

@@ -47,6 +47,7 @@ public class Community {
         this.description=description;
         this.communityUsers=communityUsers;
         this.communityPosts=communityPosts;
+        this.createdAt=LocalDateTime.now();
     }
 
     public Community(String communityName, String description, List<User> communityUsers, List<Post> communityPosts, LocalDateTime createdAt){

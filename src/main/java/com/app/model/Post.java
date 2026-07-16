@@ -46,6 +46,7 @@ public class Post {
         this.title=title;
         this.text=text;
         this.commentList=commentList;
+        this.createdAt=LocalDateTime.now();
     }
 
     public Post(long communityId, long userId, String title, String text, List<Comment> commentList, LocalDateTime createdAt){
