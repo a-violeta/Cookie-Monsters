@@ -18,11 +18,23 @@ public class CreateCommunityCommand extends Command {
     @Override
     public void execute(String[] args) {
 
+        // Arguments Validations
+        if (args.length < 2) {
+
+            System.out.println("Error : Missing Arguments");
+            System.out.println("Usage : 4 'Community Name' 'Description' ");
+            return;
+
+        } else if (args.length > 2) {
+
+            System.out.println("Error : Too Many Arguments");
+            System.out.println("Usage : 4 'Community Name' 'Description' ");
+            return;
+        }
 
         User user1 = new User("Ion", "ion123", "some guy");
 
         List<User> membersList = new ArrayList<>();
-
 
         membersList.add(user1);
 
@@ -30,6 +42,6 @@ public class CreateCommunityCommand extends Command {
 
         communityService.addCommunity(newCommunity);
 
-        System.out.println("\nCommunity successfully created!");
+        System.out.println("Community successfully created!");
     }
 }
