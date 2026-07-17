@@ -1,14 +1,12 @@
 package com.app.console;
 
 
-import com.app.model.Comment;
-import com.app.model.Community;
-import com.app.model.Post;
-import com.app.model.User;
+import com.app.model.*;
 import com.app.service.CommunityService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -57,6 +55,8 @@ public class CLIMenu implements CommandLineRunner {
 
         Post post1 = new Post(1, 1, "First post about cats", "Cats are awesome", null);
         Post post2 = new Post(1, 2, "Second post abouts cats", "Cats are still awesome", null);
+        Media image1 = new Media("C:\\Users\\iulia\\OneDrive\\Imagini\\134110683555465878.jpg", "134110683555465878.jpg", LocalDateTime.now(), MediaType.IMAGE);
+        post1.setMedia(image1);
         postsList.add(post1);
         postsList.add(post2);
         List<Post> communityPosts1 = new ArrayList<>();
