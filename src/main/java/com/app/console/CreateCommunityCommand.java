@@ -38,10 +38,7 @@ public class CreateCommunityCommand extends Command {
 
         membersList.add(user1);
 
-        Community newCommunity = new Community(args[0], args[1], membersList, null);
-
-        communityService.addCommunity(newCommunity);
-
+        Community newCommunity = communityService.addCommunity(args[0], args[1]);
         System.out.println("Community successfully created!");
     }
 }
