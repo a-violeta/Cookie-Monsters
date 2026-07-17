@@ -1,39 +1,35 @@
 package com.app.model;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.Iterator;
 import java.util.List;
 
-@Getter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Data
+@Entity
+@Table(name = "communities")
+
 public class Community {
 
-    private static long idIncrementor = 0;
-    // for id uniqueness, ids given will be 1, then 2, 3 ...
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    private static long incrementId(){
-        idIncrementor++;
-        return idIncrementor;
-    }
-
-    @EqualsAndHashCode.Include
-    private final long communityId;
-    @Setter
-    private String communityName;
-    @Setter
+    private final String communityName;
     private String description;
-    @Setter
+    private final LocalDateTime createdAt;
+
     private List<User> communityUsers;
-    @Setter
     private List<Post> communityPosts;
-    private LocalDateTime createdAt;
+
 
     public Community(){
-        this.communityId=incrementId();
         this.communityName="";
         this.description="";
         this.communityUsers=null;
@@ -42,7 +38,6 @@ public class Community {
     }
 
     public Community(String communityName, String description, List<User> communityUsers, List<Post> communityPosts){
-        this.communityId=incrementId();
         this.communityName=communityName;
         this.description=description;
         this.communityUsers=communityUsers;
@@ -51,7 +46,6 @@ public class Community {
     }
 
     public Community(String communityName, String description, List<User> communityUsers, List<Post> communityPosts, LocalDateTime createdAt){
-        this.communityId=incrementId();
         this.communityName=communityName;
         this.description=description;
         this.communityUsers=communityUsers;
@@ -115,17 +109,5 @@ public class Community {
             }
         }
         return null;
-    }
-
-    @Override
-    public String toString() {
-        return "Community{" +
-                "communityId=" + communityId +
-                ", communityName='" + communityName + '\'' +
-                ", description='" + description + '\'' +
-                ", communityUsers=" + communityUsers +
-                ", communityPosts=" + communityPosts +
-                ", createdAt=" + createdAt +
-                '}';
     }
 }
