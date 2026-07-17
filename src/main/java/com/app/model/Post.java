@@ -26,6 +26,8 @@ public class Post {
     @Setter
     private List<Comment> commentList;
     private LocalDateTime createdAt;
+    @Setter
+    private Media media;
 
     // validations not made in post constructors
 
@@ -37,6 +39,7 @@ public class Post {
         this.text="";
         this.commentList=null;
         this.createdAt=LocalDateTime.now();
+        this.media=null;
     }
 
     public Post(long communityId, long userId, String title, String text, List<Comment> commentList){
@@ -47,9 +50,10 @@ public class Post {
         this.text=text;
         this.commentList=commentList;
         this.createdAt=LocalDateTime.now();
+        this.media=null;
     }
 
-    public Post(long communityId, long userId, String title, String text, List<Comment> commentList, LocalDateTime createdAt){
+    public Post(long communityId, long userId, String title, String text, List<Comment> commentList, LocalDateTime createdAt, Media media){
         this.postId=incrementId();
         this.communityId=communityId;
         this.userId=userId;
@@ -57,6 +61,7 @@ public class Post {
         this.text=text;
         this.commentList=commentList;
         this.createdAt=createdAt;
+        this.media=media;
     }
 
     private static long incrementId(){
@@ -74,6 +79,7 @@ public class Post {
                 ", text='" + text + '\'' +
                 ", commentList=" + commentList +
                 ", createdAt=" + createdAt +
+                ", media=" + media +
                 '}';
     }
 
