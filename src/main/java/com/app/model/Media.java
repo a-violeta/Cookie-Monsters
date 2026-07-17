@@ -48,7 +48,7 @@ public class Media {
     @Override
     public String toString() {
         return "Media{" +
-                ", path='" + path + '\'' +
+                "path='" + path + '\'' +
                 ", fileName='" + fileName + '\'' +
                 ", type=" + type +
                 '}';
