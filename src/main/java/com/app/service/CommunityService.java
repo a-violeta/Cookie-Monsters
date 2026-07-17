@@ -3,7 +3,9 @@ package com.app.service;
 import com.app.model.Community;
 import com.app.model.Post;
 import com.app.model.User;
+import com.app.repository.H2CommunityRepository;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -11,10 +13,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
-@Getter
+
 @Service
+@RequiredArgsConstructor
+
 public class CommunityService {
 
+    private final H2CommunityRepository h2CommunityRepository;
     private List<Community> applicationCommunities = new ArrayList<>();
     // list of all the communities
 
@@ -46,16 +51,16 @@ public class CommunityService {
         }
     }
 
-    public Community addCommunity(String communityName, String description) {
+    /*public Community addCommunity(String communityName, String description) {
         validateCommunity(communityName, description);
         Community community = new Community(communityName, description, new ArrayList<>(), new ArrayList<>());
         applicationCommunities.add(community);
         return community;
-    }
+    }*/
 
     public Community findCommunityById(long communityId) {
         for (Community community : applicationCommunities) {
-            if (community.getCommunityId() == communityId) {
+            if (community.getId() == communityId) {
                 return community;
             }
         }
@@ -79,7 +84,7 @@ public class CommunityService {
         // removing from list by using iterator
         while (it.hasNext()) {
             Community c = it.next();
-            if (c.getCommunityId() == communityId) {
+            if (c.getId() == communityId) {
                 found = true;
                 it.remove();
                 break;
@@ -129,5 +134,15 @@ public class CommunityService {
 
     public void removePostFromCommunity(Community community, Post post) {
         community.removePost(post.getPostId());
+    }
+
+    public Community addCommunity(Community community) {
+
+        if (h2CommunityRepository.existsByCommunityName(community.getCommunityName())) {
+            throw new IllegalArgumentException("Community name is already taken");
+        }
+
+        community.setId(null);
+        return h2CommunityRepository.save(community);
     }
 }
