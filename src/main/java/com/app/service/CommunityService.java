@@ -1,17 +1,15 @@
 package com.app.service;
 
-// singleton class, there is no need for more than 1 entity that manages communities
-
 import com.app.model.Community;
 import com.app.model.Post;
 import com.app.model.User;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Service
@@ -20,168 +18,116 @@ public class CommunityService {
     private List<Community> applicationCommunities = new ArrayList<>();
     // list of all the communities
 
-    public boolean validateCommunity(Community community){
-        if(community.getCommunityId()==0
-                || community.getCommunityName().isEmpty()
-                || community.getDescription().isEmpty()
-                || community.getCommunityUsers().isEmpty()) {
-            // validate id, name, description and number of users (there should be at least 1, the creator)
-            System.out.println("Community not valid. Check id, name and description!");
-            return false;
+    public void validateCommunity(String communityName, String description) {
+        if (communityName == null || communityName.isBlank()) {
+            throw new IllegalArgumentException("Community name is required");
         }
-        return true;
-    }
 
-    public void addCommunity(Community community){
-        if(validateCommunity(community)){
-
-            for(Community c: applicationCommunities){
-                if(c.getCommunityName().equalsIgnoreCase(community.getCommunityName())){
-                    System.out.println("Community name already exists!");
-                    return;
-                }
-            }
-
-            applicationCommunities.add(community);
+        if (!communityName.matches("^[a-zA-Z0-9_]+$")) {
+            throw new IllegalArgumentException("Community name must contain only letters, numbers, and '_'");
         }
-    }
 
-    public void removeCommunity(long communityId){
-        Iterator<Community> it = applicationCommunities.iterator();
-        // removing from list by using iterator
-        while(it.hasNext()){
-            Community c = it.next();
-            if(c.getCommunityId() == communityId){
-                it.remove();
-                break;
+        if (communityName.length() < 3) {
+            throw new IllegalArgumentException("Community name must have at least 3 characters");
+        }
+
+        if (communityName.length() > 21) {
+            throw new IllegalArgumentException("Community name is too long");
+        }
+
+        if (description == null || description.isBlank()) {
+            throw new IllegalArgumentException("Community description is required");
+        }
+
+        for (Community community : applicationCommunities) {
+            if (Objects.equals(communityName, community.getCommunityName())) {
+                throw new IllegalArgumentException("Community name is already taken");
             }
         }
     }
 
-    public Community findCommunity(long communityId){
-        for(Community c : applicationCommunities){
-            if(c.getCommunityId() == communityId){
-                return c;
+    public Community addCommunity(String communityName, String description) {
+        validateCommunity(communityName, description);
+        Community community = new Community(communityName, description, new ArrayList<>(), new ArrayList<>());
+        applicationCommunities.add(community);
+        return community;
+    }
+
+    public Community findCommunityById(long communityId) {
+        for (Community community : applicationCommunities) {
+            if (community.getCommunityId() == communityId) {
+                return community;
             }
         }
         // community not found, then return null
         return null;
     }
 
-    public void listCommunities(){
+    public void editCommunity(long communityId, String description) {
+        Community community = findCommunityById(communityId);
+        if (community != null) {
+            validateCommunity(community.getCommunityName(), description);
+            community.setDescription(description);
+        } else {
+            throw new IllegalArgumentException("Community with id " + communityId + " not found");
+        }
+    }
 
-        if(applicationCommunities.isEmpty()){
+    public void deleteCommunity(long communityId) {
+        boolean found = false;
+        Iterator<Community> it = applicationCommunities.iterator();
+        // removing from list by using iterator
+        while (it.hasNext()) {
+            Community c = it.next();
+            if (c.getCommunityId() == communityId) {
+                found = true;
+                it.remove();
+                break;
+            }
+        }
+
+        if (!found) {
+            throw new IllegalArgumentException("Community with id " + communityId + " not found");
+        }
+    }
+
+    public void listCommunities() {
+        if (applicationCommunities.isEmpty()) {
             System.out.println("No communities to list!");
             return;
         }
-        for(Community c: applicationCommunities){
-            System.out.println(c);
+        for (Community community : applicationCommunities) {
+            System.out.println(community);
         }
     }
 
-    public void joinCommunity(Community community, User user){
-
+    public void joinCommunity(Community community, User user) {
         // right now, join means immediate approval into the community since we don't have admins or moderators yet
-
-        if(!user.getUsername().isEmpty()
-                && !user.getPassword().isEmpty()
-                && !user.getDescription().isEmpty()) {
-            // validate fields for business logic
-
-            community.addUser(user);
+        if (community.findUserById(user.getUserId()) != null) {
+            throw new IllegalArgumentException("User is already part of the community");
         }
+
+        community.addUser(user);
     }
 
-    public void exitCommunity(Community community, User user){
-
+    public void exitCommunity(Community community, User user) {
         // exiting doesn't need approval
         // if the community has only one user then delete the community
 
         // check that the person is part of the community
-        if(community.findUserById(user.getUserId())!=null){
+        if (community.findUserById(user.getUserId()) == null) {
+            throw new IllegalArgumentException("User is not part of the community");
+        }
 
-            if(community.getCommunityUsers().size()==1){
-                System.out.println("Community " + community.getCommunityName() + " will be empty if you exit!");
-                System.out.println("Choose to delete the community instead!");
-            }
-            else{
-
-                // exit means removing person from community s communityUsers list
-                community.removeUser(user.getUserId());
-            }
+        if (community.getCommunityUsers().size() == 1) {
+            throw new IllegalStateException("You are the last member. You cannot exit the community.");
+        } else {
+            // exit means removing person from community s communityUsers list
+            community.removeUser(user.getUserId());
         }
     }
 
-    public void addPostToCommunity(Community community, Post post){
-        if(!post.getTitle().isEmpty()
-                && !post.getText().isEmpty()
-                && post.getCommunityId()==community.getCommunityId()
-                && post.getUserId()!=0){
-                // validate fields for business logic
-
-            community.addPost(post);
-        }
-    }
-
-    public void removePostFromCommunity(Community community, Post post){
+    public void removePostFromCommunity(Community community, Post post) {
         community.removePost(post.getPostId());
-    }
-
-    public void addUserToCommunity(Community community, User user){
-        if(!user.getUsername().isEmpty()
-                && !user.getPassword().isEmpty()
-                && !user.getDescription().isEmpty()){
-                // validate fields for business logic
-
-            community.addUser(user);
-        }
-    }
-
-    public void removeUserFromCommunity(Community community, User user){
-        community.removeUser(user.getUserId());
-    }
-
-    public void editCommunityName(Community community, String newName){
-
-        // check the newname is not empty and not the same name
-        if(!newName.isEmpty()){
-            if(!community.getCommunityName().equalsIgnoreCase(newName)){
-
-                // use regex to validate the newname
-                // length, minimum number of letters (can't be just symbols)
-                // etc
-
-                community.setCommunityName(newName);
-                System.out.println("Name changed!");
-            }
-            else{
-                System.out.println("The name is the same!");
-            }
-        }
-        else{
-            System.out.println("The name is empty!");
-        }
-    }
-
-    public void editCommunityDescription(Community community, String newDescription){
-
-        // check the description is not empty and not the same
-        if(!newDescription.isEmpty()){
-            if(!community.getDescription().equalsIgnoreCase(newDescription)){
-
-                // use regex to validate the description
-                // length, minimum number of letters (can't be just symbols)
-                // etc
-
-                community.setDescription(newDescription);
-                System.out.println("Description changed!");
-            }
-            else{
-                System.out.println("The description is the same!");
-            }
-        }
-        else{
-            System.out.println("The description is empty!");
-        }
     }
 }

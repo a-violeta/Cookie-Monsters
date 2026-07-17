@@ -18,7 +18,7 @@ public class DeleteCommunityCommand extends Command{
         }
 
         long communityId = Long.parseLong(args[0]);
-        communityService.removeCommunity(communityId);
+        communityService.deleteCommunity(communityId);
 
     }
 }
