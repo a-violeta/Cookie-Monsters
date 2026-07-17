@@ -16,47 +16,11 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
-
+@Getter
 public class CommunityService {
 
     private final H2CommunityRepository h2CommunityRepository;
     private List<Community> applicationCommunities = new ArrayList<>();
-    // list of all the communities
-
-    public void validateCommunity(String communityName, String description) {
-        if (communityName == null || communityName.isBlank()) {
-            throw new IllegalArgumentException("Community name is required");
-        }
-
-        if (!communityName.matches("^[a-zA-Z0-9_]+$")) {
-            throw new IllegalArgumentException("Community name must contain only letters, numbers, and '_'");
-        }
-
-        if (communityName.length() < 3) {
-            throw new IllegalArgumentException("Community name must have at least 3 characters");
-        }
-
-        if (communityName.length() > 21) {
-            throw new IllegalArgumentException("Community name is too long");
-        }
-
-        if (description == null || description.isBlank()) {
-            throw new IllegalArgumentException("Community description is required");
-        }
-
-        for (Community community : applicationCommunities) {
-            if (Objects.equals(communityName, community.getCommunityName())) {
-                throw new IllegalArgumentException("Community name is already taken");
-            }
-        }
-    }
-
-    /*public Community addCommunity(String communityName, String description) {
-        validateCommunity(communityName, description);
-        Community community = new Community(communityName, description, new ArrayList<>(), new ArrayList<>());
-        applicationCommunities.add(community);
-        return community;
-    }*/
 
     public Community findCommunityById(long communityId) {
         for (Community community : applicationCommunities) {
@@ -71,7 +35,6 @@ public class CommunityService {
     public void editCommunity(long communityId, String description) {
         Community community = findCommunityById(communityId);
         if (community != null) {
-            validateCommunity(community.getCommunityName(), description);
             community.setDescription(description);
         } else {
             throw new IllegalArgumentException("Community with id " + communityId + " not found");
