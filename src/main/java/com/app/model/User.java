@@ -10,13 +10,13 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User {
 
-    @EqualsAndHashCode.Include
     private static long idIncrementor = 0;
     // it s static so that all Users objects have the same idIncrementor
     // and the static method incrementId() is called in the constructors to give a 'bigger' id everytime
     // so ids are unique
     // so the ids returned will be 1 for the first User created, then 2, 3...
 
+    @EqualsAndHashCode.Include
     private final long userId;
     @Setter
     private String username;
