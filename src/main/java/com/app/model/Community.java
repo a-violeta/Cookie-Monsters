@@ -12,7 +12,6 @@ import java.util.List;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Community {
 
-    @EqualsAndHashCode.Include
     private static long idIncrementor = 0;
     // for id uniqueness, ids given will be 1, then 2, 3 ...
 
@@ -21,6 +20,7 @@ public class Community {
         return idIncrementor;
     }
 
+    @EqualsAndHashCode.Include
     private final long communityId;
     @Setter
     private String communityName;

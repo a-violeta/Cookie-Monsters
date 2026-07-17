@@ -12,10 +12,10 @@ import java.util.List;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Post {
 
-    @EqualsAndHashCode.Include
     private static long idIncrementor = 0;
     // for id uniqueness, ids given will be 1, then 2, 3 ...
 
+    @EqualsAndHashCode.Include
     private final long postId;
     private final long communityId;
     private final long userId;
