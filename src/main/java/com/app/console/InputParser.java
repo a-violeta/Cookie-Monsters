@@ -20,6 +20,7 @@ public class InputParser {
         this.communityService = communityService;
         commandMap.put("4", new CreateCommunityCommand(communityService));
         commandMap.put("10", new ListCommunityCommand(communityService));
+        commandMap.put("0", new ExitCommand(communityService));
         // Add Commands Classes to the map of commands
         //commandMap.put("h", new HelpCommand());
         //commandMap.put("help", new HelpCommand());
