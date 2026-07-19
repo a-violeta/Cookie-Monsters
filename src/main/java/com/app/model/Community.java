@@ -1,10 +1,6 @@
 package com.app.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -25,9 +21,16 @@ public class Community {
     private String description;
     private final LocalDateTime createdAt;
 
+    @Transient
     private List<User> communityUsers;
+    @Transient
     private List<Post> communityPosts;
+    // we need to specify a relationship between these
+    // otherwise Hibernate thinks Post and User are basic types (like String)
+    // and that fails
 
+    // Transient basically says to ignore these fields for now
+    // because User and Post and Comment are not yet finished
 
     public Community(){
         this.communityName="";
