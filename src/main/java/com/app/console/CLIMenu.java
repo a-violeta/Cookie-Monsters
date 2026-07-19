@@ -46,12 +46,12 @@ public class CLIMenu implements CommandLineRunner {
         communityUsers1.add(user2);
         communityUsers1.add(user3);
         Community community1 = new Community("The cat lovers", "we really love cats", communityUsers1, null);
-        communityService.getApplicationCommunities().add(community1);
+        communityService.addCommunity(community1);
 
         List<User> communityUsers2 = new ArrayList<>();
         communityUsers2.add(user2);
         Community community2 = new Community("Anca s community", "Anca is here", communityUsers2, null);
-        communityService.getApplicationCommunities().add(community2);
+        communityService.addCommunity(community2);
 
         Post post1 = new Post(1, 1, "First post about cats", "Cats are awesome", null);
         Post post2 = new Post(1, 2, "Second post abouts cats", "Cats are still awesome", null);

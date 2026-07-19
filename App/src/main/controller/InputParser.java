@@ -1,8 +1,8 @@
 package main.controller;
 
 import java.util.*;
-import model.Command;
-import model.HelpCommand;
+import main.model.Command;
+import main.model.HelpCommand;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
