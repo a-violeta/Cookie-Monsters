@@ -1,26 +1,20 @@
 package com.app.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Getter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@Entity
-@RequiredArgsConstructor
 public class Comment {
 
+    private static long idIncrementor = 0;
+    // for id uniqueness, ids given will be 1, then 2, 3 ...
+
     @EqualsAndHashCode.Include
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long commentId;
+    private final long commentId;
     @Setter
     private String text;
     private final long userId;
@@ -28,6 +22,35 @@ public class Comment {
     private LocalDateTime createdAt;
 
     // validations not made here
+
+    private static long incrementId(){
+        idIncrementor++;
+        return idIncrementor;
+    }
+
+    public Comment(){
+        this.commentId = incrementId();
+        this.text="";
+        this.userId=0;
+        this.postId=0;
+        this.createdAt=LocalDateTime.now();
+    }
+
+    public Comment(String text, long userId, long postId){
+        this.commentId=incrementId();
+        this.text=text;
+        this.userId=userId;
+        this.postId=postId;
+        this.createdAt=LocalDateTime.now();
+    }
+
+    public Comment(String text, long userId, long postId, LocalDateTime createdAt){
+        this.commentId=incrementId();
+        this.text=text;
+        this.userId=userId;
+        this.postId=postId;
+        this.createdAt=createdAt;
+    }
 
     @Override
     public String toString() {
