@@ -9,7 +9,7 @@ import java.util.List;
 
 @Getter
 @Service
-public class CommentService {
+public class CommentService implements CommentUseCases{
 
     private List<Comment> applicationComments = new ArrayList<>();
 
