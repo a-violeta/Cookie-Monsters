@@ -12,7 +12,7 @@ public class ConsoleReader {
     }
 
     public void cliPrompt() {
-        System.out.print("Reddit-CLI>");
+        System.out.print("Reddit-CLI> ");
     }
 
     public String readLine() {
