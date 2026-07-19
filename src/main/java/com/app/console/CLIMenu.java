@@ -4,6 +4,7 @@ package com.app.console;
 import com.app.model.*;
 import com.app.service.CommunityService;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Scanner;
 
 @Component
+@Profile("cli")
 public class CLIMenu implements CommandLineRunner {
     private final CommunityService communityService;
 
