@@ -3,15 +3,10 @@ package com.app.service;
 import com.app.model.Community;
 import com.app.model.Post;
 import com.app.model.User;
-import com.app.repository.H2CommunityRepository;
+import com.app.repository.CommunityRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
 
 
 @Service
@@ -19,10 +14,10 @@ import java.util.Objects;
 @Getter
 public class CommunityService {
 
-    private final H2CommunityRepository h2CommunityRepository;
+    private final CommunityRepository communityRepository;
 
     public Community findCommunityById(long communityId) {
-        return h2CommunityRepository.findById(communityId)
+        return communityRepository.findById(communityId)
                 .orElseThrow(() ->
                         new IllegalArgumentException(
                                 "Community with id " + communityId + " not found"
@@ -33,7 +28,7 @@ public class CommunityService {
         Community community = findCommunityById(communityId);
         if (community != null) {
             community.setDescription(description);
-            h2CommunityRepository.save(community);
+            communityRepository.save(community);
         } else {
             throw new IllegalArgumentException("Community with id " + communityId + " not found");
         }
@@ -44,7 +39,7 @@ public class CommunityService {
         Community community = findCommunityById(communityId);
 
         if(community!=null){
-            h2CommunityRepository.delete(community);
+            communityRepository.delete(community);
         }
         else{
             throw new IllegalArgumentException("Community with id " + communityId + " not found");
@@ -52,11 +47,11 @@ public class CommunityService {
     }
 
     public void listCommunities() {
-        if (h2CommunityRepository.findAll().isEmpty()) {
+        if (communityRepository.findAll().isEmpty()) {
             System.out.println("No communities to list!");
             return;
         }
-        for (Community community : h2CommunityRepository.findAll()) {
+        for (Community community : communityRepository.findAll()) {
             System.out.println(community);
         }
     }
@@ -68,7 +63,7 @@ public class CommunityService {
         }
 
         community.addUser(user);
-        h2CommunityRepository.save(community);
+        communityRepository.save(community);
     }
 
     public void exitCommunity(Community community, User user) {
@@ -85,22 +80,22 @@ public class CommunityService {
         } else {
             // exit means removing person from community s communityUsers list
             community.removeUser(user.getUserId());
-            h2CommunityRepository.save(community);
+            communityRepository.save(community);
         }
     }
 
     public void removePostFromCommunity(Community community, Post post) {
         community.removePost(post.getPostId());
-        h2CommunityRepository.save(community);
+        communityRepository.save(community);
     }
 
     public Community addCommunity(Community community) {
 
-        if (h2CommunityRepository.existsByCommunityName(community.getCommunityName())) {
+        if (communityRepository.existsByCommunityName(community.getCommunityName())) {
             throw new IllegalArgumentException("Community name is already taken");
         }
 
         community.setId(null);
-        return h2CommunityRepository.save(community);
+        return communityRepository.save(community);
     }
 }
