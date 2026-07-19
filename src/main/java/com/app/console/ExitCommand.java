@@ -1,11 +1,9 @@
 package com.app.console;
 
-import com.app.service.CommunityService;
-
 public class ExitCommand extends Command {
 
-    public ExitCommand(CommunityService communityService) {
-        super(communityService);
+    public ExitCommand() {
+        super();
     }
 
     @Override
