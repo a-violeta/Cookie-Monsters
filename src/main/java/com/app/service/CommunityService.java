@@ -7,6 +7,8 @@ import com.app.repository.CommunityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
@@ -44,14 +46,9 @@ public class CommunityService {
         }
     }
 
-    public void listCommunities() {
-        if (communityRepository.findAll().isEmpty()) {
-            System.out.println("No communities to list!");
-            return;
-        }
-        for (Community community : communityRepository.findAll()) {
-            System.out.println(community);
-        }
+    public List<Community> listCommunities() {
+
+        return communityRepository.findAll();
     }
 
     public void joinCommunity(Community community, User user) {
