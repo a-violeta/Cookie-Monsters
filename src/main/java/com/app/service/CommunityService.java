@@ -4,14 +4,12 @@ import com.app.model.Community;
 import com.app.model.Post;
 import com.app.model.User;
 import com.app.repository.CommunityRepository;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 
 @Service
 @RequiredArgsConstructor
-@Getter
 public class CommunityService {
 
     private final CommunityRepository communityRepository;
