@@ -1,6 +1,9 @@
 package com.app.console;
 
+import com.app.model.Community;
 import com.app.service.CommunityService;
+
+import java.util.List;
 
 public class ListCommunityCommand extends Command{
 
@@ -11,6 +14,10 @@ public class ListCommunityCommand extends Command{
     @Override
     public void execute(String[] args) {
 
-        communityService.listCommunities();
+        List<Community> communities = communityService.listCommunities();
+
+        for(Community c: communities){
+            System.out.println(c);
+        }
     }
 }
