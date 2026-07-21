@@ -4,7 +4,6 @@ import com.app.model.Community;
 import com.app.model.Post;
 import com.app.model.User;
 import com.app.repository.CommunityRepository;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.handler.UserRoleAuthorizationInterceptor;
@@ -15,7 +14,6 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@Getter
 public class CommunityService implements CommunityUseCases {
 
     private final CommunityRepository communityRepository;
