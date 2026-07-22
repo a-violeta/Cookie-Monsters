@@ -39,6 +39,9 @@ public class InputParser {
         commandMap.put("20", new EditCommentCommand(commentUseCases));
         commandMap.put("13", new DeleteCommentCommand(commentUseCases));
         commandMap.put("5", new CreateCommentCommand(commentUseCases));
+        commandMap.put("help", new HelpCommand());
+        commandMap.put("h", new HelpCommand());
+
 
         // Add Commands Classes to the map of commands
     }

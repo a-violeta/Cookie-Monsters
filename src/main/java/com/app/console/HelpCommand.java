@@ -4,13 +4,6 @@ import com.app.service.CommunityUseCases;
 
 public class HelpCommand extends Command {
 
-    private CommunityUseCases communityUseCases;
-
-    public HelpCommand(CommunityUseCases communityUseCases) {
-        super();
-        this.communityUseCases=communityUseCases;
-    }
-
     @Override
     public void execute(String[] args) {
         System.out.println("--This is the Help Page for Reddit-CLI--");
