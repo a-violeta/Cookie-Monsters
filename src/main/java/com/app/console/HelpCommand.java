@@ -1,11 +1,14 @@
 package com.app.console;
 
-import com.app.service.CommunityService;
+import com.app.service.CommunityUseCases;
 
 public class HelpCommand extends Command {
 
-    public HelpCommand(CommunityService communityService) {
-        super(communityService);
+    private CommunityUseCases communityUseCases;
+
+    public HelpCommand(CommunityUseCases communityUseCases) {
+        super();
+        this.communityUseCases=communityUseCases;
     }
 
     @Override
