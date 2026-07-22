@@ -77,8 +77,9 @@ public class CLIMenu implements CommandLineRunner {
         post1.setCommentList(commentList1);
 
         ConsoleReader consoleReader = new ConsoleReader();
+        ConsolePrinter consolePrinter = new ConsolePrinter();
 
-        InputParser inputParser = new InputParser(consoleReader, communityService, commentService, postService/*, userService*/);
+        InputParser inputParser = new InputParser(consoleReader, consolePrinter, communityService, commentService, postService/*, userService*/);
 
         inputParser.startListening();
 
