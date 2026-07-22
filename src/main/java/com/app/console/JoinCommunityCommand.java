@@ -18,14 +18,14 @@ public class JoinCommunityCommand extends Command {
         // Arguments Validations
         if (args.length < 2) {
 
-            System.out.println("Error : Missing Arguments");
-            System.out.println("Usage : 17 'Community Id' 'User Id' ");
+            consolePrinter.printError("Missing Arguments");
+            consolePrinter.printExplanation("17 'Community Id' 'User Id'");
             return;
 
         } else if (args.length > 2) {
 
-            System.out.println("Error : Too Many Arguments");
-            System.out.println("Usage : 17 'Community Id' 'User Id' ");
+            consolePrinter.printError("Too Many Arguments");
+            consolePrinter.printExplanation("17 'Community Id' 'User Id'");
             return;
         }
 
@@ -37,9 +37,9 @@ public class JoinCommunityCommand extends Command {
 
             consolePrinter.printSuccess("Successfully joined the community!");
         } catch (NumberFormatException e) {
-            System.out.println("Error : Community Id and User Id must be numbers");
+            consolePrinter.printError("Community Id and User Id must be numbers");
         } catch (Exception e) {
-            System.out.println("Error : " + e.getMessage());
+            consolePrinter.printError(e.getMessage());
         }
     }
 }

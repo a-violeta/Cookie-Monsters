@@ -18,14 +18,14 @@ public class CreateCommunityCommand extends Command {
         // Arguments Validations
         if (args.length < 2) {
 
-            System.out.println("Error : Missing Arguments");
-            System.out.println("Usage : 4 'Community Name' 'Description' ");
+            consolePrinter.printError("Missing Arguments");
+            consolePrinter.printExplanation("4 'Community Name' 'Description'");
             return;
 
         } else if (args.length > 2) {
 
-            System.out.println("Error : Too Many Arguments");
-            System.out.println("Usage : 4 'Community Name' 'Description' ");
+            consolePrinter.printError("Too Many Arguments");
+            consolePrinter.printExplanation("4 'Community Name' 'Description'");
             return;
         }
 

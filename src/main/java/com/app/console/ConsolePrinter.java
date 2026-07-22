@@ -26,6 +26,13 @@ public class ConsolePrinter {
         System.out.println(RED + "❌ Error: " + message + RESET);
     }
 
+    public void printExplanation(String usage) {
+        String CYAN = "\u001B[36m";
+        String RESET = "\u001B[0m";
+
+        System.out.println(CYAN + "ℹ️  Usage: " + usage + RESET);
+    }
+
     public void printBanner() {
         String RESET = "\u001B[0m";
         String BOLD = "\u001B[1m";

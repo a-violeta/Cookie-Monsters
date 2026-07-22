@@ -15,8 +15,8 @@ public class DeleteCommunityCommand extends Command{
     public void execute(String[] args) {
 
         if (args.length < 1) {
-            System.out.println("Error : Missing Arguments");
-            System.out.println("Usage : 14 \"Community ID\"");
+            consolePrinter.printError("Missing Arguments");
+            consolePrinter.printExplanation("14 \"Community ID\"");
             return;
         }
 
@@ -26,9 +26,9 @@ public class DeleteCommunityCommand extends Command{
 
             consolePrinter.printSuccess("Community successfully deleted!");
         } catch (NumberFormatException e) {
-            System.out.println("Error : Community Id must be a number");
+            consolePrinter.printError("Community Id must be a number");
         } catch (Exception e) {
-            System.out.println("Error : " + e.getMessage());
+            consolePrinter.printError(e.getMessage());
         }
 
     }
