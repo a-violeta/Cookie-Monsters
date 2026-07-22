@@ -1,11 +1,15 @@
 package com.app.console;
 
 import com.app.service.CommunityService;
+import com.app.service.CommunityUseCases;
 
 public class DeleteCommunityCommand extends Command{
 
-    public DeleteCommunityCommand(CommunityService communityService) {
-        super(communityService);
+    private CommunityUseCases communityUseCases;
+
+    public DeleteCommunityCommand(CommunityUseCases communityUseCases) {
+        super();
+        this.communityUseCases=communityUseCases;
     }
 
     @Override
@@ -18,7 +22,7 @@ public class DeleteCommunityCommand extends Command{
         }
 
         long communityId = Long.parseLong(args[0]);
-        communityService.deleteCommunity(communityId);
+        communityUseCases.deleteCommunity(communityId);
 
     }
 }

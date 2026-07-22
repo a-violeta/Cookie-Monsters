@@ -10,7 +10,7 @@ import java.util.List;
 
 @Getter
 @Service
-public class PostService {
+public class PostService implements  PostUseCases{
 
     private List<Post> applicationPosts = new ArrayList<>();
     // list of all the posts
