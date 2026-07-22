@@ -19,8 +19,13 @@ public class ListCommunityCommand extends Command{
 
         List<Community> communities = communityUseCases.listCommunities();
 
-        for(Community c: communities){
-            System.out.println(c);
+        if(communities.isEmpty()){
+            consolePrinter.printError("No communities found!");
+        }
+        else{
+            for(Community c: communities){
+                consolePrinter.displayCommunity(c);
+            }
         }
     }
 }

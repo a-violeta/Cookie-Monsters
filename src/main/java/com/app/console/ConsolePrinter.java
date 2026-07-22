@@ -35,7 +35,7 @@ public class ConsolePrinter {
 
         System.out.println();
         System.out.println(YELLOW + "   🍪  " + RESET + BOLD + GREEN + "See you soon, cookie monster!" + RESET + YELLOW + "  🍪" + RESET);
-        System.out.println(GRAY + "        \"Me will be back... for more cookies.\"" + RESET);
+        System.out.println(GRAY + "        \"We will be back... for more cookies.\"" + RESET);
         System.out.println();
     }
 

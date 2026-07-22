@@ -34,10 +34,11 @@ public class JoinCommunityCommand extends Command {
             Long userId = Long.parseLong(args[1]);
 
             communityUseCases.joinCommunity(communityId, userId);
-            System.out.println("Successfully joined the community!");
+
+            consolePrinter.printSuccess("Successfully joined the community!");
         } catch (NumberFormatException e) {
             System.out.println("Error : Community Id and User Id must be numbers");
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
             System.out.println("Error : " + e.getMessage());
         }
     }
