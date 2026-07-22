@@ -1,23 +1,24 @@
 package com.app.model;
 
+import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Entity
+@Table(name = "app_users") // user is a reserved name in postgres
 public class User {
 
-    private static long idIncrementor = 0;
-    // it s static so that all Users objects have the same idIncrementor
-    // and the static method incrementId() is called in the constructors to give a 'bigger' id everytime
-    // so ids are unique
-    // so the ids returned will be 1 for the first User created, then 2, 3...
-
     @EqualsAndHashCode.Include
-    private final long userId;
+    @Id
+    @GeneratedValue(strategy =  GenerationType.IDENTITY)
+    private Long id;
+
     @Setter
     private String username;
     @Setter
@@ -27,42 +28,19 @@ public class User {
     @Setter
     private LocalDateTime createdAt;
 
-    // the validations for username and password can be made in UserService class
-    // it is business logic
+    @ManyToMany(mappedBy = "communityUsers")
+    private List<Community> communities;
 
-    private static long incrementId(){
-        idIncrementor++;
-        return idIncrementor;
-    }
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Post> posts;
 
-    public User(){
-        this.userId = incrementId();
-        this.username="";
-        this.password="";
-        this.description="";
-        this.createdAt=LocalDateTime.now();
-    }
-
-    public User(String username, String password, String description){
-        this.userId = incrementId();
-        this.username=username;
-        this.password=password;
-        this.description=description;
-        this.createdAt=LocalDateTime.now();
-    }
-
-    public User(String username, String password, String description, LocalDateTime createdAt){
-        this.userId = incrementId();
-        this.username=username;
-        this.password=password;
-        this.description=description;
-        this.createdAt=createdAt;
-    }
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Comment> comments;
 
     @Override
     public String toString() {
         return "User{" +
-                "userId=" + userId +
+                "userId=" + id +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", description='" + description + '\'' +
