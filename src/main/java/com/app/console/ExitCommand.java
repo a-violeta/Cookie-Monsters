@@ -8,7 +8,7 @@ public class ExitCommand extends Command {
 
     @Override
     public void execute(String[] args) {
-        System.out.println("Goodbye see you soon !");
+        consolePrinter.printGoodbye();
         System.exit(0);
     }
 }

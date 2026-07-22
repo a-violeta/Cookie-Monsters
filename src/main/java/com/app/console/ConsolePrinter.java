@@ -26,6 +26,19 @@ public class ConsolePrinter {
         System.out.println(RED + "❌ Error: " + message + RESET);
     }
 
+    public void printGoodbye() {
+        String RESET = "\u001B[0m";
+        String BOLD = "\u001B[1m";
+        String YELLOW = "\u001B[33m";
+        String GREEN = "\u001B[32m";
+        String GRAY = "\u001B[90m";
+
+        System.out.println();
+        System.out.println(YELLOW + "   🍪  " + RESET + BOLD + GREEN + "See you soon, cookie monster!" + RESET + YELLOW + "  🍪" + RESET);
+        System.out.println(GRAY + "        \"Me will be back... for more cookies.\"" + RESET);
+        System.out.println();
+    }
+
     public void displayPost(Post post) {
         System.out.println("\n" + CYAN + "┌──────────────────────────────────────────────" + RESET);
         System.out.println(CYAN + "│ " + RESET + "📌 " + BOLD + "r/" + post.getCommunityId() + RESET
