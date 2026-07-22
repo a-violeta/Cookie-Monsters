@@ -1,18 +1,15 @@
 package com.app.console;
 
 import com.app.model.Community;
-import com.app.model.User;
-import com.app.service.CommunityService;
-
-import java.util.ArrayList;
-import java.util.List;
-
-
+import com.app.service.CommunityUseCases;
 
 public class CreateCommunityCommand extends Command {
 
-    public CreateCommunityCommand(CommunityService communityService) {
-        super(communityService);
+    private CommunityUseCases communityUseCases;
+
+    public CreateCommunityCommand(CommunityUseCases communityUseCases) {
+        super();
+        this.communityUseCases=communityUseCases;
     }
 
     @Override
@@ -32,15 +29,7 @@ public class CreateCommunityCommand extends Command {
             return;
         }
 
-        User user1 = new User("Ion", "ion123", "some guy");
-
-        List<User> membersList = new ArrayList<>();
-
-        membersList.add(user1);
-
-        Community community = new Community(args[0], args[1], membersList,new ArrayList<>());
-
-        Community newCommunity = communityService.addCommunity(community);
+        Community newCommunity = communityUseCases.createCommunity(args[0], args[1]);
         System.out.println("Community successfully created!");
     }
 }
