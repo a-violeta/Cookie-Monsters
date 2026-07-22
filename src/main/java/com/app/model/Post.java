@@ -1,5 +1,6 @@
 package com.app.model;
 
+import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,71 +11,47 @@ import java.util.List;
 
 @Getter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Entity
 public class Post {
 
-    private static long idIncrementor = 0;
-    // for id uniqueness, ids given will be 1, then 2, 3 ...
-
     @EqualsAndHashCode.Include
-    private final long postId;
-    private final long communityId;
-    private final long userId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "community_id")
+    private Community community;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
     @Setter
     private String title;
     @Setter
     private String text;
+
     @Setter
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<Comment> commentList;
-    private LocalDateTime createdAt;
+
     @Setter
+    private LocalDateTime createdAt;
+
+    @Setter
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "media_id")
     private Media media;
 
     // validations not made in post constructors
 
-    public Post(){
-        this.postId= incrementId();
-        this.communityId=0;
-        this.userId=0;
-        this.title="";
-        this.text="";
-        this.commentList=null;
-        this.createdAt=LocalDateTime.now();
-        this.media=null;
-    }
-
-    public Post(long communityId, long userId, String title, String text, List<Comment> commentList){
-        this.postId=incrementId();
-        this.communityId=communityId;
-        this.userId=userId;
-        this.title=title;
-        this.text=text;
-        this.commentList=commentList;
-        this.createdAt=LocalDateTime.now();
-        this.media=null;
-    }
-
-    public Post(long communityId, long userId, String title, String text, List<Comment> commentList, LocalDateTime createdAt, Media media){
-        this.postId=incrementId();
-        this.communityId=communityId;
-        this.userId=userId;
-        this.title=title;
-        this.text=text;
-        this.commentList=commentList;
-        this.createdAt=createdAt;
-        this.media=media;
-    }
-
-    private static long incrementId(){
-        idIncrementor++;
-        return idIncrementor;
-    }
-
     @Override
     public String toString() {
         return "Post{" +
-                "postId=" + postId +
-                ", communityId=" + communityId +
-                ", userId=" + userId +
+                "postId=" + id +
+                ", communityId=" + community.getId() +
+                ", userId=" + user.getId() +
                 ", title='" + title + '\'' +
                 ", text='" + text + '\'' +
                 ", commentList=" + commentList +
@@ -94,7 +71,7 @@ public class Post {
         // removing from list by using iterator
         while(it.hasNext()){
             Comment c = it.next();
-            if(c.getCommentId() == commentId){
+            if(c.getId() == commentId){
                 it.remove();
                 break;
             }
