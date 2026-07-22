@@ -6,15 +6,21 @@ import com.app.model.User;
 import com.app.repository.CommunityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.handler.UserRoleAuthorizationInterceptor;
+
+import java.util.ArrayList;
+import java.util.Optional;
 
 import java.util.List;
 
 
 @Service
 @RequiredArgsConstructor
-public class CommunityService {
+public class CommunityService implements CommunityUseCases {
 
     private final CommunityRepository communityRepository;
+    //private final UserRepository userRepository;
+    //private final PostRepository postRepository;
 
     public Community findCommunityById(long communityId) {
         return communityRepository.findById(communityId)
@@ -51,22 +57,27 @@ public class CommunityService {
         return communityRepository.findAll();
     }
 
-    public void joinCommunity(Community community, User user) {
+    public void joinCommunity(Long communityId, Long userId) {
         // right now, join means immediate approval into the community since we don't have admins or moderators yet
-        if (community.findUserById(user.getUserId()) != null) {
+        Community community = findCommunityById(communityId);
+        //User user = userRepository.findById(userId)
+                //.orElseThrow(() -> new IllegalArgumentException("User with id " + userId + " not found"));
+
+        if (community.findUserById(userId) != null) {
             throw new IllegalArgumentException("User is already part of the community");
         }
 
-        community.addUser(user);
+        //community.addUser(user);
         communityRepository.save(community);
     }
 
-    public void exitCommunity(Community community, User user) {
+    public void exitCommunity(Long communityId, Long userId) {
         // exiting doesn't need approval
         // if the community has only one user then delete the community
+        Community community = findCommunityById(communityId);
 
         // check that the person is part of the community
-        if (community.findUserById(user.getUserId()) == null) {
+        if (community.findUserById(userId) == null) {
             throw new IllegalArgumentException("User is not part of the community");
         }
 
@@ -74,13 +85,14 @@ public class CommunityService {
             throw new IllegalStateException("You are the last member. You cannot exit the community.");
         } else {
             // exit means removing person from community s communityUsers list
-            community.removeUser(user.getUserId());
+            community.removeUser(userId);
             communityRepository.save(community);
         }
     }
 
-    public void removePostFromCommunity(Community community, Post post) {
-        community.removePost(post.getPostId());
+    public void removePostFromCommunity(Long communityId, Long postId) {
+        Community community = findCommunityById(communityId);
+        community.removePost(postId);
         communityRepository.save(community);
     }
 
@@ -91,6 +103,16 @@ public class CommunityService {
         }
 
         community.setId(null);
+        return communityRepository.save(community);
+    }
+
+    // method necessary because in console you can't pass a Community as an argument
+    public Community createCommunity(String communityName, String description){
+
+        if (communityRepository.existsByCommunityName(communityName)) {
+            throw new IllegalArgumentException("Community name is already taken");
+        }
+        Community community = new Community(communityName, description, new ArrayList<>(), new ArrayList<>());
         return communityRepository.save(community);
     }
 }
