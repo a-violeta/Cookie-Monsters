@@ -79,6 +79,8 @@ public class CLIMenu implements CommandLineRunner {
         ConsoleReader consoleReader = new ConsoleReader();
         ConsolePrinter consolePrinter = new ConsolePrinter();
 
+        consolePrinter.printBanner();
+
         InputParser inputParser = new InputParser(consoleReader, consolePrinter, communityService, commentService, postService/*, userService*/);
 
         inputParser.startListening();
