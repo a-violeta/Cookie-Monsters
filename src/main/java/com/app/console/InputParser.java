@@ -36,6 +36,10 @@ public class InputParser {
         commandMap.put("19", new FindCommunityCommand(communityUseCases));
         commandMap.put("17", new JoinCommunityCommand(communityUseCases));
         commandMap.put("15", new RemovePostFromCommunityCommand(communityUseCases));
+        commandMap.put("20", new EditCommentCommand(commentUseCases));
+        commandMap.put("13", new DeleteCommentCommand(commentUseCases));
+        commandMap.put("5", new CreateCommentCommand(commentUseCases));
+
         // Add Commands Classes to the map of commands
     }
 
