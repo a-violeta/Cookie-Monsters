@@ -25,8 +25,8 @@ public class EditCommentCommand extends Command{
         }
 
         try {
-            String newText = args[0];
-            long commentId = Long.parseLong(args[1]); // Easier to read and understand the code
+            String newText = args[1];
+            long commentId = Long.parseLong(args[0]); // Easier to read and understand the code
 
             commentUseCases.editComment(commentId, newText);
             System.out.println("Comment successfully edited!");

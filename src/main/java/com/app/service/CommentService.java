@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CommentService implements CommentUseCases{
 
-    private CommentRepository commentRepository;
+    private final CommentRepository commentRepository;
 
     public void validateComment(String text) {
         if (text == null || text.isBlank()) {
