@@ -30,6 +30,8 @@ public class CreateCommunityCommand extends Command {
         }
 
         Community newCommunity = communityUseCases.createCommunity(args[0], args[1]);
-        System.out.println("Community successfully created!");
+
+        consolePrinter.printSuccess("Community successfully created!");
+        consolePrinter.displayCommunity(newCommunity);
     }
 }

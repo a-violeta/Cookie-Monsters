@@ -1,6 +1,5 @@
 package com.app.console;
 
-import com.app.service.CommunityService;
 import com.app.service.CommunityUseCases;
 
 public class DeleteCommunityCommand extends Command{
@@ -21,8 +20,16 @@ public class DeleteCommunityCommand extends Command{
             return;
         }
 
-        long communityId = Long.parseLong(args[0]);
-        communityUseCases.deleteCommunity(communityId);
+        try {
+            long communityId = Long.parseLong(args[0]);
+            communityUseCases.deleteCommunity(communityId);
+
+            consolePrinter.printSuccess("Community successfully deleted!");
+        } catch (NumberFormatException e) {
+            System.out.println("Error : Community Id must be a number");
+        } catch (Exception e) {
+            System.out.println("Error : " + e.getMessage());
+        }
 
     }
 }
