@@ -1,60 +1,40 @@
 package com.app.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.Iterator;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "communities")
-
 public class Community {
 
+    @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private final String communityName;
+    private String communityName;
     private String description;
-    private final LocalDateTime createdAt;
+    private LocalDateTime createdAt;
 
-    @Transient
+    @ManyToMany
+    @JoinTable(
+            name = "community_users",
+            joinColumns = @JoinColumn(name = "community_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
     private List<User> communityUsers;
-    @Transient
+
+    @OneToMany(mappedBy = "community", cascade = CascadeType.ALL)
     private List<Post> communityPosts;
-    // we need to specify a relationship between these
-    // otherwise Hibernate thinks Post and User are basic types (like String)
-    // and that fails
-
-    // Transient basically says to ignore these fields for now
-    // because User and Post and Comment are not yet finished
-
-    public Community(){
-        this.communityName="";
-        this.description="";
-        this.communityUsers=null;
-        this.communityPosts=null;
-        this.createdAt=LocalDateTime.now();
-    }
-
-    public Community(String communityName, String description, List<User> communityUsers, List<Post> communityPosts){
-        this.communityName=communityName;
-        this.description=description;
-        this.communityUsers=communityUsers;
-        this.communityPosts=communityPosts;
-        this.createdAt=LocalDateTime.now();
-    }
-
-    public Community(String communityName, String description, List<User> communityUsers, List<Post> communityPosts, LocalDateTime createdAt){
-        this.communityName=communityName;
-        this.description=description;
-        this.communityUsers=communityUsers;
-        this.communityPosts=communityPosts;
-        this.createdAt=createdAt;
-    }
 
     public void addPost(Post post){
         communityPosts.add(post);
@@ -65,7 +45,7 @@ public class Community {
         // removing from list by using iterator
         while(it.hasNext()){
             Post p = it.next();
-            if(p.getPostId() == postId){
+            if(p.getId() == postId){
                 it.remove();
                 break;
             }
@@ -77,7 +57,7 @@ public class Community {
         // if there are any posts at all, we search
         if(this.getCommunityPosts()!=null && !this.getCommunityPosts().isEmpty()) {
             for (Post p : this.getCommunityPosts()) {
-                if(p.getPostId()==postId){
+                if(p.getId()==postId){
                     return p;
                 }
             }
@@ -94,7 +74,7 @@ public class Community {
         // removing from list by using iterator
         while(it.hasNext()){
             User u = it.next();
-            if(u.getUserId() == userId){
+            if(u.getId() == userId){
                 it.remove();
                 break;
             }
@@ -106,7 +86,7 @@ public class Community {
         // if there are any users at all, we search
         if(this.getCommunityUsers()!=null && !this.getCommunityUsers().isEmpty()) {
             for (User u : this.getCommunityUsers()) {
-                if(u.getUserId()==userId){
+                if(u.getId()==userId){
                     return u;
                 }
             }
