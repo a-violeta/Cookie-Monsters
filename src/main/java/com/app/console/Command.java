@@ -2,7 +2,7 @@ package com.app.console;
 
 public abstract class Command {
 
-    private ConsolePrinter consolePrinter;
+    protected ConsolePrinter consolePrinter;
 
     Command(ConsolePrinter consolePrinter){
         this.consolePrinter=consolePrinter;
