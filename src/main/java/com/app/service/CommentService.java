@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Getter
 @Service
 @RequiredArgsConstructor
-public class CommentService {
+public class CommentService implements CommentUseCases{
 
     private CommentRepository commentRepository;
 
