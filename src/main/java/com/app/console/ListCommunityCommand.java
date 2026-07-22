@@ -9,8 +9,8 @@ public class ListCommunityCommand extends Command{
 
     private CommunityUseCases communityUseCases;
 
-    public ListCommunityCommand(CommunityUseCases communityUseCases) {
-        super();
+    public ListCommunityCommand(ConsolePrinter consolePrinter, CommunityUseCases communityUseCases) {
+        super(consolePrinter);
         this.communityUseCases=communityUseCases;
     }
 

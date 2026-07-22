@@ -6,8 +6,8 @@ public class RemovePostFromCommunityCommand extends Command {
 
     private CommunityUseCases communityUseCases;
 
-    public RemovePostFromCommunityCommand(CommunityUseCases communityUseCases) {
-        super();
+    public RemovePostFromCommunityCommand(ConsolePrinter consolePrinter, CommunityUseCases communityUseCases) {
+        super(consolePrinter);
         this.communityUseCases=communityUseCases;
     }
 

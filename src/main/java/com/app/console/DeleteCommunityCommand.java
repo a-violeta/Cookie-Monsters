@@ -7,8 +7,8 @@ public class DeleteCommunityCommand extends Command{
 
     private CommunityUseCases communityUseCases;
 
-    public DeleteCommunityCommand(CommunityUseCases communityUseCases) {
-        super();
+    public DeleteCommunityCommand(ConsolePrinter consolePrinter, CommunityUseCases communityUseCases) {
+        super(consolePrinter);
         this.communityUseCases=communityUseCases;
     }
 

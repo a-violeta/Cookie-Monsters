@@ -6,8 +6,8 @@ public class HelpCommand extends Command {
 
     private CommunityUseCases communityUseCases;
 
-    public HelpCommand(CommunityUseCases communityUseCases) {
-        super();
+    public HelpCommand(ConsolePrinter consolePrinter, CommunityUseCases communityUseCases) {
+        super(consolePrinter);
         this.communityUseCases=communityUseCases;
     }
 

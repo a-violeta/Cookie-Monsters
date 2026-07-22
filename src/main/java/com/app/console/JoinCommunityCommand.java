@@ -6,8 +6,8 @@ public class JoinCommunityCommand extends Command {
 
     private CommunityUseCases communityUseCases;
 
-    public JoinCommunityCommand(CommunityUseCases communityUseCases) {
-        super();
+    public JoinCommunityCommand(ConsolePrinter consolePrinter, CommunityUseCases communityUseCases) {
+        super(consolePrinter);
         this.communityUseCases=communityUseCases;
     }
 

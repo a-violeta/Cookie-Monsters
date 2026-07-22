@@ -2,8 +2,8 @@ package com.app.console;
 
 public class ExitCommand extends Command {
 
-    public ExitCommand() {
-        super();
+    public ExitCommand(ConsolePrinter consolePrinter) {
+        super(consolePrinter);
     }
 
     @Override

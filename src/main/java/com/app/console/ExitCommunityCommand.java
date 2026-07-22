@@ -6,8 +6,8 @@ public class ExitCommunityCommand extends Command {
 
     private CommunityUseCases communityUseCases;
 
-    public ExitCommunityCommand(CommunityUseCases communityUseCases) {
-        super();
+    public ExitCommunityCommand(ConsolePrinter consolePrinter, CommunityUseCases communityUseCases) {
+        super(consolePrinter);
         this.communityUseCases=communityUseCases;
     }
 
