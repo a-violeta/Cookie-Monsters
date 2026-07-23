@@ -78,7 +78,7 @@ public class ConsolePrinter {
     public void displayPost(Post post) {
         System.out.println("\n" + CYAN + "┌──────────────────────────────────────────────" + RESET);
         System.out.println(CYAN + "│ " + RESET + "📌 " + BOLD + "r/" + post.getCommunityId() + RESET
-                + GRAY + "  •  Post #" + post.getPostId() + RESET);
+                + GRAY + "  •  Post #" + post.getId() + RESET);
         System.out.println(CYAN + "│ " + RESET + BOLD + YELLOW + post.getTitle() + RESET);
         System.out.println(CYAN + "│" + RESET);
         System.out.println(CYAN + "│ " + RESET + post.getText());

@@ -5,16 +5,20 @@ import com.app.model.Post;
 import com.app.model.User;
 import com.app.repository.CommunityRepository;
 import lombok.RequiredArgsConstructor;
+import com.app.repository.CommunityRepository;
+import com.app.repository.PostRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
-public class PostService implements  PostUseCases{
+public class PostService implements PostUseCases{
 
     private final PostRepository postRepository;
     private final CommunityRepository communityRepository;
@@ -59,7 +63,24 @@ public class PostService implements  PostUseCases{
     @Transactional(readOnly = true)
     public Post findPostById(long postId) {
         return postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("Post with id " + postId + " not found"));
+                .orElseThrow(() ->
+                        new IllegalArgumentException(
+                                "Post with id " + postId + " not found"
+                        ));
+    }
+
+    @Transactional
+    public List<Post> listPosts(long communityId) {
+        Community community = communityRepository.findById(communityId)
+                .orElseThrow(() -> new IllegalArgumentException("Community with id " + communityId + " not found"));
+
+        List<Post> posts = new ArrayList<>();
+        for (Post post : postRepository.findAll()) {
+            if (Objects.equals(post.getCommunity(), community)) {
+                posts.add(post);
+            }
+        }
+        return posts;
     }
 
     @Transactional(readOnly = true)
@@ -70,17 +91,12 @@ public class PostService implements  PostUseCases{
     @Transactional
     public void editPost(long postId, String newText) {
         Post post = findPostById(postId);
-
-        if (post != null) {
-            validatePost(post.getTitle(), newText);
-            post.setText(newText);
-            postRepository.save(post);
-        } else {
-            throw new IllegalArgumentException("Post with id " + postId + " not found");
-        }
+        validatePost(post.getTitle(), newText);
+        post.setText(newText);
+        postRepository.save(post);
     }
 
-    public void removePost(long postId) {
+    public void deletePost(long postId) {
         Post post = findPostById(postId);
         postRepository.delete(post);
     }
