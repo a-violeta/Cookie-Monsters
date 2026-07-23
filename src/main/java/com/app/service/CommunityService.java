@@ -11,6 +11,8 @@ import org.springframework.web.servlet.handler.UserRoleAuthorizationInterceptor;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
@@ -50,14 +52,9 @@ public class CommunityService implements CommunityUseCases {
         }
     }
 
-    public void listCommunities() {
-        if (communityRepository.findAll().isEmpty()) {
-            System.out.println("No communities to list!");
-            return;
-        }
-        for (Community community : communityRepository.findAll()) {
-            System.out.println(community);
-        }
+    public List<Community> listCommunities() {
+
+        return communityRepository.findAll();
     }
 
     public void joinCommunity(Long communityId, Long userId) {

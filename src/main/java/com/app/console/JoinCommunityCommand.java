@@ -6,8 +6,8 @@ public class JoinCommunityCommand extends Command {
 
     private CommunityUseCases communityUseCases;
 
-    public JoinCommunityCommand(CommunityUseCases communityUseCases) {
-        super();
+    public JoinCommunityCommand(ConsolePrinter consolePrinter, CommunityUseCases communityUseCases) {
+        super(consolePrinter);
         this.communityUseCases=communityUseCases;
     }
 
@@ -18,14 +18,14 @@ public class JoinCommunityCommand extends Command {
         // Arguments Validations
         if (args.length < 2) {
 
-            System.out.println("Error : Missing Arguments");
-            System.out.println("Usage : 17 'Community Id' 'User Id' ");
+            consolePrinter.printError("Missing Arguments");
+            consolePrinter.printExplanation("17 'Community Id' 'User Id'");
             return;
 
         } else if (args.length > 2) {
 
-            System.out.println("Error : Too Many Arguments");
-            System.out.println("Usage : 17 'Community Id' 'User Id' ");
+            consolePrinter.printError("Too Many Arguments");
+            consolePrinter.printExplanation("17 'Community Id' 'User Id'");
             return;
         }
 
@@ -34,11 +34,12 @@ public class JoinCommunityCommand extends Command {
             Long userId = Long.parseLong(args[1]);
 
             communityUseCases.joinCommunity(communityId, userId);
-            System.out.println("Successfully joined the community!");
+
+            consolePrinter.printSuccess("Successfully joined the community!");
         } catch (NumberFormatException e) {
-            System.out.println("Error : Community Id and User Id must be numbers");
-        } catch (IllegalArgumentException e) {
-            System.out.println("Error : " + e.getMessage());
+            consolePrinter.printError("Community Id and User Id must be numbers");
+        } catch (Exception e) {
+            consolePrinter.printError(e.getMessage());
         }
     }
 }

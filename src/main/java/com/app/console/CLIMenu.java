@@ -33,8 +33,11 @@ public class CLIMenu implements CommandLineRunner {
         new SeedData(/*userService, */communityService, postService, commentService).seed();
 
         ConsoleReader consoleReader = new ConsoleReader();
+        ConsolePrinter consolePrinter = new ConsolePrinter();
 
-        InputParser inputParser = new InputParser(consoleReader, communityService, commentService, postService/*, userService*/);
+        consolePrinter.printBanner();
+
+        InputParser inputParser = new InputParser(consoleReader, consolePrinter, communityService, commentService, postService/*, userService*/);
 
         inputParser.startListening();
 
