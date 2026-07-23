@@ -26,6 +26,55 @@ public class ConsolePrinter {
         System.out.println(RED + "❌ Error: " + message + RESET);
     }
 
+    public void printExplanation(String usage) {
+        String CYAN = "\u001B[36m";
+        String RESET = "\u001B[0m";
+
+        System.out.println(CYAN + "ℹ️  Usage: " + usage + RESET);
+    }
+
+    public void printBanner() {
+        String RESET = "\u001B[0m";
+        String BOLD = "\u001B[1m";
+        String YELLOW = "\u001B[33m";
+        String BROWN = "\u001B[38;5;94m";
+        String CYAN = "\u001B[36m";
+        String GREEN = "\u001B[32m";
+
+        System.out.println();
+        System.out.println(BOLD + YELLOW + "                 .-\"\"\"-." + RESET);
+        System.out.println(BOLD + YELLOW + "               / . " + BROWN + ".o." + YELLOW + "  \\" + RESET);
+        System.out.println(BOLD + YELLOW + "              | . " + BROWN + "o." + YELLOW + "  " + BROWN + "o" + YELLOW + "  |" + RESET);
+        System.out.println(BOLD + YELLOW + "              | " + BROWN + ".o o o " + YELLOW + ". |" + RESET);
+        System.out.println(BOLD + YELLOW + "               \\  " + BROWN + ".o. " + YELLOW + ". /" + RESET);
+        System.out.println(BOLD + YELLOW + "                '-...-'" + RESET);
+        System.out.println();
+        System.out.println(BOLD + CYAN + "   ██████╗ ██████╗  ██████╗ ██╗  ██╗██╗███████╗" + RESET);
+        System.out.println(BOLD + CYAN + "  ██╔════╝██╔═══██╗██╔═══██╗██║ ██╔╝██║██╔════╝" + RESET);
+        System.out.println(BOLD + CYAN + "  ██║     ██║   ██║██║   ██║█████╔╝ ██║█████╗  " + RESET);
+        System.out.println(BOLD + CYAN + "  ██║     ██║   ██║██║   ██║██╔═██╗ ██║██╔══╝  " + RESET);
+        System.out.println(BOLD + CYAN + "  ╚██████╗╚██████╔╝╚██████╔╝██║  ██╗██║███████╗" + RESET);
+        System.out.println(BOLD + CYAN + "   ╚═════╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝╚══════╝" + RESET);
+        System.out.println();
+        System.out.println(BOLD + GREEN + "        🍪  M O N S T E R S   🍪" + RESET);
+        System.out.println();
+        System.out.println("\u001B[90m" + "        \"We want data... WE WANT DATA NOW!\"" + RESET);
+        System.out.println();
+    }
+
+    public void printGoodbye() {
+        String RESET = "\u001B[0m";
+        String BOLD = "\u001B[1m";
+        String YELLOW = "\u001B[33m";
+        String GREEN = "\u001B[32m";
+        String GRAY = "\u001B[90m";
+
+        System.out.println();
+        System.out.println(YELLOW + "   🍪  " + RESET + BOLD + GREEN + "See you soon, cookie monster!" + RESET + YELLOW + "  🍪" + RESET);
+        System.out.println(GRAY + "        \"We will be back... for more cookies.\"" + RESET);
+        System.out.println();
+    }
+
     public void displayPost(Post post) {
         System.out.println("\n" + CYAN + "┌──────────────────────────────────────────────" + RESET);
         System.out.println(CYAN + "│ " + RESET + "📌 " + BOLD + "r/" + post.getCommunityId() + RESET

@@ -1,14 +1,13 @@
 package com.app.console;
 
-import com.app.service.CommunityService;
 import com.app.service.CommunityUseCases;
 
 public class DeleteCommunityCommand extends Command{
 
     private CommunityUseCases communityUseCases;
 
-    public DeleteCommunityCommand(CommunityUseCases communityUseCases) {
-        super();
+    public DeleteCommunityCommand(ConsolePrinter consolePrinter, CommunityUseCases communityUseCases) {
+        super(consolePrinter);
         this.communityUseCases=communityUseCases;
     }
 
@@ -16,13 +15,21 @@ public class DeleteCommunityCommand extends Command{
     public void execute(String[] args) {
 
         if (args.length < 1) {
-            System.out.println("Error : Missing Arguments");
-            System.out.println("Usage : 14 \"Community ID\"");
+            consolePrinter.printError("Missing Arguments");
+            consolePrinter.printExplanation("14 \"Community ID\"");
             return;
         }
 
-        long communityId = Long.parseLong(args[0]);
-        communityUseCases.deleteCommunity(communityId);
+        try {
+            long communityId = Long.parseLong(args[0]);
+            communityUseCases.deleteCommunity(communityId);
+
+            consolePrinter.printSuccess("Community successfully deleted!");
+        } catch (NumberFormatException e) {
+            consolePrinter.printError("Community Id must be a number");
+        } catch (Exception e) {
+            consolePrinter.printError(e.getMessage());
+        }
 
     }
 }
