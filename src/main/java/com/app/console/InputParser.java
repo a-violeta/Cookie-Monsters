@@ -29,6 +29,7 @@ public class InputParser {
         this.commentUseCases=commentUseCases;
         //this.userUseCases=userUseCases;
         this.postUseCases=postUseCases;
+
         commandMap.put("4", new CreateCommunityCommand(printer, communityUseCases));
         commandMap.put("10", new ListCommunityCommand(printer, communityUseCases));
         commandMap.put("0", new ExitCommand(printer));
@@ -38,6 +39,12 @@ public class InputParser {
         commandMap.put("19", new FindCommunityCommand(printer, communityUseCases));
         commandMap.put("17", new JoinCommunityCommand(printer, communityUseCases));
         commandMap.put("15", new RemovePostFromCommunityCommand(printer, communityUseCases));
+        commandMap.put("20", new EditCommentCommand(commentUseCases));
+        commandMap.put("13", new DeleteCommentCommand(commentUseCases));
+        commandMap.put("5", new CreateCommentCommand(commentUseCases));
+        commandMap.put("help", new HelpCommand());
+        commandMap.put("h", new HelpCommand());
+
         // Add Commands Classes to the map of commands
     }
 

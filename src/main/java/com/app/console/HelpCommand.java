@@ -4,13 +4,6 @@ import com.app.service.CommunityUseCases;
 
 public class HelpCommand extends Command {
 
-    private CommunityUseCases communityUseCases;
-
-    public HelpCommand(ConsolePrinter consolePrinter, CommunityUseCases communityUseCases) {
-        super(consolePrinter);
-        this.communityUseCases=communityUseCases;
-    }
-
     @Override
     public void execute(String[] args) {
         System.out.println("--This is the Help Page for Reddit-CLI--");
@@ -33,6 +26,7 @@ public class HelpCommand extends Command {
         System.out.println("17 - Join an existing community");
         System.out.println("18 - Edit a community Description");
         System.out.println("19 - Find a community");
+        System.out.println("20 - Edit a comment");
         System.out.println("Help / h - Display this Help Menu with all existing commands");
         System.out.println("0. Exit the application\n");
     }
