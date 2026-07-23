@@ -7,39 +7,56 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserService implements UserUseCases {
 
     private final UserRepository userRepository;
 
-    public User createUser(String username, String password, String description) {
+    //user status
+    private User loggedInUser = null;
 
-        //BL
+    @Override
+    public User createUser(String username, String email, String password, String description) {
         if (username == null || username.isBlank()) {
             throw new IllegalArgumentException("Username is required.");
+        }
+        if (email == null || email.isBlank() || !email.contains("@")) {
+            throw new IllegalArgumentException("A valid email is required.");
         }
         if (password == null || password.isBlank()) {
             throw new IllegalArgumentException("Password is required.");
         }
-
         if (userRepository.existsByUsername(username)) {
             throw new IllegalArgumentException("Username is already taken.");
         }
+        if (userRepository.existsByEmail(email)) {
+            throw new IllegalArgumentException("Email is already taken.");
+        }
 
-        User newUser = new User(username, password, description);
+        User newUser = new User(username, email, password, description);
         return userRepository.save(newUser);
     }
 
-    public User login(String username, String password) {
-
-        //use repository
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("Incorrect username or password."));
+    @Override
+    public User login(String identifier, String password) {
+        // Căutăm utilizatorul transmițând același 'identifier' atât pentru username cât și pentru email
+        User user = userRepository.findByUsernameOrEmail(identifier, identifier)
+                .orElseThrow(() -> new IllegalArgumentException("Incorrect username/email or password."));
 
         if (!user.getPassword().equals(password)) {
-            throw new IllegalArgumentException("Incorrect username or password.");
+            throw new IllegalArgumentException("Incorrect username/email or password.");
         }
 
+        this.loggedInUser = user;
         return user;
     }
 
+    @Override
+    public void logout() {
+        this.loggedInUser = null;
+    }
+
+    @Override
+    public User getLoggedInUser() {
+        return this.loggedInUser;
+    }
 }

@@ -19,9 +19,10 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
-    private Long userId; // JPA needs to be null before using
+    private Long userId;// JPA needs to be null before using
 
     private String username;
+    private String email;
     private String password;
     private String description;
     private LocalDateTime createdAt;
@@ -31,18 +32,12 @@ public class User {
         this.createdAt = LocalDateTime.now();
     }
 
-    public User(String username, String password, String description) {
+    public User(String username, String email, String password, String description) {
         this.username = username;
+        this.email = email;
         this.password = password;
         this.description = description;
         this.createdAt = LocalDateTime.now();
-    }
-
-    public User(String username, String password, String description, LocalDateTime createdAt) {
-        this.username = username;
-        this.password = password;
-        this.description = description;
-        this.createdAt = createdAt;
     }
 
     @Override
@@ -50,6 +45,7 @@ public class User {
         return "User{" +
                 "userId=" + userId +
                 ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", description='" + description + '\'' +
                 ", createdAt=" + createdAt +
