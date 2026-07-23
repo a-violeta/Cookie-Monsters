@@ -1,38 +1,26 @@
 package com.app.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@Getter
+@Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
+@Table(name = "media")
 public class Media {
 
     @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long mediaId;
 
-    @Setter
     private String path;
-    @Setter
     private String fileName;
-    @Setter
     private LocalDateTime createdAt;
-    @Setter
     @Enumerated(EnumType.STRING)
     private MediaType type;
 
-    @Override
-    public String toString() {
-        return "Media{" +
-                "path='" + path + '\'' +
-                ", fileName='" + fileName + '\'' +
-                ", type=" + type +
-                '}';
-    }
 }
