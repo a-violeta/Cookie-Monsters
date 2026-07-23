@@ -1,23 +1,24 @@
 package com.app.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
-import java.util.Iterator;
 import java.util.List;
 
-@Getter
+@Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(exclude = {"community", "user", "commentList", "media"})
 @Entity
+@Table(name = "posts")
 public class Post {
 
     @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long postId;
 
     @ManyToOne
     @JoinColumn(name = "community_id")
@@ -27,42 +28,25 @@ public class Post {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Setter
     private String title;
-    @Setter
     private String text;
 
-    @Setter
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<Comment> commentList;
 
-    @Setter
     private LocalDateTime createdAt;
 
-    @Setter
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "media_id")
     private Media media;
 
-    // validations not made in post constructors
-
-    @Override
-    public String toString() {
-        return "Post{" +
-                "postId=" + id +
-                ", communityId=" + community.getId() +
-                ", userId=" + user.getId() +
-                ", title='" + title + '\'' +
-                ", text='" + text + '\'' +
-                ", commentList=" + commentList +
-                ", createdAt=" + createdAt +
-                ", media=" + media +
-                '}';
-    }
+    /*
+    this is dead code, may be useful if we move this logic to services
 
     public void addComment(Comment comment){
 
         // moved all validations to services
+        comment.setPost(this);
         commentList.add(comment);
     }
 
@@ -71,10 +55,12 @@ public class Post {
         // removing from list by using iterator
         while(it.hasNext()){
             Comment c = it.next();
-            if(c.getId() == commentId){
+            if(c.getCommentId() == commentId){
                 it.remove();
                 break;
             }
         }
     }
+    */
+
 }
