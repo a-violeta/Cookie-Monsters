@@ -61,19 +61,6 @@ public class Community {
         return null;
     }
 
-    public Post findPostById(long postId) {
-
-        // if there are any posts at all, we search
-        if (this.getCommunityPosts() != null && !this.getCommunityPosts().isEmpty()) {
-            for (Post p : this.getCommunityPosts()) {
-                if (p.getPostId() == postId) {
-                    return p;
-                }
-            }
-        }
-        return null;
-    }
-
     /*
     might be useless now
 
