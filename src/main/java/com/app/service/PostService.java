@@ -1,19 +1,24 @@
 package com.app.service;
 
+import com.app.model.Community;
 import com.app.model.Post;
-import lombok.Getter;
+import com.app.model.User;
+import com.app.repository.CommunityRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-@Getter
 @Service
+@RequiredArgsConstructor
 public class PostService implements  PostUseCases{
 
-    private List<Post> applicationPosts = new ArrayList<>();
-    // list of all the posts
+    private final PostRepository postRepository;
+    private final CommunityRepository communityRepository;
+    private final UserRepository userRepository;
 
     public void validatePost(String title, String text) {
         if (title == null || title.isBlank()) {
@@ -25,49 +30,58 @@ public class PostService implements  PostUseCases{
         }
     }
 
+    @Transactional
     public Post addPost(long communityId, String title, String text, long userId) {
         validatePost(title, text);
-        Post post = new Post(communityId, userId, title, text, new ArrayList<>());
-        this.applicationPosts.add(post);
-        return post;
-    }
 
-    public Post findPostById(long postId) {
-        for (Post post : applicationPosts) {
-            if (post.getPostId() == postId) {
-                return post;
-            }
+        Community community = communityRepository.findById(communityId)
+                .orElseThrow(() -> new IllegalArgumentException("Community with id " + communityId + " not found"));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User with id " + userId + " not found"));
+
+        if (community.findUserById(userId) == null) {
+            throw new IllegalArgumentException("User is not a member of this community");
         }
 
-        return null;
+        Post post = new Post();
+
+        post.setCommunity(community);
+        post.setUser(user);
+        post.setTitle(title);
+        post.setText(text);
+        post.setCreatedAt(LocalDateTime.now());
+        post.setCommentList(new ArrayList<>());
+
+        return postRepository.save(post);
     }
 
+    @Transactional(readOnly = true)
+    public Post findPostById(long postId) {
+        return postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("Post with id " + postId + " not found"));
+    }
+
+    @Transactional(readOnly = true)
+    public List<Post> listPosts() {
+        return postRepository.findAll();
+    }
+
+    @Transactional
     public void editPost(long postId, String newText) {
         Post post = findPostById(postId);
 
         if (post != null) {
             validatePost(post.getTitle(), newText);
             post.setText(newText);
+            postRepository.save(post);
         } else {
             throw new IllegalArgumentException("Post with id " + postId + " not found");
         }
     }
 
     public void removePost(long postId) {
-        boolean found = false;
-        Iterator<Post> it = applicationPosts.iterator();
-        // removing from list by using iterator
-        while (it.hasNext()) {
-            Post post = it.next();
-            if (post.getPostId() == postId) {
-                found = true;
-                it.remove();
-                break;
-            }
-        }
-
-        if (!found) {
-            throw new IllegalArgumentException("Post with id " + postId + " not found");
-        }
+        Post post = findPostById(postId);
+        postRepository.delete(post);
     }
 }
