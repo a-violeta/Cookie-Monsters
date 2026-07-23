@@ -1,17 +1,17 @@
 package com.app.service;
 
 import com.app.model.Comment;
+import com.app.repository.CommentRepository;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Service
+@RequiredArgsConstructor
 public class CommentService implements CommentUseCases{
 
-    private List<Comment> applicationComments = new ArrayList<>();
+    private final CommentRepository commentRepository;
 
     public void validateComment(String text) {
         if (text == null || text.isBlank()) {
@@ -22,18 +22,11 @@ public class CommentService implements CommentUseCases{
     public Comment addComment(String text, long userId, long postId) {
         validateComment(text);
         Comment newComment = new Comment(text, userId, postId);
-        applicationComments.add(newComment);
-        return newComment;
+        return commentRepository.save(newComment);
     }
 
     public Comment findCommentById(long commentId) {
-        for (Comment comment : applicationComments) {
-            if (comment.getCommentId() == commentId) {
-                return comment;
-            }
-        }
-
-        return null;
+        return commentRepository.findById(commentId).orElse(null);
     }
 
     public void editComment(long commentId, String newText) {
@@ -41,15 +34,15 @@ public class CommentService implements CommentUseCases{
         if (comment != null) {
             validateComment(newText);
             comment.setText(newText);
+            commentRepository.save(comment);
         } else {
             throw new IllegalArgumentException("Comment with id " + commentId + " not found");
         }
     }
 
     public void removeComment(long commentId) {
-        Comment comment = findCommentById(commentId);
-        if (comment != null) {
-            applicationComments.remove(comment);
+        if (commentRepository.existsById(commentId)) {
+            commentRepository.deleteById(commentId);
         } else {
             throw new IllegalArgumentException("Comment with id " + commentId + " not found");
         }

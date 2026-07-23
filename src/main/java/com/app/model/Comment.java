@@ -1,6 +1,8 @@
 package com.app.model;
 
 import jakarta.persistence.*;
+import lombok.*;
+import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,14 +12,15 @@ import java.time.LocalDateTime;
 @Getter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
+@Table(name = "comments")
+@NoArgsConstructor
 public class Comment {
 
-    @EqualsAndHashCode.Include
-    @Id
+    @Id // PK of the table
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @EqualsAndHashCode.Include
+    private Long commentId;
 
-    @Setter
     private String text;
 
     @ManyToOne
@@ -31,14 +34,4 @@ public class Comment {
     @Setter
     private LocalDateTime createdAt;
 
-    @Override
-    public String toString() {
-        return "Comment{" +
-                "commentId=" + id +
-                ", text='" + text + '\'' +
-                ", userId=" + user.getId() +
-                ", postId=" + post.getId() +
-                ", createdAt=" + createdAt +
-                '}';
-    }
 }

@@ -6,8 +6,8 @@ public class EditCommunityCommand extends Command {
 
     private CommunityUseCases communityUseCases;
 
-    public EditCommunityCommand(CommunityUseCases communityUseCases) {
-        super();
+    public EditCommunityCommand(ConsolePrinter consolePrinter, CommunityUseCases communityUseCases) {
+        super(consolePrinter);
         this.communityUseCases=communityUseCases;
     }
 
