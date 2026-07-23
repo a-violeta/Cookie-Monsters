@@ -1,14 +1,11 @@
 package com.app.console;
 
-import com.app.service.CommunityService;
-
 public abstract class Command {
 
-    //
-    protected final CommunityService communityService;
+    protected ConsolePrinter consolePrinter;
 
-    public Command(CommunityService communityService) {
-        this.communityService = communityService;
+    Command(ConsolePrinter consolePrinter){
+        this.consolePrinter=consolePrinter;
     }
 
     public abstract void execute(String[] args);

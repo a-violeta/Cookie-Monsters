@@ -1,16 +1,14 @@
 package com.app.console;
 
-import com.app.service.CommunityService;
-
 public class ExitCommand extends Command {
 
-    public ExitCommand(CommunityService communityService) {
-        super(communityService);
+    public ExitCommand(ConsolePrinter consolePrinter) {
+        super(consolePrinter);
     }
 
     @Override
     public void execute(String[] args) {
-        System.out.println("Goodbye see you soon !");
+        consolePrinter.printGoodbye();
         System.exit(0);
     }
 }
