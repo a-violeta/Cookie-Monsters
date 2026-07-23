@@ -6,8 +6,8 @@ public class DeleteCommentCommand extends Command {
 
     private final CommentUseCases commentUseCases;
 
-    public DeleteCommentCommand(CommentUseCases commentUseCases) {
-        super();
+    public DeleteCommentCommand(ConsolePrinter consolePrinter,CommentUseCases commentUseCases) {
+        super(consolePrinter);
         this.commentUseCases = commentUseCases;
     }
 
