@@ -16,10 +16,9 @@ public class InputParser {
     //private final UserUseCases userUseCases;
     private final CommentUseCases commentUseCases;
 
-    private ConsoleReader reader;
-    private ConsolePrinter printer;
+    private final ConsoleReader reader;
+    private final ConsolePrinter printer;
     private Map<String, Command> commandMap = new HashMap<>();
-    //PostRepository postRepo = new PostRepository();
     //ConsolePrinter printer = new ConsolePrinter();
 
     public InputParser(ConsoleReader reader, ConsolePrinter printer, CommunityUseCases communityUseCases, CommentUseCases commentUseCases, PostUseCases postUseCases/*, UserUseCases userUseCases*/) {
@@ -39,11 +38,16 @@ public class InputParser {
         commandMap.put("19", new FindCommunityCommand(printer, communityUseCases));
         commandMap.put("17", new JoinCommunityCommand(printer, communityUseCases));
         commandMap.put("15", new RemovePostFromCommunityCommand(printer, communityUseCases));
-        commandMap.put("20", new EditCommentCommand(commentUseCases));
-        commandMap.put("13", new DeleteCommentCommand(commentUseCases));
-        commandMap.put("5", new CreateCommentCommand(commentUseCases));
-        commandMap.put("help", new HelpCommand());
-        commandMap.put("h", new HelpCommand());
+        commandMap.put("20", new EditCommentCommand(printer, commentUseCases));
+        commandMap.put("13", new DeleteCommentCommand(printer, commentUseCases));
+        commandMap.put("5", new CreateCommentCommand(printer, commentUseCases));
+        commandMap.put("help", new HelpCommand(printer));
+        commandMap.put("h", new HelpCommand(printer));
+
+        commandMap.put("6", new AddPostCommand(printer, postUseCases));
+        commandMap.put("8", new ListPostsCommand(printer, postUseCases));
+        commandMap.put("12", new DeletePostCommand(printer, postUseCases));
+        commandMap.put("21", new EditPostCommand(printer, postUseCases));
 
         // Add Commands Classes to the map of commands
     }
