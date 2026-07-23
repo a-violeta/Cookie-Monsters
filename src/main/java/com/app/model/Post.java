@@ -1,100 +1,80 @@
 package com.app.model;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.Iterator;
 import java.util.List;
 
-@Getter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Data
+@Entity
+@Table(name = "posts")
+
 public class Post {
-
-    private static long idIncrementor = 0;
-    // for id uniqueness, ids given will be 1, then 2, 3 ...
-
-    @EqualsAndHashCode.Include
-    private final long postId;
-    private final long communityId;
-    private final long userId;
-    @Setter
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private long communityId;
+    private long userId;
     private String title;
-    @Setter
     private String text;
-    @Setter
-    private List<Comment> commentList;
     private LocalDateTime createdAt;
-    @Setter
+
+    @Transient
+    Community community;
+    @Transient
+    User user;
+
+    @Transient
     private Media media;
+    @Transient
+    private List<Comment> commentList;
 
     // validations not made in post constructors
 
-    public Post(){
-        this.postId= incrementId();
-        this.communityId=0;
-        this.userId=0;
-        this.title="";
-        this.text="";
-        this.commentList=null;
-        this.createdAt=LocalDateTime.now();
-        this.media=null;
+    public Post() {
+        this.communityId = 0;
+        this.userId = 0;
+        this.title = "";
+        this.text = "";
+        this.commentList = null;
+        this.createdAt = LocalDateTime.now();
+        this.media = null;
     }
 
-    public Post(long communityId, long userId, String title, String text, List<Comment> commentList){
-        this.postId=incrementId();
-        this.communityId=communityId;
-        this.userId=userId;
-        this.title=title;
-        this.text=text;
-        this.commentList=commentList;
-        this.createdAt=LocalDateTime.now();
-        this.media=null;
+    public Post(long communityId, long userId, String title, String text, List<Comment> commentList) {
+        this.communityId = communityId;
+        this.userId = userId;
+        this.title = title;
+        this.text = text;
+        this.commentList = commentList;
+        this.createdAt = LocalDateTime.now();
+        this.media = null;
     }
 
-    public Post(long communityId, long userId, String title, String text, List<Comment> commentList, LocalDateTime createdAt, Media media){
-        this.postId=incrementId();
-        this.communityId=communityId;
-        this.userId=userId;
-        this.title=title;
-        this.text=text;
-        this.commentList=commentList;
-        this.createdAt=createdAt;
-        this.media=media;
+    public Post(long communityId, long userId, String title, String text, List<Comment> commentList, LocalDateTime createdAt, Media media) {
+        this.communityId = communityId;
+        this.userId = userId;
+        this.title = title;
+        this.text = text;
+        this.commentList = commentList;
+        this.createdAt = createdAt;
+        this.media = media;
     }
 
-    private static long incrementId(){
-        idIncrementor++;
-        return idIncrementor;
-    }
-
-    @Override
-    public String toString() {
-        return "Post{" +
-                "postId=" + postId +
-                ", communityId=" + communityId +
-                ", userId=" + userId +
-                ", title='" + title + '\'' +
-                ", text='" + text + '\'' +
-                ", commentList=" + commentList +
-                ", createdAt=" + createdAt +
-                ", media=" + media +
-                '}';
-    }
-
-    public void addComment(Comment comment){
+    public void addComment(Comment comment) {
 
         // moved all validations to services
         commentList.add(comment);
     }
 
-    public void removeComment(long commentId){
+    public void removeComment(long commentId) {
         Iterator<Comment> it = commentList.iterator();
         // removing from list by using iterator
-        while(it.hasNext()){
+        while (it.hasNext()) {
             Comment c = it.next();
-            if(c.getCommentId() == commentId){
+            if (c.getCommentId() == commentId) {
                 it.remove();
                 break;
             }
