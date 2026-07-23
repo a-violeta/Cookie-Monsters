@@ -1,15 +1,16 @@
 package com.app.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Getter
+@Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(exclude = {"password", "communities", "posts", "comments"})
 @Entity
 @Table(name = "app_users") // user is a reserved name in postgres
 public class User {
@@ -17,15 +18,11 @@ public class User {
     @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy =  GenerationType.IDENTITY)
-    private Long id;
+    private Long userId;
 
-    @Setter
     private String username;
-    @Setter
     private String password;
-    @Setter
     private String description;
-    @Setter
     private LocalDateTime createdAt;
 
     @ManyToMany(mappedBy = "communityUsers")
@@ -36,15 +33,4 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Comment> comments;
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "userId=" + id +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", description='" + description + '\'' +
-                ", createdAt=" + createdAt +
-                '}';
-    }
 }
