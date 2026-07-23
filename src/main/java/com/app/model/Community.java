@@ -1,17 +1,16 @@
 package com.app.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
-import java.util.Iterator;
 import java.util.List;
 
-@Getter
-@Setter
+@Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(exclude = {"communityUsers", "communityPosts"})
 @Entity
 @Table(name = "communities")
 public class Community {
@@ -19,7 +18,7 @@ public class Community {
     @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long communityId;
 
     private String communityName;
     private String description;
@@ -36,7 +35,38 @@ public class Community {
     @OneToMany(mappedBy = "community", cascade = CascadeType.ALL)
     private List<Post> communityPosts;
 
+    public Post findPostById(long postId){
+
+        // if there are any posts at all, we search
+        if(this.getCommunityPosts()!=null && !this.getCommunityPosts().isEmpty()) {
+            for (Post p : this.getCommunityPosts()) {
+                if(p.getPostId()==postId){
+                    return p;
+                }
+            }
+        }
+        return null;
+    }
+
+
+    public User findUserById(long userId){
+
+        // if there are any users at all, we search
+        if(this.getCommunityUsers()!=null && !this.getCommunityUsers().isEmpty()) {
+            for (User u : this.getCommunityUsers()) {
+                if(u.getUserId()==userId){
+                    return u;
+                }
+            }
+        }
+        return null;
+    }
+
+    /*
+    this is dead code, may be useful if we move this logic to services
+
     public void addPost(Post post){
+        post.setCommunity(this);
         communityPosts.add(post);
     }
 
@@ -45,24 +75,11 @@ public class Community {
         // removing from list by using iterator
         while(it.hasNext()){
             Post p = it.next();
-            if(p.getId() == postId){
+            if(p.getPostId() == postId){
                 it.remove();
                 break;
             }
         }
-    }
-
-    public Post findPostById(long postId){
-
-        // if there are any posts at all, we search
-        if(this.getCommunityPosts()!=null && !this.getCommunityPosts().isEmpty()) {
-            for (Post p : this.getCommunityPosts()) {
-                if(p.getId()==postId){
-                    return p;
-                }
-            }
-        }
-        return null;
     }
 
     public void addUser(User user){
@@ -74,23 +91,12 @@ public class Community {
         // removing from list by using iterator
         while(it.hasNext()){
             User u = it.next();
-            if(u.getId() == userId){
+            if(u.getUserId() == userId){
                 it.remove();
                 break;
             }
         }
     }
+    */
 
-    public User findUserById(long userId){
-
-        // if there are any users at all, we search
-        if(this.getCommunityUsers()!=null && !this.getCommunityUsers().isEmpty()) {
-            for (User u : this.getCommunityUsers()) {
-                if(u.getId()==userId){
-                    return u;
-                }
-            }
-        }
-        return null;
-    }
 }
