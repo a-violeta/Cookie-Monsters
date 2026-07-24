@@ -35,6 +35,22 @@ public class Community {
     @OneToMany(mappedBy = "community", cascade = CascadeType.ALL)
     private List<Post> communityPosts;
 
+    public Community() {
+        this.communityName = "";
+        this.description = "";
+        this.createdAt = LocalDateTime.now();
+        this.communityUsers = null;
+        this.communityPosts = null;
+    }
+
+    public Community(String communityName, String description, List<User> communityUsers, List<Post> communityPosts) {
+        this.communityName = communityName;
+        this.description = description;
+        this.createdAt = LocalDateTime.now();
+        this.communityUsers = communityUsers;
+        this.communityPosts = communityPosts;
+    }
+
     public Post findPostById(long postId){
 
         // if there are any posts at all, we search
@@ -60,34 +76,6 @@ public class Community {
         }
         return null;
     }
-
-    /*
-    might be useless now
-
-    public Community() {
-        this.communityName = "";
-        this.description = "";
-        this.communityUsers = null;
-        this.communityPosts = null;
-        this.createdAt = LocalDateTime.now();
-    }
-
-    public Community(String communityName, String description, List<User> communityUsers, List<Post> communityPosts) {
-        this.communityName = communityName;
-        this.description = description;
-        this.communityUsers = communityUsers;
-        this.communityPosts = communityPosts;
-        this.createdAt = LocalDateTime.now();
-    }
-
-    public Community(String communityName, String description, List<User> communityUsers, List<Post> communityPosts, LocalDateTime createdAt) {
-        this.communityName = communityName;
-        this.description = description;
-        this.communityUsers = communityUsers;
-        this.communityPosts = communityPosts;
-        this.createdAt = createdAt;
-    }
-    */
 
     /*
     this is dead code, may be useful if we move this logic to services

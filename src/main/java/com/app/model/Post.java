@@ -4,11 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import jakarta.persistence.*;
-import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.Iterator;
 import java.util.List;
 
 @Data
@@ -43,14 +40,9 @@ public class Post {
     @JoinColumn(name = "media_id")
     private Media media;
 
-    // validations not made in post constructors
-
-    /*
-    not sure these constructors are needed anymore
-
     public Post() {
-        this.communityId = 0;
-        this.userId = 0;
+        this.community = null;
+        this.user = null;
         this.title = "";
         this.text = "";
         this.commentList = null;
@@ -58,26 +50,15 @@ public class Post {
         this.media = null;
     }
 
-    public Post(long communityId, long userId, String title, String text, List<Comment> commentList) {
-        this.communityId = communityId;
-        this.userId = userId;
+    public Post(Community community, User user, String title, String text, List<Comment> commentList, Media media) {
+        this.community = community;
+        this.user = user;
         this.title = title;
         this.text = text;
         this.commentList = commentList;
         this.createdAt = LocalDateTime.now();
-        this.media = null;
-    }
-
-    public Post(long communityId, long userId, String title, String text, List<Comment> commentList, LocalDateTime createdAt, Media media) {
-        this.communityId = communityId;
-        this.userId = userId;
-        this.title = title;
-        this.text = text;
-        this.commentList = commentList;
-        this.createdAt = createdAt;
         this.media = media;
     }
-    */
 
     /*
     this is dead code, may be useful if we move this logic to services
