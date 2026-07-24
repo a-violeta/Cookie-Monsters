@@ -19,6 +19,11 @@ public class DeleteCommunityCommand extends Command{
             consolePrinter.printExplanation("14 \"Community ID\"");
             return;
         }
+        else if(args.length > 1) {
+            consolePrinter.printError("Too Many Arguments");
+            consolePrinter.printExplanation("14 \"Community ID\"");
+            return;
+        }
 
         try {
             long communityId = Long.parseLong(args[0]);

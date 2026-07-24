@@ -15,13 +15,13 @@ public class AddPostCommand extends Command {
     public void execute(String[] args) {
         // Arguments Validations
         if (args.length < 4) {
-            consolePrinter.printError("Error : Missing Arguments");
-            consolePrinter.printExplanation("Usage : 4 'Community ID' 'User ID' 'Title' 'Text' ");
+            consolePrinter.printError("Missing Arguments");
+            consolePrinter.printExplanation("4 'Community ID' 'User ID' 'Title' 'Text' ");
             return;
         } else if (args.length > 4) {
 
-            consolePrinter.printError("Error : Too Many Arguments");
-            consolePrinter.printExplanation("Usage : 4 'Community ID' 'User ID' 'Title' 'Text' ");
+            consolePrinter.printError("Too Many Arguments");
+            consolePrinter.printExplanation("4 'Community ID' 'User ID' 'Title' 'Text' ");
             return;
         }
 

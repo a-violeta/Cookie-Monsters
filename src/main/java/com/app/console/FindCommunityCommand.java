@@ -17,23 +17,23 @@ public class FindCommunityCommand extends Command {
         // 19 communityid
 
         if (args.length < 1) {
-            System.out.println("Error : Missing Arguments");
-            System.out.println("Usage : 19 'Community Id' ");
+            consolePrinter.printError("Missing Arguments");
+            consolePrinter.printExplanation("19 'Community Id' ");
             return;
         } else if (args.length > 1) {
-            System.out.println("Error : Too Many Arguments");
-            System.out.println("Usage : 19 'Community Id' ");
+            consolePrinter.printError("Too Many Arguments");
+            consolePrinter.printExplanation("19 'Community Id' ");
             return;
         }
 
         try {
             Long communityId = Long.parseLong(args[0]);
             Community community = communityUseCases.findCommunityById(communityId);
-            System.out.println(community);
+            consolePrinter.displayCommunity(community);
         } catch (NumberFormatException e) {
-            System.out.println("Error : Community Id must be a number");
-        } catch (IllegalArgumentException e) {
-            System.out.println("Error : " + e.getMessage());
+            consolePrinter.printError("Community Id must be a number");
+        } catch (Exception e) {
+            consolePrinter.printError(e.getMessage());
         }
     }
 }

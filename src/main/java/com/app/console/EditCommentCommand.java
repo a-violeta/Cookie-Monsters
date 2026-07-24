@@ -15,12 +15,12 @@ public class EditCommentCommand extends Command{
     public void execute(String[] args) {
 
         if (args.length < 2) {
-            System.out.println("Error : Missing Arguments");
-            System.out.println("Usage : 20 <commentId> 'Text'");
+            consolePrinter.printError("Missing Arguments");
+            consolePrinter.printExplanation("20 'commentId' 'Text'");
             return;
         } else if (args.length > 2) {
-            System.out.println("Error : Too Many Arguments");
-            System.out.println("Usage : 20 <commentId> 'Text'");
+            consolePrinter.printError("Too Many Arguments");
+            consolePrinter.printExplanation("20 'commentId' 'Text'");
             return;
         }
 
@@ -29,12 +29,12 @@ public class EditCommentCommand extends Command{
             long commentId = Long.parseLong(args[0]); // Easier to read and understand the code
 
             commentUseCases.editComment(commentId, newText);
-            System.out.println("Comment successfully edited!");
+            consolePrinter.printSuccess("Comment successfully edited!");
 
         } catch (NumberFormatException e) {
-            System.out.println("Error : commentId must be a number.");
-        } catch (IllegalArgumentException e) {
-            System.out.println("Error : " + e.getMessage());
+            consolePrinter.printError("commentId must be a number.");
+        } catch (Exception e) {
+            consolePrinter.printError(e.getMessage());
         }
     }
 }

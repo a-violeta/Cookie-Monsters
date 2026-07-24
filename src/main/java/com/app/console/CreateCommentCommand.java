@@ -15,12 +15,12 @@ public class CreateCommentCommand extends Command {
     public void execute(String[] args) {
 
         if (args.length < 3) {
-            System.out.println("Error : Missing Arguments");
-            System.out.println("Usage : 5 'Text' <userId> <postId>");
+            consolePrinter.printError("Missing Arguments");
+            consolePrinter.printExplanation("5 'Text' 'userId' 'postId'");
             return;
         } else if (args.length > 3) {
-            System.out.println("Error : Too Many Arguments");
-            System.out.println("Usage : 5 'Text' <userId> <postId>");
+            consolePrinter.printError("Too Many Arguments");
+            consolePrinter.printExplanation("5 'Text' <userId> <postId>");
             return;
         }
 
@@ -30,12 +30,12 @@ public class CreateCommentCommand extends Command {
             long postId = Long.parseLong(args[2]);
 
             commentUseCases.addComment(text, userId, postId);
-            System.out.println("Comment successfully created!");
+            consolePrinter.printSuccess("Comment successfully created!");
 
         } catch (NumberFormatException e) {
-            System.out.println("Error : userId and postId must be numbers.");
-        } catch (IllegalArgumentException e) {
-            System.out.println("Error : " + e.getMessage());
+            consolePrinter.printError("userId and postId must be numbers.");
+        } catch (Exception e) {
+            consolePrinter.printError(e.getMessage());
         }
 
 
