@@ -10,7 +10,6 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
-@Primary
 // @Primary tells Spring which repo to choose for CommunityService
 // because in CommunityService we have an instance of CommunityRepository which can be JpaCommunityRepository or InMemoryCommunityRepository
 // without @Primary Spring would not know what bean to choose
