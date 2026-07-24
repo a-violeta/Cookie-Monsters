@@ -3,7 +3,7 @@ package com.app.console;
 import com.app.service.CommentUseCases;
 import com.app.service.CommunityUseCases;
 import com.app.service.PostUseCases;
-import com.app.service.UserUseCases;
+import com.app.service.UserUseCases; // Decomentat
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -13,24 +13,24 @@ public class InputParser {
 
     private final CommunityUseCases communityUseCases;
     private final PostUseCases postUseCases;
-    //private final UserUseCases userUseCases;
+    private final UserUseCases userUseCases;
     private final CommentUseCases commentUseCases;
 
     private final ConsoleReader reader;
     private final ConsolePrinter printer;
     private Map<String, Command> commandMap = new HashMap<>();
-    //ConsolePrinter printer = new ConsolePrinter();
 
-    public InputParser(ConsoleReader reader, ConsolePrinter printer, CommunityUseCases communityUseCases, CommentUseCases commentUseCases, PostUseCases postUseCases/*, UserUseCases userUseCases*/) {
+    public InputParser(ConsoleReader reader, ConsolePrinter printer, CommunityUseCases communityUseCases, CommentUseCases commentUseCases, PostUseCases postUseCases, UserUseCases userUseCases) {
         this.reader = reader;
-        this.printer=printer;
+        this.printer = printer;
         this.communityUseCases = communityUseCases;
-        this.commentUseCases=commentUseCases;
-        //this.userUseCases=userUseCases;
-        this.postUseCases=postUseCases;
+        this.commentUseCases = commentUseCases;
+        this.userUseCases = userUseCases;
+        this.postUseCases = postUseCases;
 
         commandMap.put("4", new CreateCommunityCommand(printer, communityUseCases));
         commandMap.put("10", new ListCommunityCommand(printer, communityUseCases));
+        commandMap.put("3", new LogoutCommand(printer, userUseCases));
         commandMap.put("0", new ExitCommand(printer));
         commandMap.put("14", new DeleteCommunityCommand(printer, communityUseCases));
         commandMap.put("18", new EditCommunityCommand(printer, communityUseCases));
@@ -77,23 +77,20 @@ public class InputParser {
     }
 
     public void startListening() {
-        while(true) {
+        //while user is logged, parser will read commands
+        //after logout call userUserCase.logout, the loggerInUser=null and exit while
+        while(userUseCases.getLoggedInUser() != null) {
             try {
-
-                reader.cliPrompt(); //Start the Prompt Method
-
-                String input = reader.readLine(); // Read command like this : post (name of the command) 1234 (Other arguments needed for the command)
-
-                String[] parts = tokenizeInput(input); // Splits arguments in an array of Strings
+                reader.cliPrompt();
+                String input = reader.readLine();
+                String[] parts = tokenizeInput(input);
 
                 if (parts.length == 0) continue;
 
                 Command command = commandMap.get(parts[0].toLowerCase());
-                // Get the command name to use the execute method of the selected Command
+
                 if (command != null) {
-                    // Read the other arguments (Here will be "1234" when input is "post 1234")
                     command.execute(Arrays.copyOfRange(parts, 1, parts.length));
-                    // Execute the method execute of the "command" Class
                 } else {
                     printer.printError("Unknown Command");
                     Command helpCommand = commandMap.get("help");
@@ -105,3 +102,7 @@ public class InputParser {
         }
     }
 }
+
+
+
+

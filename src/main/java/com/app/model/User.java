@@ -1,62 +1,43 @@
 package com.app.model;
 
+import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "users") // create table "users" for this class
 @Getter
+@Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User {
 
-    private static long idIncrementor = 0;
-    // it s static so that all Users objects have the same idIncrementor
-    // and the static method incrementId() is called in the constructors to give a 'bigger' id everytime
-    // so ids are unique
-    // so the ids returned will be 1 for the first User created, then 2, 3...
-
+    //no id generator
+    //let database make it for no errors in future
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
-    private final long userId;
-    @Setter
+    private Long userId;// JPA needs to be null before using
+
     private String username;
-    @Setter
+    private String email;
     private String password;
-    @Setter
     private String description;
-    @Setter
     private LocalDateTime createdAt;
 
-    // the validations for username and password can be made in UserService class
-    // it is business logic
-
-    private static long incrementId(){
-        idIncrementor++;
-        return idIncrementor;
+    //constructors
+    public User() {
+        this.createdAt = LocalDateTime.now();
     }
 
-    public User(){
-        this.userId = incrementId();
-        this.username="";
-        this.password="";
-        this.description="";
-        this.createdAt=LocalDateTime.now();
-    }
-
-    public User(String username, String password, String description){
-        this.userId = incrementId();
-        this.username=username;
-        this.password=password;
-        this.description=description;
-        this.createdAt=LocalDateTime.now();
-    }
-
-    public User(String username, String password, String description, LocalDateTime createdAt){
-        this.userId = incrementId();
-        this.username=username;
-        this.password=password;
-        this.description=description;
-        this.createdAt=createdAt;
+    public User(String username, String email, String password, String description) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.description = description;
+        this.createdAt = LocalDateTime.now();
     }
 
     @Override
@@ -64,6 +45,7 @@ public class User {
         return "User{" +
                 "userId=" + userId +
                 ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", description='" + description + '\'' +
                 ", createdAt=" + createdAt +
