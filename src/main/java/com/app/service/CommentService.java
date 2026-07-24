@@ -2,11 +2,11 @@ package com.app.service;
 
 import com.app.model.Comment;
 import com.app.repository.CommentRepository;
-import lombok.Getter;
+import com.app.repository.JpaCommentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-@Getter
+
 @Service
 @RequiredArgsConstructor
 public class CommentService implements CommentUseCases{
