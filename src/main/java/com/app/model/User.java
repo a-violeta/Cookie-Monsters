@@ -15,12 +15,15 @@ import java.util.List;
 @Table(name = "app_users") // user is a reserved name in postgres
 public class User {
 
-    @EqualsAndHashCode.Include
+    //no id generator
+    //let database make it for no errors in future
     @Id
-    @GeneratedValue(strategy =  GenerationType.IDENTITY)
-    private Long userId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
+    private Long userId;// JPA needs to be null before using
 
     private String username;
+    private String email;
     private String password;
     private String description;
     private LocalDateTime createdAt;
@@ -33,4 +36,29 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Comment> comments;
+
+    //constructors
+    public User() {
+        this.createdAt = LocalDateTime.now();
+    }
+
+    public User(String username, String email, String password, String description) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.description = description;
+        this.createdAt = LocalDateTime.now();
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "userId=" + userId +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", description='" + description + '\'' +
+                ", createdAt=" + createdAt +
+                '}';
+    }
 }

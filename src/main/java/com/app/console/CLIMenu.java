@@ -1,89 +1,117 @@
 package com.app.console;
 
-
-import com.app.model.*;
+import com.app.model.Community;
+import com.app.model.Post;
+import com.app.model.User;
 import com.app.service.CommentService;
 import com.app.service.CommunityService;
 import com.app.service.PostService;
+import com.app.service.UserUseCases;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
 @Component
-@Profile("cli")
 public class CLIMenu implements CommandLineRunner {
+
     private final CommunityService communityService;
     private final CommentService commentService;
     private final PostService postService;
-    //private final UserService userService;
+    private final UserUseCases userUseCases;
 
-    public CLIMenu(CommunityService communityService, CommentService commentService, PostService postService/*, UserService userService*/){
+    public CLIMenu(CommunityService communityService, CommentService commentService, PostService postService, UserUseCases userUseCases){
         this.communityService = communityService;
-        this.commentService=commentService;
-        this.postService=postService;
-        //this.userService=userService;
+        this.commentService = commentService;
+        this.postService = postService;
+        this.userUseCases = userUseCases;
     }
 
     @Override
     public void run(String... args){
-
-        List<User> usersList = new ArrayList<>();
-        List<Post> postsList = new ArrayList<>();
-
-        // seed data for testing:
-
-        User user1 = new User("Ion", "ion123", "some guy");
-        User user2 = new User("Anca", "anca123", "some girl");
-        User user3 = new User("Petru", "petru123", "guitarist");
-        User user4 = new User("Adela", "adela123", "physicist or smt");
-
-        usersList.add(user1);
-        usersList.add(user2);
-        usersList.add(user3);
-        usersList.add(user4);
-
-        List<User> communityUsers1 = new ArrayList<>();
-        communityUsers1.add(user1);
-        communityUsers1.add(user2);
-        communityUsers1.add(user3);
-        Community community1 = new Community("The cat lovers", "we really love cats", communityUsers1, null);
-        communityService.addCommunity(community1);
-
-        List<User> communityUsers2 = new ArrayList<>();
-        communityUsers2.add(user2);
-        Community community2 = new Community("Anca s community", "Anca is here", communityUsers2, null);
-        communityService.addCommunity(community2);
-
-        Post post1 = new Post(1, 1, "First post about cats", "Cats are awesome", null);
-        Post post2 = new Post(1, 2, "Second post abouts cats", "Cats are still awesome", null);
-        Media image1 = new Media("C:\\Users\\iulia\\OneDrive\\Imagini\\134110683555465878.jpg", "134110683555465878.jpg", LocalDateTime.now(), MediaType.IMAGE);
-        post1.setMedia(image1);
-        postsList.add(post1);
-        postsList.add(post2);
-        List<Post> communityPosts1 = new ArrayList<>();
-        communityPosts1.add(post1);
-        communityPosts1.add(post2);
-        community1.setCommunityPosts(communityPosts1);
-
-        Comment comment1 = new Comment("So true", 2, 1);
-        Comment comment2 = new Comment("Yesss", 3, 1);
-        List<Comment> commentList1 = new ArrayList<>();
-        commentList1.add(comment1);
-        commentList1.add(comment2);
-        post1.setCommentList(commentList1);
-
         ConsoleReader consoleReader = new ConsoleReader();
         ConsolePrinter consolePrinter = new ConsolePrinter();
 
+        try {
+            User user1 = userUseCases.createUser("Ion", "ion@test.com", "ion123", "some guy");
+            User user2 = userUseCases.createUser("Anca", "anca@test.com", "anca123", "some girl");
+            User user3 = userUseCases.createUser("Petru", "petru@test.com", "petru123", "guitarist");
+            User user4 = userUseCases.createUser("Adela", "adela@test.com", "adela123", "physicist or smt");
+
+            Community community1 = communityService.createCommunity("The cat lovers", "we really love cats");
+            Community community2 = communityService.createCommunity("Anca s community", "Anca is here");
+
+            communityService.joinCommunity(community1.getId(), user1.getUserId());
+            communityService.joinCommunity(community1.getId(), user2.getUserId());
+            communityService.joinCommunity(community1.getId(), user3.getUserId());
+
+            communityService.joinCommunity(community2.getId(), user2.getUserId());
+
+            Post post1 = postService.addPost(community1.getId(), user1.getUserId(), "First post about cats", "Cats are awesome");
+            Post post2 = postService.addPost(community1.getId(), user2.getUserId(), "Second post abouts cats", "Cats are still awesome");
+
+            commentService.addComment("So true", user2.getUserId(), post1.getId());
+            commentService.addComment("Yesss", user3.getUserId(), post1.getId());
+
+        } catch (Exception e) {
+        }
+
         consolePrinter.printBanner();
 
-        InputParser inputParser = new InputParser(consoleReader, consolePrinter, communityService, commentService, postService/*, userService*/);
+        while (true) {
+            boolean isAuthenticated = false;
 
-        inputParser.startListening();
+            while (!isAuthenticated) {
+                System.out.println("\n=================================");
+                System.out.println("       1. Login                  ");
+                System.out.println("       2. Create Account         ");
+                System.out.println("       0. Exit                   ");
+                System.out.println("=================================");
+                System.out.print("Choose option: ");
 
+                String option = consoleReader.readLine();
+
+                switch (option) {
+                    case "1":
+                        System.out.print("Username or Email: ");
+                        String loginIdentifier = consoleReader.readLine();
+                        System.out.print("Password: ");
+                        String loginPass = consoleReader.readLine();
+                        try {
+                            userUseCases.login(loginIdentifier, loginPass);
+                            consolePrinter.printSuccess("Welcome back, " + userUseCases.getLoggedInUser().getUsername() + "!");
+                            isAuthenticated = true;
+                        } catch (IllegalArgumentException e) {
+                            consolePrinter.printError(e.getMessage());
+                        }
+                        break;
+                    case "2":
+                        System.out.print("Choose a Username: ");
+                        String newUser = consoleReader.readLine();
+                        System.out.print("Enter your Email: ");
+                        String newEmail = consoleReader.readLine();
+                        System.out.print("Choose a Password: ");
+                        String newPass = consoleReader.readLine();
+                        System.out.print("Short Description: ");
+                        String newDesc = consoleReader.readLine();
+                        try {
+                            userUseCases.createUser(newUser, newEmail, newPass, newDesc);
+                            consolePrinter.printSuccess("Account created successfully! You can now log in (Option 1).");
+                        } catch (IllegalArgumentException e) {
+                            consolePrinter.printError(e.getMessage());
+                        }
+                        break;
+                    case "0":
+                        consolePrinter.printGoodbye();
+                        System.exit(0);
+                        break;
+                    default:
+                        consolePrinter.printError("Invalid option. Please choose 1, 2, or 0.");
+                }
+            }
+
+            //after login
+            InputParser inputParser = new InputParser(consoleReader, consolePrinter, communityService, commentService, postService, userUseCases);
+
+            inputParser.startListening();
+        }
     }
 }

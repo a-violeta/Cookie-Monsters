@@ -4,12 +4,16 @@ import com.app.model.Comment;
 import com.app.model.Post;
 import com.app.model.User;
 import com.app.repository.CommentRepository;
+import com.app.repository.JpaCommentRepository;
+import com.app.repository.PostRepository;
+import com.app.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
