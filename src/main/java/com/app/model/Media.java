@@ -15,7 +15,7 @@ public class Media {
     @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long mediaId;
+    private Long id;
 
     private String path;
     private String fileName;

@@ -18,7 +18,7 @@ public class Community {
     @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long communityId;
+    private Long id;
 
     private String communityName;
     private String description;
@@ -54,9 +54,9 @@ public class Community {
     public Post findPostById(long postId){
 
         // if there are any posts at all, we search
-        if(this.getCommunityPosts()!=null && !this.getCommunityPosts().isEmpty()) {
+        if (this.getCommunityPosts() != null && !this.getCommunityPosts().isEmpty()) {
             for (Post p : this.getCommunityPosts()) {
-                if(p.getPostId()==postId){
+                if (p.getId() == postId) {
                     return p;
                 }
             }
@@ -67,9 +67,9 @@ public class Community {
     public User findUserById(long userId){
 
         // if there are any users at all, we search
-        if(this.getCommunityUsers()!=null && !this.getCommunityUsers().isEmpty()) {
+        if (this.getCommunityUsers() != null && !this.getCommunityUsers().isEmpty()) {
             for (User u : this.getCommunityUsers()) {
-                if(u.getUserId()==userId){
+                if (u.getId() == userId) {
                     return u;
                 }
             }

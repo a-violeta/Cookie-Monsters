@@ -18,7 +18,7 @@ public class Post {
     @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long postId;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "community_id")

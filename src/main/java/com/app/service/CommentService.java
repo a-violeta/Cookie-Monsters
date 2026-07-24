@@ -4,7 +4,6 @@ import com.app.model.Comment;
 import com.app.model.Post;
 import com.app.model.User;
 import com.app.repository.CommentRepository;
-import com.app.repository.JpaCommentRepository;
 import com.app.repository.PostRepository;
 import com.app.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

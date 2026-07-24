@@ -16,7 +16,7 @@ public class Comment {
     @Id // PK of the table
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
-    private Long commentId;
+    private Long id;
 
     private String text;
 

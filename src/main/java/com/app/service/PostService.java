@@ -4,10 +4,9 @@ import com.app.model.Community;
 import com.app.model.Post;
 import com.app.model.User;
 import com.app.repository.CommunityRepository;
+import com.app.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import com.app.repository.CommunityRepository;
 import com.app.repository.PostRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,7 +34,7 @@ public class PostService implements PostUseCases{
     }
 
     @Transactional
-    public Post addPost(long communityId, String title, String text, long userId) {
+    public Post addPost(long communityId, long userId, String title, String text) {
         validatePost(title, text);
 
         Community community = communityRepository.findById(communityId)
