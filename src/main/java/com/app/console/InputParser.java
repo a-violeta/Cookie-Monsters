@@ -95,7 +95,9 @@ public class InputParser {
                     command.execute(Arrays.copyOfRange(parts, 1, parts.length));
                     // Execute the method execute of the "command" Class
                 } else {
-                    System.out.println("Unknown Command ");
+                    printer.printError("Unknown Command");
+                    Command helpCommand = commandMap.get("help");
+                    helpCommand.execute(new String[0]);
                 }
             } catch (Exception e) {
                 System.out.println("An error as occurred during the Input Reading : " + e.getMessage());
