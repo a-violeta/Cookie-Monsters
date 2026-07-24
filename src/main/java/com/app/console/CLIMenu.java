@@ -42,10 +42,7 @@ public class CLIMenu implements CommandLineRunner {
             boolean isAuthenticated = false;
 
             while (!isAuthenticated) {
-                consolePrinter.printMenu("Main Menu",
-                        "1. Login",
-                        "2. Create Account",
-                        "0. Exit");
+                consolePrinter.printMainMenu();
                 consolePrinter.printPrompt("Choose option");
 
                 String option = consoleReader.readLine();
