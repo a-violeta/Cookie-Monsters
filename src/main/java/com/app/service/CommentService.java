@@ -2,6 +2,7 @@ package com.app.service;
 
 import com.app.model.Comment;
 import com.app.repository.CommentRepository;
+import com.app.repository.JpaCommentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
