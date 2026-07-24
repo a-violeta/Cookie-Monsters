@@ -35,6 +35,8 @@ public class Comment {
         this.user = null;
         this.post = null;
         this.createdAt = LocalDateTime.now();
+        // lombok annotation @NoArgsConstructor would make createdAt = null
+        // I think it s better to use current time though
     }
 
     public Comment(String text, User user, Post post){

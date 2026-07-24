@@ -30,15 +30,14 @@ public class Post {
 
     private String title;
     private String text;
-
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-    private List<Comment> commentList;
-
     private LocalDateTime createdAt;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "media_id")
     private Media media;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<Comment> commentList;
 
     public Post() {
         this.community = null;
