@@ -75,6 +75,24 @@ public class ConsolePrinter {
         System.out.println();
     }
 
+    public void printMenu(String title, String... options) {
+
+        int width = 35;
+        System.out.println();
+        System.out.println(CYAN + "┌" + "─".repeat(width) + "┐" + RESET);
+        System.out.println(CYAN + "│ " + RESET + BOLD + "🍪 " + title + RESET);
+        System.out.println(CYAN + "├" + "─".repeat(width) + "┤" + RESET);
+        for (String option : options) {
+            System.out.println(CYAN + "│  " + RESET + option);
+        }
+        System.out.println(CYAN + "└" + "─".repeat(width) + "┘" + RESET);
+    }
+
+    public void printPrompt(String label) {
+
+        System.out.print(YELLOW + "➜ " + RESET + label + ": ");
+    }
+
     public void displayPost(Post post) {
         System.out.println("\n" + CYAN + "┌──────────────────────────────────────────────" + RESET);
         System.out.println(CYAN + "│ " + RESET + "📌 " + BOLD + "r/" + post.getCommunityId() + RESET
