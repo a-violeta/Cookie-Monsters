@@ -7,8 +7,8 @@ public class CreateCommunityCommand extends Command {
 
     private CommunityUseCases communityUseCases;
 
-    public CreateCommunityCommand(CommunityUseCases communityUseCases) {
-        super();
+    public CreateCommunityCommand(ConsolePrinter consolePrinter, CommunityUseCases communityUseCases) {
+        super(consolePrinter);
         this.communityUseCases=communityUseCases;
     }
 
@@ -18,18 +18,20 @@ public class CreateCommunityCommand extends Command {
         // Arguments Validations
         if (args.length < 2) {
 
-            System.out.println("Error : Missing Arguments");
-            System.out.println("Usage : 4 'Community Name' 'Description' ");
+            consolePrinter.printError("Missing Arguments");
+            consolePrinter.printExplanation("4 'Community Name' 'Description'");
             return;
 
         } else if (args.length > 2) {
 
-            System.out.println("Error : Too Many Arguments");
-            System.out.println("Usage : 4 'Community Name' 'Description' ");
+            consolePrinter.printError("Too Many Arguments");
+            consolePrinter.printExplanation("4 'Community Name' 'Description'");
             return;
         }
 
         Community newCommunity = communityUseCases.createCommunity(args[0], args[1]);
-        System.out.println("Community successfully created!");
+
+        consolePrinter.printSuccess("Community successfully created!");
+        consolePrinter.displayCommunity(newCommunity);
     }
 }

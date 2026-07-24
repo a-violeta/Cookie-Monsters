@@ -4,10 +4,10 @@ import com.app.service.CommentUseCases;
 
 public class CreateCommentCommand extends Command {
 
-    private CommentUseCases commentUseCases;
+    private final CommentUseCases commentUseCases;
 
-    public CreateCommentCommand(CommentUseCases commentUseCases){
-        super();
+    public CreateCommentCommand(ConsolePrinter consolePrinter,CommentUseCases commentUseCases){
+        super(consolePrinter);
         this.commentUseCases = commentUseCases;
     }
 

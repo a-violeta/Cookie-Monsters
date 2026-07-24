@@ -6,8 +6,8 @@ public class EditCommentCommand extends Command{
 
     private final CommentUseCases commentUseCases;
 
-    public EditCommentCommand(CommentUseCases commentUseCases) {
-        super();
+    public EditCommentCommand(ConsolePrinter consolePrinter, CommentUseCases commentUseCases) {
+        super(consolePrinter);
         this.commentUseCases = commentUseCases;
     }
 

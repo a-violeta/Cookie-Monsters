@@ -7,8 +7,8 @@ public class FindCommunityCommand extends Command {
 
     private CommunityUseCases communityUseCases;
 
-    public FindCommunityCommand(CommunityUseCases communityUseCases) {
-        super();
+    public FindCommunityCommand(ConsolePrinter consolePrinter, CommunityUseCases communityUseCases) {
+        super(consolePrinter);
         this.communityUseCases=communityUseCases;
     }
 
