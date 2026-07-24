@@ -1,8 +1,5 @@
 package com.app.console;
 
-import com.app.model.Community;
-import com.app.model.Post;
-import com.app.model.User;
 import com.app.service.CommentService;
 import com.app.service.CommunityService;
 import com.app.service.PostService;
@@ -29,34 +26,14 @@ public class CLIMenu implements CommandLineRunner {
     @Override
     public void run(String... args){
 
-        // seed data for testing:
-
-        new SeedData(userUseCases, communityService, postService, commentService).seed();
         ConsoleReader consoleReader = new ConsoleReader();
         ConsolePrinter consolePrinter = new ConsolePrinter();
 
         try {
-            User user1 = userUseCases.createUser("Ion", "ion@test.com", "ion123", "some guy");
-            User user2 = userUseCases.createUser("Anca", "anca@test.com", "anca123", "some girl");
-            User user3 = userUseCases.createUser("Petru", "petru@test.com", "petru123", "guitarist");
-            User user4 = userUseCases.createUser("Adela", "adela@test.com", "adela123", "physicist or smt");
-
-            Community community1 = communityService.createCommunity("The cat lovers", "we really love cats");
-            Community community2 = communityService.createCommunity("Anca s community", "Anca is here");
-
-            communityService.joinCommunity(community1.getId(), user1.getUserId());
-            communityService.joinCommunity(community1.getId(), user2.getUserId());
-            communityService.joinCommunity(community1.getId(), user3.getUserId());
-
-            communityService.joinCommunity(community2.getId(), user2.getUserId());
-
-            Post post1 = postService.addPost(community1.getId(), user1.getUserId(), "First post about cats", "Cats are awesome");
-            Post post2 = postService.addPost(community1.getId(), user2.getUserId(), "Second post abouts cats", "Cats are still awesome");
-
-            commentService.addComment("So true", user2.getUserId(), post1.getId());
-            commentService.addComment("Yesss", user3.getUserId(), post1.getId());
-
+            new SeedData(userUseCases, communityService, postService, commentService).seed();
         } catch (Exception e) {
+            System.err.println("Failed to seed data: " + e.getMessage());
+            e.printStackTrace();
         }
 
         consolePrinter.printBanner();

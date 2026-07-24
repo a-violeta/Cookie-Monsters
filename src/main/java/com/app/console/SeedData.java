@@ -1,17 +1,13 @@
 package com.app.console;
 
 import com.app.model.*;
-import com.app.service.CommentService;
-import com.app.service.CommunityService;
-import com.app.service.PostService;
-//import com.app.service.UserService;
+import com.app.service.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public class SeedData {
 
-    //private final UserService userService;
+    private final UserUseCases userUseCases;
     private final CommunityService communityService;
     private final PostService postService;
     private final CommentService commentService;
@@ -25,9 +21,9 @@ public class SeedData {
     // posts
     private Post catPost1, catPost2, catPost3, gamePost1, gamePost2, bookPost1, foodPost1, foodPost2;
 
-    public SeedData(/*UserService userService, */CommunityService communityService,
+    public SeedData(UserUseCases userUseCases, CommunityService communityService,
                     PostService postService, CommentService commentService) {
-        //this.userService = userService;
+        this.userUseCases = userUseCases;
         this.communityService = communityService;
         this.postService = postService;
         this.commentService = commentService;
@@ -41,14 +37,14 @@ public class SeedData {
     }
 
     private void seedUsers() {
-        ion = new User("Ion", "ion123", "some guy");
-        anca = new User("Anca", "anca123", "some girl");
-        petru = new User("Petru", "petru123", "guitarist");
-        adela = new User("Adela", "adela123", "physicist or smt");
-        mihai = new User("Mihai", "mihai123", "backend dev, coffee addict");
-        elena = new User("Elena", "elena123", "reads too much sci-fi");
-        radu = new User("Radu", "radu123", "amateur chef");
-        cristina = new User("Cristina", "cristina123", "speedrunner");
+        ion = userUseCases.createUser("Ion", "ion@gmail.com", "ion123", "some guy");
+        anca = userUseCases.createUser("Anca", "anca@gmail.com", "anca123", "some girl");
+        petru = userUseCases.createUser("Petru", "petru@gmail.com", "petru123", "guitarist");
+        adela = userUseCases.createUser("Adela", "adela@gmail.com", "adela123", "physicist or smt");
+        mihai = userUseCases.createUser("Mihai", "mihai@gmail.com", "mihai123", "backend dev, coffee addict");
+        elena = userUseCases.createUser("Elena", "elena@gmail.com", "elena123", "reads too much sci-fi");
+        radu = userUseCases.createUser("Radu", "radu@gmail.com", "radu123", "amateur chef");
+        cristina = userUseCases.createUser("Cristina", "cristina@gmail.com", "cristina123", "speedrunner");
     }
 
     private void seedCommunities() {
@@ -69,7 +65,7 @@ public class SeedData {
     }
 
     private void seedPosts() {
-        catPost1 = postService.addPost(catLovers.getId(),ion.getUserId(), "First post about cats", "Cats are awesome");
+        catPost1 = postService.addPost(catLovers.getId(), ion.getUserId(), "First post about cats", "Cats are awesome");
         //attachImage(catPost1, "134110683555465878.jpg");
 
         catPost2 = postService.addPost(catLovers.getId(), anca.getUserId(), "My cat knocked over my plant again", "Third time this week. I've given up on plants.");
