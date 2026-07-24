@@ -23,14 +23,14 @@ public class Media {
     @Enumerated(EnumType.STRING)
     private MediaType type;
 
-    Media(){
+    public Media(){
         this.path = "";
         this.fileName = "";
         this.createdAt = LocalDateTime.now();
         this.type = MediaType.IMAGE;
     }
 
-    Media(String path, String fileName, MediaType type){
+    public Media(String path, String fileName, MediaType type){
         this.path = path;
         this.fileName = fileName;
         this.createdAt = LocalDateTime.now();

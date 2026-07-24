@@ -30,14 +30,14 @@ public class Comment {
 
     private LocalDateTime createdAt;
 
-    Comment(){
+    public Comment(){
         this.text = "";
         this.user = null;
         this.post = null;
         this.createdAt = LocalDateTime.now();
     }
 
-    Comment(String text, User user, Post post){
+    public Comment(String text, User user, Post post){
         this.text = text;
         this.user = user;
         this.post = post;
