@@ -77,13 +77,12 @@ public class ConsolePrinter {
 
     public void displayPost(Post post) {
         System.out.println("\n" + CYAN + "┌──────────────────────────────────────────────" + RESET);
-        System.out.println(CYAN + "│ " + RESET + "📌 " + BOLD + "r/" + post.getCommunityId() + RESET
-                + GRAY + "  •  Post #" + post.getId() + RESET);
+        System.out.println(CYAN + "│ " + RESET + "📌 " + BOLD + post.getCommunity().getCommunityName() + RESET + GRAY + "  •  Post #" + post.getId() + RESET);
         System.out.println(CYAN + "│ " + RESET + BOLD + YELLOW + post.getTitle() + RESET);
         System.out.println(CYAN + "│" + RESET);
         System.out.println(CYAN + "│ " + RESET + post.getText());
         System.out.println(CYAN + "│" + RESET);
-        System.out.println(CYAN + "│ " + RESET + "👤 " + GRAY + "author: " + post.getUserId() + RESET);
+        System.out.println(CYAN + "│ " + RESET + "👤 " + GRAY + "author: " + post.getUser().getUsername() + RESET);
         System.out.println(CYAN + "└──────────────────────────────────────────────" + RESET + "\n");
     }
 
@@ -97,7 +96,7 @@ public class ConsolePrinter {
 
     public void displayUser(User user) {
         System.out.println("\n" + BLUE + "┌──────────────────────────────────────────────" + RESET);
-        System.out.println(BLUE + "│ " + RESET + "👤 " + BOLD + "u/" + user.getUsername() + RESET);
+        System.out.println(BLUE + "│ " + RESET + "👤 " + BOLD + user.getUsername() + RESET);
         System.out.println(BLUE + "└──────────────────────────────────────────────" + RESET + "\n");
     }
 
@@ -105,7 +104,7 @@ public class ConsolePrinter {
         System.out.println("\n" + GRAY + "┌──────────────────────────────────────────────" + RESET);
         System.out.println(GRAY + "│ " + RESET + "💬 " + comment.getText());
         System.out.println(GRAY + "│" + RESET);
-        System.out.println(GRAY + "│ " + RESET + "👤 " + GRAY + "author: " + comment.getUserId() + RESET);
+        System.out.println(GRAY + "│ " + RESET + "👤 " + GRAY + "author: " + comment.getUser().getUsername() + RESET);
         System.out.println(GRAY + "└──────────────────────────────────────────────" + RESET + "\n");
     }
 }
