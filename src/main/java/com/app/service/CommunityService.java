@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.handler.UserRoleAuthorizationInterceptor;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Optional;
 
 import java.util.List;
@@ -28,6 +29,16 @@ public class CommunityService implements CommunityUseCases {
                         new IllegalArgumentException(
                                 "Community with id " + communityId + " not found"
                         ));
+    }
+
+    // could be improved to search for 1 word and return all communities with that word in their name
+    public Community findCommunityByName(String name) {
+        for (Community c: communityRepository.findAll()) {
+            if (Objects.equals(c.getCommunityName().toLowerCase(), name.toLowerCase())) {
+                return c;
+            }
+        }
+        throw new IllegalArgumentException("Community with name " + name + " not found");
     }
 
     public void editCommunity(long communityId, String description) {
