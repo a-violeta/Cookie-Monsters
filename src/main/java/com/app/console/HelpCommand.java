@@ -9,6 +9,10 @@ public class HelpCommand extends Command {
 
     @Override
     public void execute(String[] args) {
+
+        consolePrinter.printHelp();
+
+        /*
         System.out.println("--This is the Help Page for Reddit-CLI--");
         System.out.println("1 - Create user");
         System.out.println("2 - Log into account");
@@ -32,5 +36,6 @@ public class HelpCommand extends Command {
         System.out.println("20 - Edit a comment");
         System.out.println("Help / h - Display this Help Menu with all existing commands");
         System.out.println("0. Exit the application\n");
+        */
     }
 }

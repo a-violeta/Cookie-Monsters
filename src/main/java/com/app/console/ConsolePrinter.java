@@ -78,7 +78,7 @@ public class ConsolePrinter {
     public void printMainMenu() {
         System.out.println();
         System.out.println(CYAN + "┌────────────────────────────────────┐" + RESET);
-        System.out.println(CYAN + "│ " + RESET + BOLD + "🍪 Main Menu" + RESET + "                      " + CYAN + "│" + RESET);
+        System.out.println(CYAN + "│ " + RESET + BOLD + "🍪 Main Menu" + RESET + "                       " + CYAN + "│" + RESET);
         System.out.println(CYAN + "├────────────────────────────────────┤" + RESET);
         System.out.println(CYAN + "│  " + RESET + "1. Login" + "                          " + CYAN + "│" + RESET);
         System.out.println(CYAN + "│  " + RESET + "2. Create Account" + "                 " + CYAN + "│" + RESET);
@@ -91,15 +91,70 @@ public class ConsolePrinter {
         System.out.print(YELLOW + "➜ " + RESET + label + ": ");
     }
 
+    public void printHelp() {
+
+        String[] lines = {
+                "create-community <name> <description>   — Create a new community",
+                "list-communities                        — List all communities",
+                "find-community <name>                   — Find a community by name",
+                "join-community <communityId>            — Join an existing community",
+                "exit-community <communityId>             — Leave a community",
+                "edit-community <communityId> <newDesc>   — Edit a community's description",
+                "delete-community <communityId>           — Delete a community",
+                //"remove-post <communityId> <postId>       — Remove a post from a community",
+                "add-post <communityId> <title> <text>    — Create a post in a community",
+                "list-posts <communityId>                 — List all posts of a community",
+                "edit-post <postId> <newText>              — Edit an existing post",
+                "delete-post <postId>                      — Delete a post",
+                "add-comment <postId> <text>               — Comment on a post",
+                "edit-comment <commentId> <newText>        — Edit an existing comment",
+                "delete-comment <commentId>                — Delete a comment",
+                "logout                                    — Log out of your account",
+                "help / h                                  — Display this help menu",
+                "exit / 0                                  — Exit the application"
+        };
+
+        int width = 4;
+        for (String line : lines) {
+            width = Math.max(width, line.length() + 4);
+        }
+        // for a border that fits all the text
+
+        System.out.println();
+        System.out.println(CYAN + "┌" + "─".repeat(width) + "┐" + RESET);
+        printHelpLine(width, BOLD + "🍪 Reddit-CLI — Available Commands" + RESET, CYAN);
+        System.out.println(CYAN + "├" + "─".repeat(width) + "┤" + RESET);
+        for (String line : lines) {
+            printHelpLine(width, "  " + line, CYAN);
+        }
+        System.out.println(CYAN + "└" + "─".repeat(width) + "┘" + RESET);
+        System.out.println();
+    }
+
+    private void printHelpLine(int width, String content, String borderColor) {
+        int visibleLength = content.replaceAll("\u001B\\[[;\\d]*m", "").length();
+        int padding = Math.max(0, width - visibleLength - 1);
+        System.out.println(borderColor + "│ " + RESET + content + " ".repeat(padding) + borderColor + "│" + RESET);
+    }
+
+    public void printPostLoginHint() {
+        System.out.println();
+        System.out.println(GRAY + "Commands are no longer numbered — " + RESET
+                + "type the command name and its parameters to use it.");
+        System.out.println(GRAY + "Type " + RESET + CYAN + "help" + RESET + GRAY
+                + " or " + RESET + CYAN + "h" + RESET + GRAY + " to see all available commands." + RESET);
+        System.out.println();
+    }
+
     public void displayPost(Post post) {
         System.out.println("\n" + CYAN + "┌──────────────────────────────────────────────" + RESET);
-        System.out.println(CYAN + "│ " + RESET + "📌 " + BOLD + "r/" + post.getCommunityId() + RESET
+        System.out.println(CYAN + "│ " + RESET + "📌 " + BOLD + post.getCommunity().getCommunityName() + RESET
                 + GRAY + "  •  Post #" + post.getId() + RESET);
         System.out.println(CYAN + "│ " + RESET + BOLD + YELLOW + post.getTitle() + RESET);
         System.out.println(CYAN + "│" + RESET);
         System.out.println(CYAN + "│ " + RESET + post.getText());
         System.out.println(CYAN + "│" + RESET);
-        System.out.println(CYAN + "│ " + RESET + "👤 " + GRAY + "author: " + post.getUserId() + RESET);
+        System.out.println(CYAN + "│ " + RESET + "👤 " + GRAY + "author: " + post.getUser().getUsername() + RESET);
         System.out.println(CYAN + "└──────────────────────────────────────────────" + RESET + "\n");
     }
 
