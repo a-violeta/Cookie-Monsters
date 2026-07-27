@@ -65,22 +65,22 @@ public class SeedData {
     }
 
     private void seedPosts() {
-        catPost1 = postService.addPost(catLovers.getId(), ion.getUserId(), "First post about cats", "Cats are awesome");
+        catPost1 = postService.addPost(catLovers.getId(), ion.getId(), "First post about cats", "Cats are awesome");
         //attachImage(catPost1, "134110683555465878.jpg");
 
-        catPost2 = postService.addPost(catLovers.getId(), anca.getUserId(), "My cat knocked over my plant again", "Third time this week. I've given up on plants.");
+        catPost2 = postService.addPost(catLovers.getId(), anca.getId(), "My cat knocked over my plant again", "Third time this week. I've given up on plants.");
 
-        catPost3 = postService.addPost(catLovers.getId(), petru.getUserId(), "Cat vs guitar", "She sits on the strings every single time I practice.");
+        catPost3 = postService.addPost(catLovers.getId(), petru.getId(), "Cat vs guitar", "She sits on the strings every single time I practice.");
 
-        gamePost1 = postService.addPost(gamers.getId(), cristina.getUserId(), "New PB on my speedrun!", "Shaved off 40 seconds, finally under 2 hours.");
+        gamePost1 = postService.addPost(gamers.getId(), cristina.getId(), "New PB on my speedrun!", "Shaved off 40 seconds, finally under 2 hours.");
 
-        gamePost2 = postService.addPost(gamers.getId(), radu.getUserId(), "What are you all playing this weekend?", "Looking for co-op recommendations.");
+        gamePost2 = postService.addPost(gamers.getId(), radu.getId(), "What are you all playing this weekend?", "Looking for co-op recommendations.");
 
-        bookPost1 = postService.addPost(bookClub.getId(), elena.getUserId(), "This month's pick: Project Hail Mary", "Starting Monday, discussion thread up next week.");
+        bookPost1 = postService.addPost(bookClub.getId(), elena.getId(), "This month's pick: Project Hail Mary", "Starting Monday, discussion thread up next week.");
 
-        foodPost1 = postService.addPost(foodies.getId(), radu.getUserId(), "Made carbonara from scratch", "No cream, I promise. Recipe in comments if anyone wants it.");
+        foodPost1 = postService.addPost(foodies.getId(), radu.getId(), "Made carbonara from scratch", "No cream, I promise. Recipe in comments if anyone wants it.");
 
-        foodPost2 = postService.addPost(foodies.getId(), mihai.getUserId(), "Best coffee spots near the office?", "Need something stronger than what the office machine makes.");
+        foodPost2 = postService.addPost(foodies.getId(), mihai.getId(), "Best coffee spots near the office?", "Need something stronger than what the office machine makes.");
     }
 
     /*private void attachImage(Post post, String fileName) {
@@ -94,25 +94,25 @@ public class SeedData {
     }*/
 
     private void seedComments() {
-        commentService.addComment("So true", anca.getUserId(), catPost1.getId());
-        commentService.addComment("Yesss", petru.getUserId(), catPost1.getId());
+        commentService.addComment("So true", anca.getId(), catPost1.getId());
+        commentService.addComment("Yesss", petru.getId(), catPost1.getId());
 
-        commentService.addComment("Classic cat behavior honestly", petru.getUserId(), catPost2.getId());
-        commentService.addComment("Mine does the same, get a cactus instead", ion.getUserId(), catPost2.getId());
+        commentService.addComment("Classic cat behavior honestly", petru.getId(), catPost2.getId());
+        commentService.addComment("Mine does the same, get a cactus instead", ion.getId(), catPost2.getId());
 
-        commentService.addComment("Lol get a cat-proof stand", anca.getUserId(), catPost3.getId());
+        commentService.addComment("Lol get a cat-proof stand", anca.getId(), catPost3.getId());
 
-        commentService.addComment("Nice! What route did you change?", radu.getUserId(), gamePost1.getId());
-        commentService.addComment("That's insane, congrats", mihai.getUserId(), gamePost1.getId());
+        commentService.addComment("Nice! What route did you change?", radu.getId(), gamePost1.getId());
+        commentService.addComment("That's insane, congrats", mihai.getId(), gamePost1.getId());
 
-        commentService.addComment("I'm down, what time?", cristina.getUserId(), gamePost2.getId());
+        commentService.addComment("I'm down, what time?", cristina.getId(), gamePost2.getId());
 
-        commentService.addComment("Loved that one, great pick", adela.getUserId(), bookPost1.getId());
-        commentService.addComment("Ordering it today", anca.getUserId(), bookPost1.getId());
+        commentService.addComment("Loved that one, great pick", adela.getId(), bookPost1.getId());
+        commentService.addComment("Ordering it today", anca.getId(), bookPost1.getId());
 
-        commentService.addComment("Yes please, share the recipe", mihai.getUserId(), foodPost1.getId());
-        commentService.addComment("Looks so much better than mine", cristina.getUserId(), foodPost1.getId());
+        commentService.addComment("Yes please, share the recipe", mihai.getId(), foodPost1.getId());
+        commentService.addComment("Looks so much better than mine", cristina.getId(), foodPost1.getId());
 
-        commentService.addComment("Try the place two blocks from the station", petru.getUserId(), foodPost2.getId());
+        commentService.addComment("Try the place two blocks from the station", petru.getId(), foodPost2.getId());
     }
 }

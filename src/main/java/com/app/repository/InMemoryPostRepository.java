@@ -13,7 +13,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
-@Primary
 public class InMemoryPostRepository implements PostRepository {
     // this is our storage
     private final Map<Long, Post> storage = new ConcurrentHashMap<>();

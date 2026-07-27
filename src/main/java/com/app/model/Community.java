@@ -2,17 +2,20 @@ package com.app.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
-import java.util.Iterator;
 import java.util.List;
 
 @Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(exclude = {"communityUsers", "communityPosts"})
 @Entity
 @Table(name = "communities")
-
 public class Community {
 
+    @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,42 +24,64 @@ public class Community {
     private String description;
     private LocalDateTime createdAt;
 
-    @Transient
+    @ManyToMany
+    @JoinTable(
+            name = "community_users",
+            joinColumns = @JoinColumn(name = "community_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
     private List<User> communityUsers;
-    @Transient
-    private List<Post> communityPosts;
-    // we need to specify a relationship between these
-    // otherwise Hibernate thinks Post and User are basic types (like String)
-    // and that fails
 
-    // Transient basically says to ignore these fields for now
-    // because User and Post and Comment are not yet finished
+    @OneToMany(mappedBy = "community", cascade = CascadeType.ALL)
+    private List<Post> communityPosts;
 
     public Community() {
         this.communityName = "";
         this.description = "";
+        this.createdAt = LocalDateTime.now();
         this.communityUsers = null;
         this.communityPosts = null;
-        this.createdAt = LocalDateTime.now();
     }
 
     public Community(String communityName, String description, List<User> communityUsers, List<Post> communityPosts) {
         this.communityName = communityName;
         this.description = description;
+        this.createdAt = LocalDateTime.now();
         this.communityUsers = communityUsers;
         this.communityPosts = communityPosts;
-        this.createdAt = LocalDateTime.now();
     }
 
-    public Community(String communityName, String description, List<User> communityUsers, List<Post> communityPosts, LocalDateTime createdAt) {
-        this.communityName = communityName;
-        this.description = description;
-        this.communityUsers = communityUsers;
-        this.communityPosts = communityPosts;
-        this.createdAt = createdAt;
+    public Post findPostById(long postId){
+
+        // if there are any posts at all, we search
+        if (this.getCommunityPosts() != null && !this.getCommunityPosts().isEmpty()) {
+            for (Post p : this.getCommunityPosts()) {
+                if (p.getId() == postId) {
+                    return p;
+                }
+            }
+        }
+        return null;
     }
+
+    public User findUserById(long userId){
+
+        // if there are any users at all, we search
+        if (this.getCommunityUsers() != null && !this.getCommunityUsers().isEmpty()) {
+            for (User u : this.getCommunityUsers()) {
+                if (u.getId() == userId) {
+                    return u;
+                }
+            }
+        }
+        return null;
+    }
+
+    /*
+    this is dead code, may be useful if we move this logic to services
 
     public void addPost(Post post) {
+        post.setCommunity(this);
         communityPosts.add(post);
     }
 
@@ -70,19 +95,6 @@ public class Community {
                 break;
             }
         }
-    }
-
-    public Post findPostById(long postId) {
-
-        // if there are any posts at all, we search
-        if (this.getCommunityPosts() != null && !this.getCommunityPosts().isEmpty()) {
-            for (Post p : this.getCommunityPosts()) {
-                if (p.getId() == postId) {
-                    return p;
-                }
-            }
-        }
-        return null;
     }
 
     public void addUser(User user) {
@@ -100,17 +112,6 @@ public class Community {
             }
         }
     }
+    */
 
-    public User findUserById(long userId) {
-
-        // if there are any users at all, we search
-        if (this.getCommunityUsers() != null && !this.getCommunityUsers().isEmpty()) {
-            for (User u : this.getCommunityUsers()) {
-                if (u.getUserId() == userId) {
-                    return u;
-                }
-            }
-        }
-        return null;
-    }
 }

@@ -168,7 +168,7 @@ public class ConsolePrinter {
 
     public void displayUser(User user) {
         System.out.println("\n" + BLUE + "┌──────────────────────────────────────────────" + RESET);
-        System.out.println(BLUE + "│ " + RESET + "👤 " + BOLD + "u/" + user.getUsername() + RESET);
+        System.out.println(BLUE + "│ " + RESET + "👤 " + BOLD + user.getUsername() + RESET);
         System.out.println(BLUE + "└──────────────────────────────────────────────" + RESET + "\n");
     }
 
@@ -176,7 +176,7 @@ public class ConsolePrinter {
         System.out.println("\n" + GRAY + "┌──────────────────────────────────────────────" + RESET);
         System.out.println(GRAY + "│ " + RESET + "💬 " + comment.getText());
         System.out.println(GRAY + "│" + RESET);
-        System.out.println(GRAY + "│ " + RESET + "👤 " + GRAY + "author: " + comment.getUserId() + RESET);
+        System.out.println(GRAY + "│ " + RESET + "👤 " + GRAY + "author: " + comment.getUser().getUsername() + RESET);
         System.out.println(GRAY + "└──────────────────────────────────────────────" + RESET + "\n");
     }
 }
