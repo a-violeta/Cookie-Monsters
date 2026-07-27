@@ -14,11 +14,11 @@ public class EditPostCommand extends Command {
     public void execute(String[] args) {
         if (args.length < 2) {
             consolePrinter.printError("Missing Arguments");
-            consolePrinter.printExplanation("21 'Post Id' 'New Text' ");
+            consolePrinter.printExplanation("edit-post 'Post Id' 'New Text' ");
             return;
         } else if (args.length > 2) {
             consolePrinter.printError("Too Many Arguments");
-            consolePrinter.printExplanation("'Post Id' 'New Text' ");
+            consolePrinter.printExplanation("edit-post 'Post Id' 'New Text' ");
             return;
         }
 

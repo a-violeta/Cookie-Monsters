@@ -17,11 +17,11 @@ public class EditCommunityCommand extends Command {
 
         if (args.length < 2) {
             consolePrinter.printError("Missing Arguments");
-            consolePrinter.printExplanation("18 'Community Id' 'New Description' ");
+            consolePrinter.printExplanation("edit-community 'Community Id' 'New Description' ");
             return;
         } else if (args.length > 2) {
             consolePrinter.printError("Too Many Arguments");
-            consolePrinter.printExplanation("18 'Community Id' 'New Description' ");
+            consolePrinter.printExplanation("edit-community 'Community Id' 'New Description' ");
             return;
         }
 

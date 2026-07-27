@@ -16,11 +16,11 @@ public class EditCommentCommand extends Command{
 
         if (args.length < 2) {
             consolePrinter.printError("Missing Arguments");
-            consolePrinter.printExplanation("20 'commentId' 'Text'");
+            consolePrinter.printExplanation("edit-comment 'commentId' 'Text'");
             return;
         } else if (args.length > 2) {
             consolePrinter.printError("Too Many Arguments");
-            consolePrinter.printExplanation("20 'commentId' 'Text'");
+            consolePrinter.printExplanation("edit-comment 'commentId' 'Text'");
             return;
         }
 

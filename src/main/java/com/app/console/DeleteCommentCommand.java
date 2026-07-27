@@ -16,11 +16,11 @@ public class DeleteCommentCommand extends Command {
 
         if (args.length < 1) {
             consolePrinter.printError("Missing Arguments");
-            consolePrinter.printExplanation("13 'commentId' ");
+            consolePrinter.printExplanation("delete-comment 'commentId' ");
             return;
         } else if (args.length > 1) {
             consolePrinter.printError("Too Many Arguments");
-            consolePrinter.printExplanation("13 'commentId' ");
+            consolePrinter.printExplanation("delete-comment 'commentId' ");
             return;
         }
 

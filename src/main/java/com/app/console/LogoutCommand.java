@@ -13,6 +13,13 @@ public class LogoutCommand extends Command {
 
     @Override
     public void execute(String[] args) {
+
+        if (args.length > 0) {
+            consolePrinter.printError("Too Many Arguments");
+            consolePrinter.printExplanation("logout");
+            return;
+        }
+
         userUseCases.logout();
         consolePrinter.printSuccess("Logged out successfully! Returning to login menu...");
     }

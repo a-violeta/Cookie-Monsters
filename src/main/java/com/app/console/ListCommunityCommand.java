@@ -17,6 +17,14 @@ public class ListCommunityCommand extends Command{
     @Override
     public void execute(String[] args) {
 
+        // Arguments Validations
+        if (args.length > 0) {
+
+            consolePrinter.printError("Too Many Arguments");
+            consolePrinter.printExplanation("list-communities");
+            return;
+        }
+
         List<Community> communities = communityUseCases.listCommunities();
 
         if(communities.isEmpty()){

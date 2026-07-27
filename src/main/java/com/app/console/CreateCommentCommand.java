@@ -16,11 +16,11 @@ public class CreateCommentCommand extends Command {
 
         if (args.length < 3) {
             consolePrinter.printError("Missing Arguments");
-            consolePrinter.printExplanation("5 'Text' 'userId' 'postId'");
+            consolePrinter.printExplanation("add-comment <Text> <userId> <postId>");
             return;
         } else if (args.length > 3) {
             consolePrinter.printError("Too Many Arguments");
-            consolePrinter.printExplanation("5 'Text' <userId> <postId>");
+            consolePrinter.printExplanation("add-comment <Text> <userId> <postId>");
             return;
         }
 

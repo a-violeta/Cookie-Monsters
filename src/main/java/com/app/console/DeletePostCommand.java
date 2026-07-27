@@ -14,12 +14,12 @@ public class DeletePostCommand extends Command {
     public void execute(String[] args) {
         if (args.length < 1) {
             consolePrinter.printError("Missing Arguments");
-            consolePrinter.printExplanation("12 'Post ID' ");
+            consolePrinter.printExplanation("delete-post 'Post ID' ");
             return;
         }
         else if (args.length > 1) {
             consolePrinter.printError("Too Many Arguments");
-            consolePrinter.printExplanation("12 'postId'");
+            consolePrinter.printExplanation("delete-post 'postId'");
             return;
         }
 

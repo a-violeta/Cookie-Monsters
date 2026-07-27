@@ -17,11 +17,11 @@ public class FindCommunityCommand extends Command {
 
         if (args.length < 1) {
             consolePrinter.printError("Missing Arguments");
-            consolePrinter.printExplanation("19 'Community Name' ");
+            consolePrinter.printExplanation("find-community 'Community Name' ");
             return;
         } else if (args.length > 1) {
             consolePrinter.printError("Too Many Arguments");
-            consolePrinter.printExplanation("19 'Community Name' ");
+            consolePrinter.printExplanation("find-community 'Community Name' ");
             return;
         }
 
