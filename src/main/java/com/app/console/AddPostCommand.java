@@ -30,7 +30,7 @@ public class AddPostCommand extends Command {
 
         long communityId = Long.parseLong(args[0]);
         //long userId = Long.parseLong(args[1]);
-        long userId = userUseCases.getLoggedInUser().getUserId();
+        long userId = userUseCases.getLoggedInUser().getId();
         String title = args[1];
         String text = args[2];
 

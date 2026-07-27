@@ -59,7 +59,7 @@ public class InputParser {
         commandMap.put("exit-community", new ExitCommunityCommand(printer, communityUseCases));
         commandMap.put("find-community", new FindCommunityCommand(printer, communityUseCases));
         commandMap.put("join-community", new JoinCommunityCommand(printer, communityUseCases));
-        commandMap.put("remove-post", new RemovePostFromCommunityCommand(printer, communityUseCases));
+        //commandMap.put("remove-post", new RemovePostFromCommunityCommand(printer, communityUseCases));
         //commandMap.put("edit-comment", new EditCommentCommand(printer, commentUseCases));
         // edit comment implies we keep a current comment in CommentService
         // a current comment is memorized in the service class when you create it
