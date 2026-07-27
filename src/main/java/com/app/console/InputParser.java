@@ -56,7 +56,7 @@ public class InputParser {
         commandMap.put("0", new ExitCommand(printer));
         commandMap.put("delete-community", new DeleteCommunityCommand(printer, communityUseCases));
         commandMap.put("edit-community", new EditCommunityCommand(printer, communityUseCases));
-        commandMap.put("exit-community", new ExitCommunityCommand(printer, communityUseCases));
+        commandMap.put("exit-community", new ExitCommunityCommand(printer, communityUseCases, userUseCases, reader));
         commandMap.put("find-community", new FindCommunityCommand(printer, communityUseCases));
         commandMap.put("join-community", new JoinCommunityCommand(printer, communityUseCases, userUseCases, reader));
         //commandMap.put("remove-post", new RemovePostFromCommunityCommand(printer, communityUseCases));

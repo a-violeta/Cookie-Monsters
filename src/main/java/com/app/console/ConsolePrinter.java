@@ -100,7 +100,7 @@ public class ConsolePrinter {
                 "list-communities                        — List all communities",
                 "find-community <name>                   — Find a community by name",
                 "join-community                          — Join an existing community",
-                "exit-community <communityId>            — Leave a community",
+                "exit-community                          — Leave a community",
                 "edit-community <communityId> <newDesc>  — Edit a community's description",
                 "delete-community <communityId>          — Delete a community",
                 //"remove-post <communityId> <postId>      — Remove a post from a community",
