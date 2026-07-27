@@ -1,17 +1,18 @@
 package com.app.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
-@Entity
-@Table(name = "users") // create table "users" for this class
-@Getter
-@Setter
+@Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(exclude = {"password", "communities", "posts", "comments"})
+@Entity
+@Table(name = "app_users") // user is a reserved name in postgres
 public class User {
 
     //no id generator
@@ -19,13 +20,22 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
-    private Long userId;// JPA needs to be null before using
+    private Long id;// JPA needs to be null before using
 
     private String username;
     private String email;
     private String password;
     private String description;
     private LocalDateTime createdAt;
+
+    @ManyToMany(mappedBy = "communityUsers")
+    private List<Community> communities;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Post> posts;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Comment> comments;
 
     //constructors
     public User() {
@@ -43,7 +53,7 @@ public class User {
     @Override
     public String toString() {
         return "User{" +
-                "userId=" + userId +
+                "userId=" + id +
                 ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
