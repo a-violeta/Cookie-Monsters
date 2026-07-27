@@ -5,6 +5,8 @@ import com.app.model.Community;
 import com.app.model.Post;
 import com.app.model.User;
 
+import java.time.format.DateTimeFormatter;
+
 public class ConsolePrinter {
 
     // ANSI color codes
@@ -97,7 +99,7 @@ public class ConsolePrinter {
                 "create-community <name> <description>   — Create a new community",
                 "list-communities                        — List all communities",
                 "find-community <name>                   — Find a community by name",
-                "join-community <communityId>            — Join an existing community",
+                "join-community                          — Join an existing community",
                 "exit-community <communityId>            — Leave a community",
                 "edit-community <communityId> <newDesc>  — Edit a community's description",
                 "delete-community <communityId>          — Delete a community",
@@ -169,6 +171,11 @@ public class ConsolePrinter {
     public void displayUser(User user) {
         System.out.println("\n" + BLUE + "┌──────────────────────────────────────────────" + RESET);
         System.out.println(BLUE + "│ " + RESET + "👤 " + BOLD + user.getUsername() + RESET);
+        System.out.println(BLUE + "│" + RESET);
+        System.out.println(BLUE + "│ " + RESET + user.getDescription());
+        System.out.println(BLUE + "│" + RESET);
+        System.out.println(BLUE + "│ " + RESET + GRAY + "joined: "
+                + user.getCreatedAt().format(DateTimeFormatter.ofPattern("MMM d, yyyy")) + RESET);
         System.out.println(BLUE + "└──────────────────────────────────────────────" + RESET + "\n");
     }
 
@@ -178,5 +185,9 @@ public class ConsolePrinter {
         System.out.println(GRAY + "│" + RESET);
         System.out.println(GRAY + "│ " + RESET + "👤 " + GRAY + "author: " + comment.getUser().getUsername() + RESET);
         System.out.println(GRAY + "└──────────────────────────────────────────────" + RESET + "\n");
+    }
+
+    public void printCommunityListItem(int index, Community community) {
+        System.out.println(CYAN + " " + index + ". " + RESET + "🌐 " + community.getCommunityName());
     }
 }

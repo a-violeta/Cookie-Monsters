@@ -58,7 +58,7 @@ public class InputParser {
         commandMap.put("edit-community", new EditCommunityCommand(printer, communityUseCases));
         commandMap.put("exit-community", new ExitCommunityCommand(printer, communityUseCases));
         commandMap.put("find-community", new FindCommunityCommand(printer, communityUseCases));
-        commandMap.put("join-community", new JoinCommunityCommand(printer, communityUseCases, userUseCases));
+        commandMap.put("join-community", new JoinCommunityCommand(printer, communityUseCases, userUseCases, reader));
         //commandMap.put("remove-post", new RemovePostFromCommunityCommand(printer, communityUseCases));
         //commandMap.put("edit-comment", new EditCommentCommand(printer, commentUseCases));
         // edit comment implies we keep a current comment in CommentService

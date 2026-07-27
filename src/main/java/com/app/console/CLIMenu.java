@@ -1,5 +1,6 @@
 package com.app.console;
 
+import com.app.model.User;
 import com.app.service.CommentService;
 import com.app.service.CommunityService;
 import com.app.service.PostService;
@@ -72,8 +73,9 @@ public class CLIMenu implements CommandLineRunner {
                         consolePrinter.printPrompt("Short Description");
                         String newDesc = consoleReader.readLine();
                         try {
-                            userUseCases.createUser(newUser, newEmail, newPass, newDesc);
+                            User user = userUseCases.createUser(newUser, newEmail, newPass, newDesc);
                             consolePrinter.printSuccess("Account created successfully! You can now log in (Option 1).");
+                            consolePrinter.displayUser(user);
                         } catch (IllegalArgumentException e) {
                             consolePrinter.printError(e.getMessage());
                         }
