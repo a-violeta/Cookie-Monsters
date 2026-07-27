@@ -107,7 +107,7 @@ public class ConsolePrinter {
                 "edit-post <postId> <newText>              — Edit an existing post",
                 "delete-post <postId>                      — Delete a post",
                 "add-comment <postId> <text>               — Comment on a post",
-                "edit-comment <commentId> <newText>        — Edit an existing comment",
+                //"edit-comment <commentId> <newText>        — Edit an existing comment",
                 "delete-comment <commentId>                — Delete a comment",
                 "logout                                    — Log out of your account",
                 "help / h                                  — Display this help menu",

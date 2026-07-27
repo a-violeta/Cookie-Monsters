@@ -61,7 +61,12 @@ public class InputParser {
         commandMap.put("find-community", new FindCommunityCommand(printer, communityUseCases));
         commandMap.put("join-community", new JoinCommunityCommand(printer, communityUseCases));
         commandMap.put("remove-post", new RemovePostFromCommunityCommand(printer, communityUseCases));
-        commandMap.put("edit-comment", new EditCommentCommand(printer, commentUseCases));
+        //commandMap.put("edit-comment", new EditCommentCommand(printer, commentUseCases));
+        // edit comment implies we keep a current comment in CommentService
+        // a current comment is memorized in the service class when you create it
+        // but if you create 5 comments on a single post, and you want to edit one made previously
+        // then you should be able to search that comment, but search by what? you need to list comments and make the user choose
+        // too much hassle for now
         commandMap.put("delete-comment", new DeleteCommentCommand(printer, commentUseCases));
         commandMap.put("add-comment", new CreateCommentCommand(printer, commentUseCases));
         commandMap.put("help", new HelpCommand(printer));
