@@ -15,12 +15,12 @@ public class DeleteCommentCommand extends Command {
     public void execute(String[] args) {
 
         if (args.length < 1) {
-            System.out.println("Error : Missing Arguments");
-            System.out.println("Usage : 13 <commentId> ");
+            consolePrinter.printError("Missing Arguments");
+            consolePrinter.printExplanation("delete-comment 'commentId' ");
             return;
         } else if (args.length > 1) {
-            System.out.println("Error : Too Many Arguments");
-            System.out.println("Usage : 13 <commentId> ");
+            consolePrinter.printError("Too Many Arguments");
+            consolePrinter.printExplanation("delete-comment 'commentId' ");
             return;
         }
 
@@ -28,12 +28,12 @@ public class DeleteCommentCommand extends Command {
             long commentId = Long.parseLong(args[0]);
 
             commentUseCases.removeComment(commentId);
-            System.out.println("Comment successfully deleted!");
+            consolePrinter.printSuccess("Comment successfully deleted!");
 
         } catch (NumberFormatException e) {
-            System.out.println("Error : commentId must be a number.");
-        } catch (IllegalArgumentException e) {
-            System.out.println("Error : " + e.getMessage());
+            consolePrinter.printError("commentId must be a number.");
+        } catch (Exception e) {
+            consolePrinter.printError(e.getMessage());
         }
     }
 }

@@ -16,23 +16,23 @@ public class EditCommunityCommand extends Command {
         // 18 communityid description
 
         if (args.length < 2) {
-            System.out.println("Error : Missing Arguments");
-            System.out.println("Usage : 18 'Community Id' 'New Description' ");
+            consolePrinter.printError("Missing Arguments");
+            consolePrinter.printExplanation("edit-community 'Community Id' 'New Description' ");
             return;
         } else if (args.length > 2) {
-            System.out.println("Error : Too Many Arguments");
-            System.out.println("Usage : 18 'Community Id' 'New Description' ");
+            consolePrinter.printError("Too Many Arguments");
+            consolePrinter.printExplanation("edit-community 'Community Id' 'New Description' ");
             return;
         }
 
         try {
             Long communityId = Long.parseLong(args[0]);
             communityUseCases.editCommunity(communityId, args[1]);
-            System.out.println("Community successfully updated!");
+            consolePrinter.printSuccess("Community successfully updated!");
         } catch (NumberFormatException e) {
-            System.out.println("Error : Community Id must be a number");
-        } catch (IllegalArgumentException e) {
-            System.out.println("Error : " + e.getMessage());
+            consolePrinter.printError("Community Id must be a number");
+        } catch (Exception e) {
+            consolePrinter.printError(e.getMessage());
         }
     }
 }

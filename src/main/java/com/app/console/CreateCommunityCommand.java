@@ -19,13 +19,13 @@ public class CreateCommunityCommand extends Command {
         if (args.length < 2) {
 
             consolePrinter.printError("Missing Arguments");
-            consolePrinter.printExplanation("4 'Community Name' 'Description'");
+            consolePrinter.printExplanation("create-community 'Community Name' 'Description'");
             return;
 
         } else if (args.length > 2) {
 
             consolePrinter.printError("Too Many Arguments");
-            consolePrinter.printExplanation("4 'Community Name' 'Description'");
+            consolePrinter.printExplanation("create-community 'Community Name' 'Description'");
             return;
         }
 

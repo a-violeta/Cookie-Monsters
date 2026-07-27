@@ -42,37 +42,34 @@ public class CLIMenu implements CommandLineRunner {
             boolean isAuthenticated = false;
 
             while (!isAuthenticated) {
-                System.out.println("\n=================================");
-                System.out.println("       1. Login                  ");
-                System.out.println("       2. Create Account         ");
-                System.out.println("       0. Exit                   ");
-                System.out.println("=================================");
-                System.out.print("Choose option: ");
+                consolePrinter.printMainMenu();
+                consolePrinter.printPrompt("Choose option");
 
                 String option = consoleReader.readLine();
 
                 switch (option) {
                     case "1":
-                        System.out.print("Username or Email: ");
+                        consolePrinter.printPrompt("Username or Email");
                         String loginIdentifier = consoleReader.readLine();
-                        System.out.print("Password: ");
+                        consolePrinter.printPrompt("Password");
                         String loginPass = consoleReader.readLine();
                         try {
                             userUseCases.login(loginIdentifier, loginPass);
                             consolePrinter.printSuccess("Welcome back, " + userUseCases.getLoggedInUser().getUsername() + "!");
+                            consolePrinter.printPostLoginHint();
                             isAuthenticated = true;
                         } catch (IllegalArgumentException e) {
                             consolePrinter.printError(e.getMessage());
                         }
                         break;
                     case "2":
-                        System.out.print("Choose a Username: ");
+                        consolePrinter.printPrompt("Choose a Username");
                         String newUser = consoleReader.readLine();
-                        System.out.print("Enter your Email: ");
+                        consolePrinter.printPrompt("Enter your Email");
                         String newEmail = consoleReader.readLine();
-                        System.out.print("Choose a Password: ");
+                        consolePrinter.printPrompt("Choose a Password");
                         String newPass = consoleReader.readLine();
-                        System.out.print("Short Description: ");
+                        consolePrinter.printPrompt("Short Description");
                         String newDesc = consoleReader.readLine();
                         try {
                             userUseCases.createUser(newUser, newEmail, newPass, newDesc);

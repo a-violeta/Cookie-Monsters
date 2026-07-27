@@ -17,8 +17,13 @@ public class ListPostsCommand extends Command {
     @Override
     public void execute(String[] args) {
         if (args.length < 1) {
-            consolePrinter.printError("Error : Missing Arguments");
-            consolePrinter.printExplanation("Usage : 8 'Community ID' ");
+            consolePrinter.printError("Missing Arguments");
+            consolePrinter.printExplanation("list-posts 'Community ID' ");
+            return;
+        }
+        else if (args.length > 1) {
+            consolePrinter.printError("Too Many Arguments");
+            consolePrinter.printExplanation("list-posts 'Community ID' ");
             return;
         }
 

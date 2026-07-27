@@ -28,6 +28,7 @@ public class InputParser {
         this.userUseCases = userUseCases;
         this.postUseCases = postUseCases;
 
+        /*
         commandMap.put("4", new CreateCommunityCommand(printer, communityUseCases));
         commandMap.put("10", new ListCommunityCommand(printer, communityUseCases));
         commandMap.put("3", new LogoutCommand(printer, userUseCases));
@@ -42,11 +43,37 @@ public class InputParser {
         commandMap.put("5", new CreateCommentCommand(printer, commentUseCases));
         commandMap.put("help", new HelpCommand(printer));
         commandMap.put("h", new HelpCommand(printer));
-
         commandMap.put("6", new AddPostCommand(printer, postUseCases));
         commandMap.put("8", new ListPostsCommand(printer, postUseCases));
         commandMap.put("12", new DeletePostCommand(printer, postUseCases));
         commandMap.put("21", new EditPostCommand(printer, postUseCases));
+        */
+
+        commandMap.put("create-community", new CreateCommunityCommand(printer, communityUseCases));
+        commandMap.put("list-communities", new ListCommunityCommand(printer, communityUseCases));
+        commandMap.put("logout", new LogoutCommand(printer, userUseCases));
+        commandMap.put("exit", new ExitCommand(printer));
+        commandMap.put("0", new ExitCommand(printer));
+        commandMap.put("delete-community", new DeleteCommunityCommand(printer, communityUseCases));
+        commandMap.put("edit-community", new EditCommunityCommand(printer, communityUseCases));
+        commandMap.put("exit-community", new ExitCommunityCommand(printer, communityUseCases));
+        commandMap.put("find-community", new FindCommunityCommand(printer, communityUseCases));
+        commandMap.put("join-community", new JoinCommunityCommand(printer, communityUseCases));
+        //commandMap.put("remove-post", new RemovePostFromCommunityCommand(printer, communityUseCases));
+        //commandMap.put("edit-comment", new EditCommentCommand(printer, commentUseCases));
+        // edit comment implies we keep a current comment in CommentService
+        // a current comment is memorized in the service class when you create it
+        // but if you create 5 comments on a single post, and you want to edit one made previously
+        // then you should be able to search that comment, but search by what? you need to list comments and make the user choose
+        // too much hassle for now
+        commandMap.put("delete-comment", new DeleteCommentCommand(printer, commentUseCases));
+        commandMap.put("add-comment", new CreateCommentCommand(printer, commentUseCases));
+        commandMap.put("help", new HelpCommand(printer));
+        commandMap.put("h", new HelpCommand(printer));
+        commandMap.put("add-post", new AddPostCommand(printer, postUseCases, userUseCases));
+        commandMap.put("list-posts", new ListPostsCommand(printer, postUseCases));
+        commandMap.put("delete-post", new DeletePostCommand(printer, postUseCases));
+        commandMap.put("edit-post", new EditPostCommand(printer, postUseCases));
 
         // Add Commands Classes to the map of commands
     }
@@ -96,7 +123,7 @@ public class InputParser {
                     helpCommand.execute(new String[0]);
                 }
             } catch (Exception e) {
-                System.out.println("An error as occurred during the Input Reading : " + e.getMessage());
+                printer.printError("An error as occurred during the Input Reading : " + e.getMessage());
             }
         }
     }

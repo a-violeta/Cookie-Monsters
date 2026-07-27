@@ -11,6 +11,7 @@ public interface CommunityUseCases {
     void deleteCommunity(long communityId);
     List<Community> listCommunities();
     Community findCommunityById(long communityId);
+    Community findCommunityByName(String name);
     void editCommunity(long communityId, String description);
     void joinCommunity(Long communityId, Long userId);
     void exitCommunity(Long communityId, Long userId);
