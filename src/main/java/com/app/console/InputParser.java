@@ -71,7 +71,7 @@ public class InputParser {
         commandMap.put("add-comment", new CreateCommentCommand(printer, commentUseCases));
         commandMap.put("help", new HelpCommand(printer));
         commandMap.put("h", new HelpCommand(printer));
-        commandMap.put("add-post", new AddPostCommand(printer, postUseCases));
+        commandMap.put("add-post", new AddPostCommand(printer, postUseCases, userUseCases));
         commandMap.put("list-posts", new ListPostsCommand(printer, postUseCases));
         commandMap.put("delete-post", new DeletePostCommand(printer, postUseCases));
         commandMap.put("edit-post", new EditPostCommand(printer, postUseCases));
@@ -124,7 +124,7 @@ public class InputParser {
                     helpCommand.execute(new String[0]);
                 }
             } catch (Exception e) {
-                System.out.println("An error as occurred during the Input Reading : " + e.getMessage());
+                printer.printError("An error as occurred during the Input Reading : " + e.getMessage());
             }
         }
     }
