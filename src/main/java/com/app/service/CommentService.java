@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ public class CommentService implements CommentUseCases{
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private final UserUseCases userUseCases;
 
     public void validateComment(String text) {
         if (text == null || text.isBlank()) {
@@ -81,13 +83,13 @@ public class CommentService implements CommentUseCases{
     @Transactional
     public void editComment(long commentId, String newText) {
         Comment comment = findCommentById(commentId);
-        if (comment != null) {
-            validateComment(newText);
-            comment.setText(newText);
-            commentRepository.save(comment);
-        } else {
-            throw new IllegalArgumentException("Comment with id " + commentId + " not found");
+
+        if (!Objects.equals(comment.getUser().getId(), userUseCases.getLoggedInUser().getId())) {
+            throw new IllegalStateException("This comment was not created by You ");
         }
+        validateComment(newText);
+        comment.setText(newText);
+        commentRepository.save(comment);
     }
 
     @Transactional
@@ -95,8 +97,9 @@ public class CommentService implements CommentUseCases{
         // try to find this comment
         Comment comment = findCommentById(commentId);
 
-        // if not found, method throws exception
-        // if found, we delete
+        if (!Objects.equals(comment.getUser().getId(), userUseCases.getLoggedInUser().getId())) {
+            throw new IllegalStateException("This comment was not created by You ");
+        }
         commentRepository.deleteById(commentId);
     }
 }
