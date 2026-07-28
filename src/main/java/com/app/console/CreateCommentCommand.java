@@ -3,6 +3,7 @@ package com.app.console;
 import com.app.model.Comment;
 import com.app.model.Post;
 import com.app.service.CommentUseCases;
+import com.app.service.UserUseCases;
 import com.app.service.PostUseCases;
 import com.app.service.UserUseCases;
 import org.mapstruct.control.MappingControl;

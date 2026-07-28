@@ -22,6 +22,7 @@ public class PostService implements PostUseCases{
     private final PostRepository postRepository;
     private final CommunityRepository communityRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
 
     public void validatePost(String title, String text) {
         if (title == null || title.isBlank()) {
@@ -90,6 +91,11 @@ public class PostService implements PostUseCases{
     @Transactional
     public void editPost(long postId, String newText) {
         Post post = findPostById(postId);
+
+        if (!Objects.equals(post.getUser(), userService.getLoggedInUser())) {
+            throw new IllegalArgumentException("You are not the author of this post");
+        }
+
         validatePost(post.getTitle(), newText);
         post.setText(newText);
         postRepository.save(post);
@@ -97,6 +103,11 @@ public class PostService implements PostUseCases{
 
     public void deletePost(long postId) {
         Post post = findPostById(postId);
+
+        if (!Objects.equals(post.getUser(), userService.getLoggedInUser())) {
+            throw new IllegalArgumentException("You are not the author of this post");
+        }
+
         postRepository.delete(post);
     }
 }

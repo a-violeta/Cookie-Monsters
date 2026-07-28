@@ -11,4 +11,5 @@ public interface CommentUseCases {
     void editComment(long commentId, String newText);
     void removeComment(long commentId);
     List<Comment> listComments();
+    List<Comment> listCommentByPostId(long postId);
 }
