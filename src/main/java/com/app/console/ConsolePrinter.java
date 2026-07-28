@@ -106,7 +106,7 @@ public class ConsolePrinter {
                 "add-post <title> <text>                 — Create a post in a community",
                 "posts-feed                              — List all posts",
                 "list-posts                              — List all posts of a community",
-                "edit-post <postId> <newText>            — Edit an existing post",
+                "edit-post <newText>                     — Edit an existing post",
                 "delete-post <postId>                    — Delete a post",
                 "add-comment <postId> <text>             — Comment on a post",
                 //"edit-comment <commentId> <newText>      — Edit an existing comment",
