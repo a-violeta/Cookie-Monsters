@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 @Service
@@ -60,6 +62,20 @@ public class CommentService implements CommentUseCases{
     @Transactional(readOnly = true)
     public List<Comment> listComments() {
         return commentRepository.findAll();
+    }
+
+    @Transactional
+    public List<Comment> listCommentByPostId(long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("Post with id " + postId + " not found"));
+
+        List<Comment> comments = new ArrayList<>();
+        for (Comment comment : commentRepository.findAll()) {
+            if (Objects.equals(comment.getPost(), post)) {
+                comments.add(comment);
+            }
+        }
+        return comments;
     }
 
     @Transactional

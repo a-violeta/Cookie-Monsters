@@ -54,6 +54,7 @@ public class InputParser {
         commandMap.put("list-posts", new ListPostsCommand(printer, postUseCases));
         commandMap.put("delete-post", new DeletePostCommand(printer, postUseCases));
         commandMap.put("edit-post", new EditPostCommand(printer, postUseCases));
+        commandMap.put("list-comments", new ListCommentCommand(printer,commentUseCases));
 
         // Add Commands Classes to the map of commands
     }
