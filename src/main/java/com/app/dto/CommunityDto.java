@@ -5,6 +5,8 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 public class CommunityDto {
     private Long id;
@@ -15,4 +17,5 @@ public class CommunityDto {
     private String communityName;
     @NotBlank(message = "Description is required")
     private String description;
+    private LocalDateTime createdAt;
 }
