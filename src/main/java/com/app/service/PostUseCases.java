@@ -9,6 +9,7 @@ public interface PostUseCases {
     Post addPost(long communityId, long userId, String title, String text);
     void deletePost(long postId);
     List<Post> listPosts(long communityId);
+    List<Post> listPosts();
     Post findPostById(long postId);
     void editPost(long postId, String newText);
 }

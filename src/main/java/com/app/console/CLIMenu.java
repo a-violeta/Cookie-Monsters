@@ -8,6 +8,8 @@ import com.app.service.UserUseCases;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.io.Console;
+
 
 @Component
 public class CLIMenu implements CommandLineRunner {
@@ -53,10 +55,12 @@ public class CLIMenu implements CommandLineRunner {
                         consolePrinter.printPrompt("Username or Email");
                         String loginIdentifier = consoleReader.readLine();
                         consolePrinter.printPrompt("Password");
-                        String loginPass = consoleReader.readLine();
+                        String loginPass = consoleReader.readSecret();
                         try {
                             userUseCases.login(loginIdentifier, loginPass);
                             consolePrinter.printSuccess("Welcome back, " + userUseCases.getLoggedInUser().getUsername() + "!");
+                            Command feedPosts = new PostsFeedCommand(consolePrinter, postService);
+                            feedPosts.execute(new String[0]);
                             consolePrinter.printPostLoginHint();
                             isAuthenticated = true;
                         } catch (IllegalArgumentException e) {
@@ -69,7 +73,7 @@ public class CLIMenu implements CommandLineRunner {
                         consolePrinter.printPrompt("Enter your Email");
                         String newEmail = consoleReader.readLine();
                         consolePrinter.printPrompt("Choose a Password");
-                        String newPass = consoleReader.readLine();
+                        String newPass = consoleReader.readSecret();
                         consolePrinter.printPrompt("Short Description");
                         String newDesc = consoleReader.readLine();
                         try {
