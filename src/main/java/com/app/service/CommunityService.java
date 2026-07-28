@@ -72,10 +72,6 @@ public class CommunityService implements CommunityUseCases {
         Community community = findCommunityById(communityId);
         validateCommunity(community.getCommunityName(), description);
 
-        if (community == null) {
-            throw new IllegalArgumentException("Community with id " + communityId + " not found");
-        }
-
         // maybe just a user from that community should be able to edit
         // we don't memorize the creator so this is the next best thing
         // the guidelines from the frontend also don't have a creator for a subreddit
