@@ -48,12 +48,19 @@ public class CommunityService implements CommunityUseCases {
     @Transactional
     public void editCommunity(long communityId, String description) {
         Community community = findCommunityById(communityId);
-        if (community != null) {
-            community.setDescription(description);
-            communityRepository.save(community);
-        } else {
+        if (community == null) {
             throw new IllegalArgumentException("Community with id " + communityId + " not found");
         }
+
+        // maybe just a user from that community should be able to edit
+        // we don't memorize the creator so this is the next best thing
+        // the guidelines from the frontend also don't have a creator for a subreddit
+        if (!community.getCommunityUsers().contains(userService.getLoggedInUser())) {
+            throw new IllegalStateException("User is not in community!");
+        }
+
+        community.setDescription(description);
+        communityRepository.save(community);
     }
 
     @Transactional
