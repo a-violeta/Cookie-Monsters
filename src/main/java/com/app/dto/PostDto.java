@@ -11,6 +11,7 @@ public class PostDto {
     private Long id;
 
     // these are not full objects anymore because they carry back references to each other
+    // and because they are flat, we need a mapper to create the full object
     @NotNull(message = "Community id is required")
     private Long communityId;
 

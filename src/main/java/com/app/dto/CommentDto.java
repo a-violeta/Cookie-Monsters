@@ -14,6 +14,7 @@ public class CommentDto {
     private String text;
 
     // these are not full objects anymore because they carry back references to each other
+    // and because they are flat, we need a mapper to create the full object
     @NotNull(message = "User id is required")
     private Long userId;
 
