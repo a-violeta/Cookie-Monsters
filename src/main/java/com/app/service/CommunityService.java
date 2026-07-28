@@ -70,6 +70,11 @@ public class CommunityService implements CommunityUseCases {
     @Transactional
     public void editCommunity(long communityId, String description) {
         Community community = findCommunityById(communityId);
+
+        if (!community.getCommunityUsers().contains(userService.getLoggedInUser())) {
+            throw new IllegalArgumentException("You are not a member of this community");
+        }
+
         validateCommunity(community.getCommunityName(), description);
         community.setDescription(description);
         communityRepository.save(community);
@@ -78,6 +83,11 @@ public class CommunityService implements CommunityUseCases {
     @Transactional
     public void deleteCommunity(long communityId) {
         Community community = findCommunityById(communityId);
+
+        if (!community.getCommunityUsers().contains(userService.getLoggedInUser())) {
+            throw new IllegalArgumentException("You are not a member of this community");
+        }
+
         communityRepository.delete(community);
 
     }
