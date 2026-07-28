@@ -103,7 +103,6 @@ public class ConsolePrinter {
                 "exit-community                          — Leave a community",
                 "edit-community <newDesc>                — Edit a community's description",
                 "delete-community <name>                 — Delete a community",
-                //"remove-post <communityId> <postId>      — Remove a post from a community",
                 "add-post <title> <text>                 — Create a post in a community",
                 "posts-feed                              — List all posts",
                 "list-posts                              — List all posts of a community",
@@ -190,5 +189,9 @@ public class ConsolePrinter {
 
     public void printCommunityListItem(int index, Community community) {
         System.out.println(CYAN + " " + index + ". " + RESET + "🌐 " + community.getCommunityName());
+    }
+
+    public void printPostListItem(int index, Post post) {
+        System.out.println(CYAN + " " + index + ". " + RESET + "📌 " + post.getTitle());
     }
 }
