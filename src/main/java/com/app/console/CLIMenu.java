@@ -3,10 +3,12 @@ package com.app.console;
 import com.app.model.User;
 import com.app.service.*;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 
 @Component
+@Profile("console")
 public class CLIMenu implements CommandLineRunner {
 
     private final CommunityUseCases communityUseCases;
