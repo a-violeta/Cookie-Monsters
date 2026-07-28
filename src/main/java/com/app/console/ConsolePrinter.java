@@ -102,7 +102,7 @@ public class ConsolePrinter {
                 "join-community                          — Join an existing community",
                 "exit-community                          — Leave a community",
                 "edit-community <newDesc>                — Edit a community's description",
-                "delete-community <communityId>          — Delete a community",
+                "delete-community <name>                 — Delete a community",
                 //"remove-post <communityId> <postId>      — Remove a post from a community",
                 "add-post <communityId> <title> <text>   — Create a post in a community",
                 "list-posts <communityId>                — List all posts of a community",
