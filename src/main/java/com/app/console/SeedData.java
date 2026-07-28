@@ -48,20 +48,30 @@ public class SeedData {
     }
 
     private void seedCommunities() {
-        catLovers = communityUseCases.addCommunity(
-                new Community("The cat lovers", "we really love cats", List.of(ion, anca, petru), null));
+        userUseCases.login("Ion", "ion123");
+        catLovers = communityUseCases.createCommunity("The cat lovers", "we really love cats");
+        catLovers.setCommunityUsers(List.of(ion, anca, petru));
+        userUseCases.logout();
 
-        ancaCommunity = communityUseCases.addCommunity(
-                new Community("Anca s community", "Anca is here", List.of(anca), null));
+        userUseCases.login("Anca", "anca123");
+        ancaCommunity = communityUseCases.createCommunity("Anca s community", "Anca is here");
+        ancaCommunity.setCommunityUsers(List.of(anca));
+        userUseCases.logout();
 
-        gamers = communityUseCases.addCommunity(
-                new Community("Gamers United", "for anyone who games, casually or not", List.of(cristina, radu, mihai), null));
+        userUseCases.login("Cristina", "cristina123");
+        gamers = communityUseCases.createCommunity("Gamers United", "for anyone who games, casually or not");
+        gamers.setCommunityUsers(List.of(cristina, radu, mihai));
+        userUseCases.logout();
 
-        bookClub = communityUseCases.addCommunity(
-                new Community("Monthly Book Club", "one book a month, no exceptions", List.of(elena, adela, anca), null));
+        userUseCases.login("Elena", "elena123");
+        bookClub = communityUseCases.createCommunity("Monthly Book Club", "one book a month, no exceptions");
+        bookClub.setCommunityUsers(List.of(elena, adela, anca));
+        userUseCases.logout();
 
-        foodies = communityUseCases.addCommunity(
-                new Community("Foodies", "share recipes, rate restaurants, argue about pineapple on pizza", List.of(radu, petru, mihai, cristina), null));
+        userUseCases.login("Radu", "radu123");
+        foodies = communityUseCases.createCommunity("Foodies", "share recipes, rate restaurants, argue about pineapple on pizza");
+        foodies.setCommunityUsers(List.of(radu, petru, mihai, cristina));
+        userUseCases.logout();
     }
 
     private void seedPosts() {
