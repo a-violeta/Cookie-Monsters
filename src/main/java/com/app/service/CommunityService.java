@@ -1,7 +1,6 @@
 package com.app.service;
 
 import com.app.model.Community;
-import com.app.model.Post;
 import com.app.model.User;
 import com.app.repository.CommunityRepository;
 import com.app.repository.UserRepository;
@@ -11,11 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.Optional;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -23,8 +20,33 @@ public class CommunityService implements CommunityUseCases {
 
     private final CommunityRepository communityRepository;
     private final UserRepository userRepository;
-    //private final PostRepository postRepository;
     private final UserService userService;
+
+    public void validateCommunity(String communityName, String description) {
+        if (communityName == null || communityName.isBlank()) {
+            throw new IllegalArgumentException("Community name is required");
+        }
+
+        if (!communityName.matches("^[a-zA-Z0-9_]+$")) {
+            throw new IllegalArgumentException("Community name must contain only letters, numbers, and '_'");
+        }
+
+        if (communityName.length() < 3) {
+            throw new IllegalArgumentException("Community name must have at least 3 characters");
+        }
+
+        if (communityName.length() > 50) {
+            throw new IllegalArgumentException("Community name is too long");
+        }
+
+        if (description == null || description.isBlank()) {
+            throw new IllegalArgumentException("Community description is required");
+        }
+
+        if (description.length() > 500) {
+            throw new IllegalArgumentException("Description is too long");
+        }
+    }
 
     @Transactional(readOnly = true)
     public Community findCommunityById(long communityId) {
@@ -37,7 +59,7 @@ public class CommunityService implements CommunityUseCases {
 
     // could be improved to search for 1 word and return all communities with that word in their name
     public Community findCommunityByName(String name) {
-        for (Community c: communityRepository.findAll()) {
+        for (Community c : communityRepository.findAll()) {
             if (Objects.equals(c.getCommunityName().toLowerCase(), name.toLowerCase())) {
                 return c;
             }
@@ -48,6 +70,8 @@ public class CommunityService implements CommunityUseCases {
     @Transactional
     public void editCommunity(long communityId, String description) {
         Community community = findCommunityById(communityId);
+        validateCommunity(community.getCommunityName(), description);
+
         if (community == null) {
             throw new IllegalArgumentException("Community with id " + communityId + " not found");
         }
@@ -65,15 +89,9 @@ public class CommunityService implements CommunityUseCases {
 
     @Transactional
     public void deleteCommunity(long communityId) {
-
         Community community = findCommunityById(communityId);
+        communityRepository.delete(community);
 
-        if(community!=null){
-            communityRepository.delete(community);
-        }
-        else{
-            throw new IllegalArgumentException("Community with id " + communityId + " not found");
-        }
     }
 
     @Transactional(readOnly = true)
@@ -140,7 +158,8 @@ public class CommunityService implements CommunityUseCases {
 
     // method necessary because in console you can't pass a Community as an argument
     @Transactional
-    public Community createCommunity(String communityName, String description){
+    public Community createCommunity(String communityName, String description) {
+        validateCommunity(communityName, description);
 
         if (communityRepository.existsByCommunityName(communityName)) {
             throw new IllegalArgumentException("Community name is already taken");
