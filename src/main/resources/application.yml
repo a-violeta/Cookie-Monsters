@@ -1,31 +1,11 @@
 spring:
-
-  #main:
-    #web-application-type: none
-
-  profiles:
-    active: cli
-
-  datasource:
-      url: jdbc:h2:mem:mydb
-      username: sa
-      password: password
-      driverClassName: org.h2.Driver
-
-  jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
-    hibernate:
-      ddl-auto: create-drop
-    show-sql: false
-    open-in-view: false   # no web requests reading entities lazily; avoids the "OSIV" warning Spring logs on every startup
-
   application:
     name: cookie-monsters
 
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
-
-server:
-  port: 8080   # so we know exactly where the console + future REST API will live
+app:
+  http:
+    client:
+      enabled: false
+      base-url: http://localhost:8081
+      connection-timeout: 5000
+      read-timeout: 10000
