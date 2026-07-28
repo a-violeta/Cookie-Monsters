@@ -5,6 +5,7 @@ import com.app.model.User;
 import com.app.repository.CommunityRepository;
 import com.app.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +17,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@ConditionalOnProperty(name = "app.http.client.enabled", havingValue = "false", matchIfMissing = true)
 public class CommunityService implements CommunityUseCases {
 
     private final CommunityRepository communityRepository;

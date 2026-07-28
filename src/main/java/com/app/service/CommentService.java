@@ -7,10 +7,10 @@ import com.app.repository.CommentRepository;
 import com.app.repository.PostRepository;
 import com.app.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +19,7 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
+@ConditionalOnProperty(name = "app.http.client.enabled", havingValue = "false", matchIfMissing = true)
 public class CommentService implements CommentUseCases{
 
     private final CommentRepository commentRepository;
