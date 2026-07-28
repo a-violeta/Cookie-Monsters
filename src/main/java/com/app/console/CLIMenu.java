@@ -1,28 +1,23 @@
 package com.app.console;
 
 import com.app.model.User;
-import com.app.service.CommentService;
-import com.app.service.CommunityService;
-import com.app.service.PostService;
-import com.app.service.UserUseCases;
+import com.app.service.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-
-import java.io.Console;
 
 
 @Component
 public class CLIMenu implements CommandLineRunner {
 
-    private final CommunityService communityService;
-    private final CommentService commentService;
-    private final PostService postService;
+    private final CommunityUseCases communityUseCases;
+    private final CommentUseCases commentUseCases;
+    private final PostUseCases postUseCases;
     private final UserUseCases userUseCases;
 
-    public CLIMenu(CommunityService communityService, CommentService commentService, PostService postService, UserUseCases userUseCases){
-        this.communityService = communityService;
-        this.commentService = commentService;
-        this.postService = postService;
+    public CLIMenu(CommunityUseCases communityUseCases, CommentUseCases commentUseCases, PostUseCases postUseCases, UserUseCases userUseCases){
+        this.communityUseCases = communityUseCases;
+        this.commentUseCases = commentUseCases;
+        this.postUseCases = postUseCases;
         this.userUseCases = userUseCases;
     }
 
@@ -33,7 +28,7 @@ public class CLIMenu implements CommandLineRunner {
         ConsolePrinter consolePrinter = new ConsolePrinter();
 
         try {
-            new SeedData(userUseCases, communityService, postService, commentService).seed();
+            new SeedData(userUseCases, communityUseCases, postUseCases, commentUseCases).seed();
         } catch (Exception e) {
             System.err.println("Failed to seed data: " + e.getMessage());
             e.printStackTrace();
@@ -59,7 +54,7 @@ public class CLIMenu implements CommandLineRunner {
                         try {
                             userUseCases.login(loginIdentifier, loginPass);
                             consolePrinter.printSuccess("Welcome back, " + userUseCases.getLoggedInUser().getUsername() + "!");
-                            Command feedPosts = new PostsFeedCommand(consolePrinter, postService);
+                            Command feedPosts = new PostsFeedCommand(consolePrinter, postUseCases);
                             feedPosts.execute(new String[0]);
                             consolePrinter.printPostLoginHint();
                             isAuthenticated = true;
@@ -94,7 +89,7 @@ public class CLIMenu implements CommandLineRunner {
             }
 
             //after login
-            InputParser inputParser = new InputParser(consoleReader, consolePrinter, communityService, commentService, postService, userUseCases);
+            InputParser inputParser = new InputParser(consoleReader, consolePrinter, communityUseCases, commentUseCases, postUseCases, userUseCases);
 
             inputParser.startListening();
         }
