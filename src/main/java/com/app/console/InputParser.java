@@ -49,7 +49,7 @@ public class InputParser {
         commandMap.put("add-comment", new CreateCommentCommand(printer, commentUseCases));
         commandMap.put("help", new HelpCommand(printer));
         commandMap.put("h", new HelpCommand(printer));
-        commandMap.put("add-post", new AddPostCommand(printer, postUseCases, userUseCases));
+        commandMap.put("add-post", new AddPostCommand(printer, postUseCases, userUseCases, communityUseCases, reader));
         commandMap.put("posts-feed", new PostsFeedCommand(printer, postUseCases));
         commandMap.put("list-posts", new ListPostsCommand(printer, postUseCases));
         commandMap.put("delete-post", new DeletePostCommand(printer, postUseCases));
