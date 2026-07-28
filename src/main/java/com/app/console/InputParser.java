@@ -46,7 +46,7 @@ public class InputParser {
         // then you should be able to search that comment, but search by what? you need to list comments and make the user choose
         // too much hassle for now
         commandMap.put("delete-comment", new DeleteCommentCommand(printer, commentUseCases));
-        commandMap.put("add-comment", new CreateCommentCommand(printer, commentUseCases));
+        commandMap.put("add-comment", new CreateCommentCommand(printer, commentUseCases, userUseCases));
         commandMap.put("help", new HelpCommand(printer));
         commandMap.put("h", new HelpCommand(printer));
         commandMap.put("add-post", new AddPostCommand(printer, postUseCases, userUseCases));
