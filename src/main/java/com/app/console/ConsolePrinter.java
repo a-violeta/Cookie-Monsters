@@ -111,7 +111,7 @@ public class ConsolePrinter {
                 "add-comment <text>                      — Comment on a post",
                 "edit-comment <newText>                  — Edit an existing comment",
                 "delete-comment                          — Delete a comment",
-                "list-comments <postId>                  — List comments on a post",
+                "list-comments                           — List comments on a post",
                 "logout                                  — Log out of your account",
                 "help / h                                — Display this help menu",
                 "exit / 0                                — Exit the application"
