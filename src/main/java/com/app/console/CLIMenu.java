@@ -56,6 +56,8 @@ public class CLIMenu implements CommandLineRunner {
                         try {
                             userUseCases.login(loginIdentifier, loginPass);
                             consolePrinter.printSuccess("Welcome back, " + userUseCases.getLoggedInUser().getUsername() + "!");
+                            Command feedPosts = new PostsFeedCommand(consolePrinter, postService);
+                            feedPosts.execute(new String[0]);
                             consolePrinter.printPostLoginHint();
                             isAuthenticated = true;
                         } catch (IllegalArgumentException e) {

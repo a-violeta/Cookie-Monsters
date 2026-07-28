@@ -3,7 +3,7 @@ package com.app.console;
 import com.app.service.CommentUseCases;
 import com.app.service.CommunityUseCases;
 import com.app.service.PostUseCases;
-import com.app.service.UserUseCases; // Decomentat
+import com.app.service.UserUseCases;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -18,7 +18,7 @@ public class InputParser {
 
     private final ConsoleReader reader;
     private final ConsolePrinter printer;
-    private Map<String, Command> commandMap = new HashMap<>();
+    private final Map<String, Command> commandMap = new HashMap<>();
 
     public InputParser(ConsoleReader reader, ConsolePrinter printer, CommunityUseCases communityUseCases, CommentUseCases commentUseCases, PostUseCases postUseCases, UserUseCases userUseCases) {
         this.reader = reader;
@@ -27,27 +27,6 @@ public class InputParser {
         this.commentUseCases = commentUseCases;
         this.userUseCases = userUseCases;
         this.postUseCases = postUseCases;
-
-        /*
-        commandMap.put("4", new CreateCommunityCommand(printer, communityUseCases));
-        commandMap.put("10", new ListCommunityCommand(printer, communityUseCases));
-        commandMap.put("3", new LogoutCommand(printer, userUseCases));
-        commandMap.put("0", new ExitCommand(printer));
-        commandMap.put("14", new DeleteCommunityCommand(printer, communityUseCases));
-        commandMap.put("18", new EditCommunityCommand(printer, communityUseCases));
-        commandMap.put("16", new ExitCommunityCommand(printer, communityUseCases));
-        commandMap.put("19", new FindCommunityCommand(printer, communityUseCases));
-        commandMap.put("17", new JoinCommunityCommand(printer, communityUseCases));
-        commandMap.put("20", new EditCommentCommand(printer, commentUseCases));
-        commandMap.put("13", new DeleteCommentCommand(printer, commentUseCases));
-        commandMap.put("5", new CreateCommentCommand(printer, commentUseCases));
-        commandMap.put("help", new HelpCommand(printer));
-        commandMap.put("h", new HelpCommand(printer));
-        commandMap.put("6", new AddPostCommand(printer, postUseCases));
-        commandMap.put("8", new ListPostsCommand(printer, postUseCases));
-        commandMap.put("12", new DeletePostCommand(printer, postUseCases));
-        commandMap.put("21", new EditPostCommand(printer, postUseCases));
-        */
 
         commandMap.put("create-community", new CreateCommunityCommand(printer, communityUseCases));
         commandMap.put("list-communities", new ListCommunityCommand(printer, communityUseCases));
@@ -71,6 +50,7 @@ public class InputParser {
         commandMap.put("help", new HelpCommand(printer));
         commandMap.put("h", new HelpCommand(printer));
         commandMap.put("add-post", new AddPostCommand(printer, postUseCases, userUseCases));
+        commandMap.put("posts-feed", new PostsFeedCommand(printer, postUseCases));
         commandMap.put("list-posts", new ListPostsCommand(printer, postUseCases));
         commandMap.put("delete-post", new DeletePostCommand(printer, postUseCases));
         commandMap.put("edit-post", new EditPostCommand(printer, postUseCases));
