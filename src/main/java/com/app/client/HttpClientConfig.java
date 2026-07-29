@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "app.http.client")
 @Data
 public class HttpClientConfig {
+    //private String baseUrl = "http://107.21.167.30:8081";
     private String baseUrl = "http://localhost:8081";
     private long connectionTimeout = 5000;
     private long readTimeout = 10000;
