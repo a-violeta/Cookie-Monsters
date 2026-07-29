@@ -9,3 +9,10 @@ app:
       base-url: http://localhost:8081
       connection-timeout: 5000
       read-timeout: 10000
+
+logging:
+  file:
+    name: logs/cookie-monsters.log
+  level:
+    root: INFO
+    com.app: TRACE
