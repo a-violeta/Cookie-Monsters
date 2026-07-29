@@ -99,7 +99,7 @@ public class InputParser {
                     helpCommand.execute(new String[0]);
                 }
             } catch (Exception e) {
-                printer.printError("An error as occurred during the Input Reading : " + e.getMessage());
+                printer.printError("Error : " + e.getMessage());
             }
         }
     }
