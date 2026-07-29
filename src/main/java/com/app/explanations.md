@@ -32,3 +32,51 @@ A `GlobalExceptionHandler` (`@RestControllerAdvice`) on the server turns `Illega
 Each `*HttpClient` catches `HttpClientErrorException`/`HttpServerErrorException` and re-throws using `e.getResponseBodyAsString()` as the message — that string **is** the original service's error message, round-tripped through HTTP.
 
 Without the exception handler, this would just be a generic Spring error blob instead of something a console `Command`'s `consolePrinter` can show meaningfully.
+
+## The stack
+
+### Console side:
+```
+CreatePostCommand.execute(args)
+└─ postUseCases.addPost(communityId, userId, title, text)      <- Command only knows the interface
+└─ PostHttpClient.addPost(...)                             <- Spring injected THIS impl (enabled=true)
+├─ builds PostDto from the args
+├─ restTemplate.postForObject(url, dto, PostDto.class)
+│     │
+│     │   ══════ HTTP request goes out over the network ══════
+│     │
+└─ (blocks here waiting for the HTTP response)
+```
+PostHttpClient has no idea a controller even exists — it just knows a URL and expects JSON back.
+
+### Server side:
+This is a completely separate stack, kicked off by Spring MVC/Tomcat receiving that HTTP request
+```
+DispatcherServlet (Tomcat, listening on :8081)
+  └─ routes POST /api/posts to PostController.createPost(dto)     <- matched by @PostMapping
+       ├─ @Valid runs first — bad input never reaches this method body
+       └─ postService.addPost(dto.getCommunityId(), dto.getUserId(), dto.getTitle(), dto.getText())
+            └─ PostService.addPost(...)                            <- Spring injected THIS impl (enabled=false)
+                 ├─ communityRepository.findById(...)
+                 ├─ userRepository.findById(...)
+                 ├─ community.findUserById(userId) membership check
+                 └─ postRepository.save(post)
+       └─ postMapper.toDto(created)  →  PostDto
+  └─ DispatcherServlet serializes PostDto to JSON, sends HTTP response back
+```
+### Putting both together:
+```
+[CONSOLE PROCESS]                          [SERVER PROCESS]
+Command
+  └─ PostUseCases.addPost(...)
+       └─ PostHttpClient.addPost(...)
+            └─ RestTemplate.postForObject ──HTTP──▶ DispatcherServlet
+                                                        └─ PostController.createPost(dto)
+                                                             └─ PostUseCases.addPost(...)
+                                                                  └─ PostService.addPost(...)
+                                                                       └─ (repositories, DB)
+                                                             └─ postMapper.toDto(...)
+            ◀──HTTP response (JSON)────────────────────────────────┘
+       └─ toPost(response) → detached Post
+  ← Command gets back a Post, prints it
+```
