@@ -33,6 +33,8 @@ public class Post {
     private LocalDateTime createdAt;
 
     @OneToOne(cascade = CascadeType.ALL)
+    // cascade: whatever operation happens to a Post, propagate that same operation to the Media automatically
+    // consequence: deleting a Post also deletes the Media
     @JoinColumn(name = "media_id")
     private Media media;
 
