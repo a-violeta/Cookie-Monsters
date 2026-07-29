@@ -22,6 +22,7 @@ public class CommunityController {
 
     @PostMapping
     public ResponseEntity<CommunityDto> createCommunity(@Valid @RequestBody CommunityDto dto) {
+        // adds only the currently logged-in user as initial member
         Community created = communityService.createCommunity(dto.getCommunityName(), dto.getDescription());
         return ResponseEntity.status(HttpStatus.CREATED).body(communityMapper.toDto(created));
     }
@@ -38,11 +39,13 @@ public class CommunityController {
 
     @GetMapping("/name/{name}")
     public ResponseEntity<CommunityDto> getCommunityByName(@PathVariable String name) {
+        // separate path from /{communityId} because Spring can't disambiguate by parameter type alone
         return ResponseEntity.ok(communityMapper.toDto(communityService.findCommunityByName(name)));
     }
 
     @PutMapping("/{communityId}")
     public ResponseEntity<Void> editCommunity(@PathVariable long communityId, @RequestBody CommunityDto dto) {
+        // membership check for editing is inside communityUseCases, not here
         communityService.editCommunity(communityId, dto.getDescription());
         return ResponseEntity.noContent().build();
     }

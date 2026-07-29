@@ -18,6 +18,12 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
+/*
+ toPost() builds NOT JUST a detached Post but also a detached Community and User
+ these exist purely so a Command can show "posted in {communityName} by {username}"
+ without a second network call
+*/
+
 @Service
 @RequiredArgsConstructor
 @Slf4j

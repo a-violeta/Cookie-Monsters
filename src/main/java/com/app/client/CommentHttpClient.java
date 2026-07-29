@@ -18,6 +18,13 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
+/*
+ same detached-object pattern as PostHttpClient's toPost()
+ toComment() builds a lightweight User (id + username) and Post
+ (id only, no display fields needed for a comment's own printing) purely for display
+ Same caveat: never persisted, never re-queried, not real managed entities.
+*/
+
 @Service
 @RequiredArgsConstructor
 @Slf4j

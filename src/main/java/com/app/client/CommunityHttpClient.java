@@ -13,6 +13,20 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
+/*
+ validateCommunity() is duplicated here (not just called over HTTP)
+ because it's PURE logic, regex + length checks, no database access
+ Round-tripping the network just to run a regex would be wasteful,
+ and the two copies (here and CommunityService) are trivially
+ kept in sync since neither needs the database. Contrast with
+ UserService.createUser's validation, which DOES need the database
+ (existsByUsername) and so is never duplicated client-side.
+
+ Also: addCommunity(Community) does not exist on this interface anymore
+ createCommunity(name, description) is the only creation path now, and it
+ always adds just the currently-logged-in user as member
+*/
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
