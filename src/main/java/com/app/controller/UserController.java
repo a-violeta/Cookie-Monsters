@@ -49,7 +49,7 @@ public class UserController {
         dto.setEmail(user.getEmail());
         dto.setDescription(user.getDescription());
         dto.setCreatedAt(user.getCreatedAt());
-        // password deliberately not copied — @JsonProperty(WRITE_ONLY) on UserDto keeps it out anyway
+        // password deliberately not copied, it protects it
         return dto;
     }
 }

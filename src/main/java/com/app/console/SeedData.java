@@ -49,28 +49,32 @@ public class SeedData {
 
     private void seedCommunities() {
         userUseCases.login("Ion", "ion123");
-        catLovers = communityUseCases.createCommunity("The cat lovers", "we really love cats");
-        catLovers.setCommunityUsers(List.of(ion, anca, petru));
+        catLovers = communityUseCases.createCommunity("The_cat_lovers", "we really love cats");
+        communityUseCases.joinCommunity(catLovers.getId(), anca.getId());
+        communityUseCases.joinCommunity(catLovers.getId(), petru.getId());
         userUseCases.logout();
 
         userUseCases.login("Anca", "anca123");
-        ancaCommunity = communityUseCases.createCommunity("Anca s community", "Anca is here");
-        ancaCommunity.setCommunityUsers(List.of(anca));
+        ancaCommunity = communityUseCases.createCommunity("Anca_s_community", "Anca is here");
         userUseCases.logout();
 
         userUseCases.login("Cristina", "cristina123");
-        gamers = communityUseCases.createCommunity("Gamers United", "for anyone who games, casually or not");
-        gamers.setCommunityUsers(List.of(cristina, radu, mihai));
+        gamers = communityUseCases.createCommunity("Gamers_United", "for anyone who games, casually or not");
+        communityUseCases.joinCommunity(gamers.getId(), radu.getId());
+        communityUseCases.joinCommunity(gamers.getId(), mihai.getId());
         userUseCases.logout();
 
         userUseCases.login("Elena", "elena123");
-        bookClub = communityUseCases.createCommunity("Monthly Book Club", "one book a month, no exceptions");
-        bookClub.setCommunityUsers(List.of(elena, adela, anca));
+        bookClub = communityUseCases.createCommunity("Monthly_Book_Club", "one book a month, no exceptions");
+        communityUseCases.joinCommunity(bookClub.getId(), adela.getId());
+        communityUseCases.joinCommunity(bookClub.getId(), anca.getId());
         userUseCases.logout();
 
         userUseCases.login("Radu", "radu123");
         foodies = communityUseCases.createCommunity("Foodies", "share recipes, rate restaurants, argue about pineapple on pizza");
-        foodies.setCommunityUsers(List.of(radu, petru, mihai, cristina));
+        communityUseCases.joinCommunity(foodies.getId(), petru.getId());
+        communityUseCases.joinCommunity(foodies.getId(), mihai.getId());
+        communityUseCases.joinCommunity(foodies.getId(), cristina.getId());
         userUseCases.logout();
     }
 

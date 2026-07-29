@@ -23,7 +23,6 @@ public class UserDto {
     private String email;
 
     @NotBlank(message = "Password is required")
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // accepted on requests, never serialized in responses
     private String password;
 
     @NotBlank(message = "Description is required")
