@@ -19,6 +19,7 @@ public class ConsolePrinter {
     private static final String PURPLE = "\u001B[35m";
     private static final String RED = "\u001B[31m";
     private static final String GRAY = "\u001B[90m";
+    private static final String BROWN = "\u001B[38;5;94m";
 
     public void printSuccess(String message) {
         System.out.println(GREEN + "✅ Success: " + message + RESET);
@@ -29,19 +30,10 @@ public class ConsolePrinter {
     }
 
     public void printExplanation(String usage) {
-        String CYAN = "\u001B[36m";
-        String RESET = "\u001B[0m";
-
         System.out.println(CYAN + "ℹ️  Usage: " + usage + RESET);
     }
 
     public void printBanner() {
-        String RESET = "\u001B[0m";
-        String BOLD = "\u001B[1m";
-        String YELLOW = "\u001B[33m";
-        String BROWN = "\u001B[38;5;94m";
-        String CYAN = "\u001B[36m";
-        String GREEN = "\u001B[32m";
 
         System.out.println();
         System.out.println(BOLD + YELLOW + "                 .-\"\"\"-." + RESET);
@@ -60,16 +52,11 @@ public class ConsolePrinter {
         System.out.println();
         System.out.println(BOLD + GREEN + "        🍪  M O N S T E R S   🍪" + RESET);
         System.out.println();
-        System.out.println("\u001B[90m" + "        \"We want data... WE WANT DATA NOW!\"" + RESET);
+        System.out.println(GRAY + "        \"We want data... WE WANT DATA NOW!\"" + RESET);
         System.out.println();
     }
 
     public void printGoodbye() {
-        String RESET = "\u001B[0m";
-        String BOLD = "\u001B[1m";
-        String YELLOW = "\u001B[33m";
-        String GREEN = "\u001B[32m";
-        String GRAY = "\u001B[90m";
 
         System.out.println();
         System.out.println(YELLOW + "   🍪  " + RESET + BOLD + GREEN + "See you soon, cookie monster!" + RESET + YELLOW + "  🍪" + RESET);
@@ -89,7 +76,6 @@ public class ConsolePrinter {
     }
 
     public void printPrompt(String label) {
-
         System.out.print(YELLOW + "➜ " + RESET + label + ": ");
     }
 
@@ -199,6 +185,7 @@ public class ConsolePrinter {
     public void printCommentListItem(int index, Comment comment) {
         int maxLength = 40;
         String text = comment.getText();
+        // the preview is the first 40 characters of the post followed by '...'
         String preview = text.length() > maxLength
                 ? text.substring(0, maxLength) + "..."
                 : text;

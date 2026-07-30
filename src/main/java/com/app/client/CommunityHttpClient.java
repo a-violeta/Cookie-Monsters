@@ -13,20 +13,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
-/*
- validateCommunity() is duplicated here (not just called over HTTP)
- because it's PURE logic, regex + length checks, no database access
- Round-tripping the network just to run a regex would be wasteful,
- and the two copies (here and CommunityService) are trivially
- kept in sync since neither needs the database. Contrast with
- UserService.createUser's validation, which DOES need the database
- (existsByUsername) and so is never duplicated client-side.
-
- Also: addCommunity(Community) does not exist on this interface anymore
- createCommunity(name, description) is the only creation path now, and it
- always adds just the currently-logged-in user as member
-*/
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -36,9 +22,14 @@ public class CommunityHttpClient implements CommunityUseCases {
     private final RestTemplate restTemplate;
     private final HttpClientConfig clientConfig;
 
+    // validateCommunity is copied here because it s just logic, no DB access
+    // round-tripping the network just to do a check would be wasteful
+    // and the two copies are kept in sync since neither needs the DB
+    // UserService.createUser's validation DOES need the DB to check username uniqueness
+    // and so createUser is never duplicated
     @Override
     public void validateCommunity(String communityName, String description) {
-        // pure validation, no I/O — mirrors CommunityService exactly, safe to duplicate locally
+        // pure validation, no I/O, mirrors CommunityService, safe to duplicate
         if (communityName == null || communityName.isBlank()) {
             throw new IllegalArgumentException("Community name is required");
         }
@@ -163,7 +154,7 @@ public class CommunityHttpClient implements CommunityUseCases {
         community.setCommunityName(dto.getCommunityName());
         community.setDescription(dto.getDescription());
         community.setCreatedAt(dto.getCreatedAt());
-        // communityUsers/communityPosts intentionally left null — console has no datasource to hydrate them
+        // communityUsers/communityPosts intentionally left null, console has no datasource to hydrate them
         return community;
     }
 

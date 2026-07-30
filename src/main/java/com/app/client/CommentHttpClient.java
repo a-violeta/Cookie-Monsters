@@ -18,13 +18,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
-/*
- same detached-object pattern as PostHttpClient's toPost()
- toComment() builds a lightweight User (id + username) and Post
- (id only, no display fields needed for a comment's own printing) purely for display
- Same caveat: never persisted, never re-queried, not real managed entities.
-*/
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -36,7 +29,7 @@ public class CommentHttpClient implements CommentUseCases {
 
     @Override
     public void validateComment(String text) {
-        // pure logic, no I/O — safe to duplicate locally rather than round-trip the network
+        // pure logic, no I/O, safe to duplicate rather than round-trip the network
         if (text == null || text.isBlank()) {
             throw new IllegalArgumentException("Comment text is required");
         }
@@ -119,9 +112,8 @@ public class CommentHttpClient implements CommentUseCases {
         }
     }
 
-    /**
-     * Detached objects for display — console has no datasource to hydrate real entities.
-     */
+    // detached objects for console display
+    // never persisted, never re-queried, not real managed entities
     private Comment toComment(CommentDto dto) {
         if (dto == null) return null;
 

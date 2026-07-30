@@ -1,6 +1,5 @@
 package com.app.console;
 
-import com.app.model.Community;
 import com.app.model.Post;
 import com.app.service.PostUseCases;
 

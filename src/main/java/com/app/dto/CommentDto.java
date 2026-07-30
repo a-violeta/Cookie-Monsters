@@ -20,9 +20,9 @@ public class CommentDto {
     @NotNull(message = "User id is required")
     private Long userId;
 
-    // For Post/Comment, the server always re-derives the real relationships from communityId/userId
-    // via its own repositories rather than trusting a nested object the client sent
-    // that's what keeps PostService.addPost's membership check meaningful instead of bypassable
+    // the server always re-derives the real relationships from communityId/userId
+    // using the repositories, not trusting what the client sent
+    // that's what keeps the Service classes checks useful instead of bypassable
     @NotNull(message = "Post id is required")
     private Long postId;
 

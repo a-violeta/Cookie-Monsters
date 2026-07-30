@@ -22,7 +22,6 @@ public class CommunityController {
 
     @PostMapping
     public ResponseEntity<CommunityDto> createCommunity(@Valid @RequestBody CommunityDto dto) {
-        // adds only the currently logged-in user as initial member
         Community created = communityService.createCommunity(dto.getCommunityName(), dto.getDescription());
         return ResponseEntity.status(HttpStatus.CREATED).body(communityMapper.toDto(created));
     }
@@ -45,7 +44,6 @@ public class CommunityController {
 
     @PutMapping("/{communityId}")
     public ResponseEntity<Void> editCommunity(@PathVariable long communityId, @RequestBody CommunityDto dto) {
-        // membership check for editing is inside communityUseCases, not here
         communityService.editCommunity(communityId, dto.getDescription());
         return ResponseEntity.noContent().build();
     }

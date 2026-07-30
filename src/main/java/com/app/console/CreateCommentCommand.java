@@ -5,8 +5,6 @@ import com.app.model.Post;
 import com.app.service.CommentUseCases;
 import com.app.service.UserUseCases;
 import com.app.service.PostUseCases;
-import com.app.service.UserUseCases;
-import org.mapstruct.control.MappingControl;
 
 import java.util.List;
 
@@ -73,7 +71,5 @@ public class CreateCommentCommand extends Command {
         } catch (Exception e) {
             consolePrinter.printError(e.getMessage());
         }
-
-
     }
 }

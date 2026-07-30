@@ -4,7 +4,7 @@ import com.app.service.CommunityUseCases;
 
 public class DeleteCommunityCommand extends Command{
 
-    private CommunityUseCases communityUseCases;
+    private final CommunityUseCases communityUseCases;
 
     public DeleteCommunityCommand(ConsolePrinter consolePrinter, CommunityUseCases communityUseCases) {
         super(consolePrinter);
@@ -26,7 +26,6 @@ public class DeleteCommunityCommand extends Command{
         }
 
         try {
-            //long communityId = Long.parseLong(args[0]);
             Long communityId = communityUseCases.findCommunityByName(args[0].toLowerCase()).getId();
             communityUseCases.deleteCommunity(communityId);
 

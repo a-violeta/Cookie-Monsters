@@ -38,7 +38,6 @@ public class InputParser {
         commandMap.put("exit-community", new ExitCommunityCommand(printer, communityUseCases, userUseCases, reader));
         commandMap.put("find-community", new FindCommunityCommand(printer, communityUseCases));
         commandMap.put("join-community", new JoinCommunityCommand(printer, communityUseCases, userUseCases, reader));
-        //commandMap.put("remove-post", new RemovePostFromCommunityCommand(printer, communityUseCases));
         commandMap.put("edit-comment", new EditCommentCommand(printer, commentUseCases, reader));
         commandMap.put("delete-comment", new DeleteCommentCommand(printer, commentUseCases, reader));
         commandMap.put("add-comment", new CreateCommentCommand(printer, commentUseCases, postUseCases, reader, userUseCases));
@@ -53,8 +52,6 @@ public class InputParser {
 
         // Add Commands Classes to the map of commands
     }
-
-    //Scanner ReadInput = new Scanner(System.in);
 
     private String[] tokenizeInput(String input) {
         List<String> tokens = new ArrayList<>();
@@ -79,8 +76,8 @@ public class InputParser {
     }
 
     public void startListening() {
-        //while user is logged, parser will read commands
-        //after logout call userUserCase.logout, the loggerInUser=null and exit while
+        // while user is logged, parser will read commands
+        // after logout call userUserCase.logout, the loggerInUser=null and exit while
         while(userUseCases.getLoggedInUser() != null) {
             try {
                 reader.cliPrompt();
@@ -104,7 +101,3 @@ public class InputParser {
         }
     }
 }
-
-
-
-

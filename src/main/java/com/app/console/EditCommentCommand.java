@@ -1,7 +1,6 @@
 package com.app.console;
 
 import com.app.model.Comment;
-import com.app.model.Post;
 import com.app.service.CommentUseCases;
 
 import java.util.List;

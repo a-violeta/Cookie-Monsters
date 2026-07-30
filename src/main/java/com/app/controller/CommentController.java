@@ -22,8 +22,8 @@ public class CommentController {
 
     @PostMapping
     public ResponseEntity<CommentDto> addComment(@Valid @RequestBody CommentDto dto) {
-        // commentUseCases re-derives Post/User from the ids
-        // commentUseCases checks the commenter is a member of the post's community
+        // CommentUseCases re-derives Post/User from the ids
+        // CommentUseCases checks the person is a member of the post's community
         Comment created = commentService.addComment(dto.getText(), dto.getUserId(), dto.getPostId());
         return ResponseEntity.status(HttpStatus.CREATED).body(commentMapper.toDto(created));
     }

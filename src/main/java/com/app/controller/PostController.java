@@ -34,7 +34,7 @@ public class PostController {
 
     @PutMapping("/api/posts/{postId}")
     public ResponseEntity<Void> editPost(@PathVariable long postId, @RequestBody PostDto dto) {
-        // authorship check is inside PostUseCases
+        // authorship check is in PostUseCases
         postService.editPost(postId, dto.getText());
         return ResponseEntity.noContent().build();
     }
@@ -47,7 +47,7 @@ public class PostController {
 
     @GetMapping("/api/communities/{communityId}/posts")
     public ResponseEntity<List<PostDto>> listPostsForCommunity(@PathVariable long communityId) {
-        // the one actually nested route, listPosts(communityId), is scoped this way
+        // the one nested route, listPosts(communityId), is scoped this way
         return ResponseEntity.ok(postService.listPosts(communityId).stream().map(postMapper::toDto).toList());
     }
 

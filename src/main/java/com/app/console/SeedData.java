@@ -3,8 +3,6 @@ package com.app.console;
 import com.app.model.*;
 import com.app.service.*;
 
-import java.util.List;
-
 public class SeedData {
 
     private final UserUseCases userUseCases;
@@ -80,6 +78,7 @@ public class SeedData {
 
     private void seedPosts() {
         catPost1 = postUseCases.addPost(catLovers.getId(), ion.getId(), "First post about cats", "Cats are awesome");
+
         //attachImage(catPost1, "134110683555465878.jpg");
 
         catPost2 = postUseCases.addPost(catLovers.getId(), anca.getId(), "My cat knocked over my plant again", "Third time this week. I've given up on plants.");

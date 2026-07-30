@@ -8,8 +8,8 @@ import java.util.List;
 
 public class ExitCommunityCommand extends Command {
 
-    private CommunityUseCases communityUseCases;
-    private UserUseCases userUseCases;
+    private final CommunityUseCases communityUseCases;
+    private final UserUseCases userUseCases;
     private final ConsoleReader consoleReader;
 
     public ExitCommunityCommand(ConsolePrinter consolePrinter, CommunityUseCases communityUseCases, UserUseCases userUseCases, ConsoleReader consoleReader) {

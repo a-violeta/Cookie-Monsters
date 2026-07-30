@@ -80,3 +80,41 @@ Command
        └─ toPost(response) → detached Post
   ← Command gets back a Post, prints it
 ```
+
+### WHAT HAPPENS ON EACH SIDE OF THE WIRE:
+
+**Server side (PostController in this example):**
+
+The *real* Community/User objects already exist as managed JPA entities, loaded via PostService's own repository lookups.
+
+PostMapper.toDto() just reads communityId/userId (and the display names) off those already-loaded associations -- no extra lookup needed, since PostService fetched them already.
+
+**Client side (PostHttpClient):**
+
+The reverse direction. There is no "fromDto" mapper here on purpose, rebuilding a real Post with a real Community/User would require the same repository lookups the server does, which the console can't perform
+
+Instead, PostHttpClient builds a lightweight DETACHED Post, a Community/User with only id + name/username set, just enough for the console's print statements to show something meaningful. It is never saved, never re-queried, and should never be treated as a real managed entity.
+
+## About the controllers
+
+### The receiving half of the flow
+
+REST controllers exposing the four UseCases ports over HTTP, for the console to call
+
+1. A request DTO arrives, validated by @Valid against its @NotBlank/@NotNull/@Pattern annotations. Validation failures never reach a controller method body, they're caught by GlobalExceptionHandler, before any service is called.
+
+2. THE CONTROLLER NEVER TRUSTS A NESTED ENTITY GRAPH FROM THE CLIENT. PostDto/CommentDto carry communityId/userId/postId as plain ids, not embedded objects, on purpose. The controller unpacks those ids and passes them as arguments straight to the real Service (PostService, CommentService, etc.), which does its OWN repository lookups and its OWN validation.
+
+3. The Service method runs exactly the same logic it always has, whether called from console local mode or from a controller in server mode, the controller is a thin translation layer, not a second place where business rules live.
+
+4. The resulting entity gets converted back to a response DTO, either using a mapper or a small manual method (in User: the password must never appear in the response).
+
+5. If the service throws an exception, the controller method does NOT catch it. GlobalExceptionHandler catches it centrally and turns it into a 400 or 409 with the exception's message as the plain-text body. without it, an uncaught exception becomes a generic 500 with a Spring error blob, and the HttpClient on the other end would surface something unreadable instead of the actual reason ("You are not the author" etc) that consolePrinter can show directly.
+
+### why routes are flat (but they don’t match the FE ones)
+
+Single-resource actions (get/edit/delete a specific post, comment, etc.) use flat paths like /api/posts/{postId} rather than /api/communities/{communityId}/posts/{postId}
+
+The Service methods themselves only ever take the single id they need (PostService.findPostById (postId) has no communityId parameter), so nesting the URL wouldn't reflect anything the service actually checks
+
+Community-scoped listing is the one place nesting reflects real structure (GET /api/communities/{communityId}/posts), since PostService.listPosts(communityId) is genuinely scoped that way.

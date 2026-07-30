@@ -18,12 +18,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
-/*
- toPost() builds NOT JUST a detached Post but also a detached Community and User
- these exist purely so a Command can show "posted in {communityName} by {username}"
- without a second network call
-*/
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -46,7 +40,7 @@ public class PostHttpClient implements PostUseCases {
     @Override
     public Post addPost(long communityId, long userId, String title, String text) {
         validatePost(title, text);
-        String url = clientConfig.getBaseUrl() + "/api/posts"; // flat, matches guideline's POST /posts
+        String url = clientConfig.getBaseUrl() + "/api/posts";
 
         PostDto request = new PostDto();
         request.setCommunityId(communityId);
@@ -123,11 +117,7 @@ public class PostHttpClient implements PostUseCases {
         }
     }
 
-    /**
-     * Builds a Post for display purposes only from what the server sent back.
-     * community/user here are NOT managed JPA entities — the console has no datasource,
-     * so these are just lightweight holders for id + name/username, enough to print.
-     */
+    // builds a Post for displaying, along with a Community and a User
     private Post toPost(PostDto dto) {
         if (dto == null) return null;
 

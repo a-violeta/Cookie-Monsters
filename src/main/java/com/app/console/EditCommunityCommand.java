@@ -7,7 +7,7 @@ import java.util.List;
 
 public class EditCommunityCommand extends Command {
 
-    private CommunityUseCases communityUseCases;
+    private final CommunityUseCases communityUseCases;
     private final ConsoleReader consoleReader;
 
     public EditCommunityCommand(ConsolePrinter consolePrinter, CommunityUseCases communityUseCases, ConsoleReader consoleReader) {

@@ -4,7 +4,6 @@ import com.app.model.Community;
 import com.app.model.Post;
 import com.app.service.CommunityUseCases;
 import com.app.service.PostUseCases;
-import com.app.service.UserUseCases;
 
 import java.util.List;
 
