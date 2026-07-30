@@ -5,27 +5,12 @@ import com.app.model.Post;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-/**
- * Post -> PostDto mapping (one direction only, deliberately).
- *
- * WHY THIS MAPPER EXISTS: Post holds real Community/User associations, but
- * PostDto flattens those to communityId/userId (+ display name/username) --
- * see PostDto's own class comment for why. MapStruct's @Mapping with a
- * `source` just walks the already-loaded association
- * (post.getCommunity().getId(), post.getUser().getUsername()) -- no extra
- * database hit, since PostService already loaded those objects before this
- * mapper ever runs.
- *
- * WHY THERE IS NO fromDto(): building a real Post back from a PostDto would
- * require looking up the Community/User by id AND re-running the membership
- * check ("is this user actually part of this community?") that lives in
- * PostService.addPost(). If this mapper did that lookup itself, we'd either
- * duplicate that validation here or silently skip it -- both bad. So the
- * controller never asks this mapper to build a Post; it unpacks the DTO's
- * primitive fields (communityId, userId, title, text) and calls
- * PostService.addPost(...) directly, letting the service own that logic
- * the way it always has.
- */
+// Post references User/Community objects so we want to use a Post dto with ids for user and community
+// username and community name are added for easier display
+// no need to check DB just for the username or community name of a post s user/community
+// so the mapper reads off a Comment coming from DB and trusts that it s correct
+// no fromDto() because the Service methods use the object s fields, not a dto for parameter
+// the Service methods take those fields and check DB to return an object, no DTO needed in this process
 
 @Mapper(componentModel = "spring")
 public interface PostMapper {

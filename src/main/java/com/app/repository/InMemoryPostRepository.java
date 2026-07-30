@@ -1,8 +1,6 @@
 package com.app.repository;
 
-import com.app.model.Community;
 import com.app.model.Post;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -11,6 +9,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+
+// not really using this anymore, we have a DB
 
 @Repository
 public class InMemoryPostRepository implements PostRepository {

@@ -61,26 +61,4 @@ public class Post {
         this.media = media;
     }
 
-    /*
-    this is dead code, may be useful if we move this logic to services
-
-    public void addComment(Comment comment){
-
-        // moved all validations to services
-        comment.setPost(this);
-        commentList.add(comment);
-    }
-
-    public void removeComment(long commentId) {
-        Iterator<Comment> it = commentList.iterator();
-        // removing from list by using iterator
-        while (it.hasNext()) {
-            Comment c = it.next();
-            if (c.getCommentId() == commentId) {
-                it.remove();
-                break;
-            }
-        }
-    }
-    */
 }

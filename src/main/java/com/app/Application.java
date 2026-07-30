@@ -13,10 +13,9 @@ public class Application {
         SpringApplication.run(Application.class, args);
     }
 
-    /**
-     * HTTP Client Bean for client-server communication over HTTP.
-     * Configured with timeouts and connection pooling for reliability.
-     */
+    // HTTP Client Bean for client server communication over HTTP
+    // configured with timeouts and connection pooling for reliability
+
     @Bean
     public RestTemplate restTemplate(RestTemplateBuilder builder) {
         return builder

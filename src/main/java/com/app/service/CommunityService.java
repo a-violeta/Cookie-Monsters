@@ -79,9 +79,7 @@ public class CommunityService implements CommunityUseCases {
 
         validateCommunity(community.getCommunityName(), description);
 
-        // maybe just a user from that community should be able to edit
-        // we don't memorize the creator so this is the next best thing
-        // the guidelines from the frontend also don't have a creator for a subreddit
+        // just a user from that community should be able to edit
         if (!community.getCommunityUsers().contains(userService.getLoggedInUser())) {
             throw new IllegalStateException("User is not in community!");
         }
@@ -110,7 +108,7 @@ public class CommunityService implements CommunityUseCases {
 
     @Transactional
     public void joinCommunity(Long communityId, Long userId) {
-        // right now, join means immediate approval into the community since we don't have admins or moderators yet
+        // right now, join means immediate approval into the community
         Community community = findCommunityById(communityId);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User with id " + userId + " not found"));
@@ -125,8 +123,8 @@ public class CommunityService implements CommunityUseCases {
 
     @Transactional
     public void exitCommunity(Long communityId, Long userId) {
-        // exiting doesn't need approval
-        // if the community has only one user then tell user to delete the community
+        // exiting doesn't need approval either
+        // if the community has only one user then tell user to delete the community instead
         Community community = findCommunityById(communityId);
 
         // check that the person is part of the community
@@ -164,7 +162,6 @@ public class CommunityService implements CommunityUseCases {
         return communityRepository.save(community);
     }
 
-    // method necessary because in console you can't pass a Community as an argument
     @Transactional
     public Community createCommunity(String communityName, String description) {
         validateCommunity(communityName, description);

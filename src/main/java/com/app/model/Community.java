@@ -79,41 +79,4 @@ public class Community {
         return null;
     }
 
-    /*
-    this is dead code, may be useful if we move this logic to services
-
-    public void addPost(Post post) {
-        post.setCommunity(this);
-        communityPosts.add(post);
-    }
-
-    public void removePost(long postId) {
-        Iterator<Post> it = communityPosts.iterator();
-        // removing from list by using iterator
-        while (it.hasNext()) {
-            Post p = it.next();
-            if (p.getId() == postId) {
-                it.remove();
-                break;
-            }
-        }
-    }
-
-    public void addUser(User user) {
-        communityUsers.add(user);
-    }
-
-    public void removeUser(long userId) {
-        Iterator<User> it = communityUsers.iterator();
-        // removing from list by using iterator
-        while (it.hasNext()) {
-            User u = it.next();
-            if (u.getUserId() == userId) {
-                it.remove();
-                break;
-            }
-        }
-    }
-    */
-
 }

@@ -1,6 +1,5 @@
 package com.app.repository;
 
-import com.app.model.Community;
 import com.app.model.Post;
 
 import java.util.List;
