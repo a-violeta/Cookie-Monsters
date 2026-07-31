@@ -5,6 +5,8 @@ import com.app.model.Community;
 import com.app.model.Post;
 import com.app.model.User;
 
+import java.time.format.DateTimeFormatter;
+
 public class ConsolePrinter {
 
     // ANSI color codes
@@ -17,6 +19,7 @@ public class ConsolePrinter {
     private static final String PURPLE = "\u001B[35m";
     private static final String RED = "\u001B[31m";
     private static final String GRAY = "\u001B[90m";
+    private static final String BROWN = "\u001B[38;5;94m";
 
     public void printSuccess(String message) {
         System.out.println(GREEN + "✅ Success: " + message + RESET);
@@ -27,19 +30,10 @@ public class ConsolePrinter {
     }
 
     public void printExplanation(String usage) {
-        String CYAN = "\u001B[36m";
-        String RESET = "\u001B[0m";
-
         System.out.println(CYAN + "ℹ️  Usage: " + usage + RESET);
     }
 
     public void printBanner() {
-        String RESET = "\u001B[0m";
-        String BOLD = "\u001B[1m";
-        String YELLOW = "\u001B[33m";
-        String BROWN = "\u001B[38;5;94m";
-        String CYAN = "\u001B[36m";
-        String GREEN = "\u001B[32m";
 
         System.out.println();
         System.out.println(BOLD + YELLOW + "                 .-\"\"\"-." + RESET);
@@ -58,16 +52,11 @@ public class ConsolePrinter {
         System.out.println();
         System.out.println(BOLD + GREEN + "        🍪  M O N S T E R S   🍪" + RESET);
         System.out.println();
-        System.out.println("\u001B[90m" + "        \"We want data... WE WANT DATA NOW!\"" + RESET);
+        System.out.println(GRAY + "        \"We want data... WE WANT DATA NOW!\"" + RESET);
         System.out.println();
     }
 
     public void printGoodbye() {
-        String RESET = "\u001B[0m";
-        String BOLD = "\u001B[1m";
-        String YELLOW = "\u001B[33m";
-        String GREEN = "\u001B[32m";
-        String GRAY = "\u001B[90m";
 
         System.out.println();
         System.out.println(YELLOW + "   🍪  " + RESET + BOLD + GREEN + "See you soon, cookie monster!" + RESET + YELLOW + "  🍪" + RESET);
@@ -87,7 +76,6 @@ public class ConsolePrinter {
     }
 
     public void printPrompt(String label) {
-
         System.out.print(YELLOW + "➜ " + RESET + label + ": ");
     }
 
@@ -97,20 +85,19 @@ public class ConsolePrinter {
                 "create-community <name> <description>   — Create a new community",
                 "list-communities                        — List all communities",
                 "find-community <name>                   — Find a community by name",
-                "join-community <communityId>            — Join an existing community",
-                "exit-community <communityId>            — Leave a community",
-                "edit-community <communityId> <newDesc>  — Edit a community's description",
-                "delete-community <communityId>          — Delete a community",
-                //"remove-post <communityId> <postId>      — Remove a post from a community",
-                "add-post <communityId> <title> <text>   — Create a post in a community",
+                "join-community                          — Join an existing community",
+                "exit-community                          — Leave a community",
+                "edit-community <newDesc>                — Edit a community's description",
+                "delete-community <name>                 — Delete a community",
+                "add-post <title> <text>                 — Create a post in a community",
                 "posts-feed                              — List all posts",
-                "list-posts <communityId>                — List all posts of a community",
-                "edit-post <postId> <newText>            — Edit an existing post",
-                "delete-post <postId>                    — Delete a post",
-                "add-comment <postId> <text>             — Comment on a post",
-                //"edit-comment <commentId> <newText>      — Edit an existing comment",
-                "delete-comment <commentId>              — Delete a comment",
-                "list-comments <postId>                  — List comments on a post",
+                "list-posts                              — List all posts of a community",
+                "edit-post <newText>                     — Edit an existing post",
+                "delete-post                             — Delete a post",
+                "add-comment <text>                      — Comment on a post",
+                "edit-comment <newText>                  — Edit an existing comment",
+                "delete-comment                          — Delete a comment",
+                "list-comments                           — List comments on a post",
                 "logout                                  — Log out of your account",
                 "help / h                                — Display this help menu",
                 "exit / 0                                — Exit the application"
@@ -171,6 +158,11 @@ public class ConsolePrinter {
     public void displayUser(User user) {
         System.out.println("\n" + BLUE + "┌──────────────────────────────────────────────" + RESET);
         System.out.println(BLUE + "│ " + RESET + "👤 " + BOLD + user.getUsername() + RESET);
+        System.out.println(BLUE + "│" + RESET);
+        System.out.println(BLUE + "│ " + RESET + user.getDescription());
+        System.out.println(BLUE + "│" + RESET);
+        System.out.println(BLUE + "│ " + RESET + GRAY + "joined: "
+                + user.getCreatedAt().format(DateTimeFormatter.ofPattern("MMM d, yyyy")) + RESET);
         System.out.println(BLUE + "└──────────────────────────────────────────────" + RESET + "\n");
     }
 
@@ -180,5 +172,24 @@ public class ConsolePrinter {
         System.out.println(GRAY + "│" + RESET);
         System.out.println(GRAY + "│ " + RESET + "👤 " + GRAY + "author: " + comment.getUser().getUsername() + RESET);
         System.out.println(GRAY + "└──────────────────────────────────────────────" + RESET + "\n");
+    }
+
+    public void printCommunityListItem(int index, Community community) {
+        System.out.println(CYAN + " " + index + ". " + RESET + "🌐 " + community.getCommunityName());
+    }
+
+    public void printPostListItem(int index, Post post) {
+        System.out.println(CYAN + " " + index + ". " + RESET + "📌 " + post.getTitle());
+    }
+
+    public void printCommentListItem(int index, Comment comment) {
+        int maxLength = 40;
+        String text = comment.getText();
+        // the preview is the first 40 characters of the post followed by '...'
+        String preview = text.length() > maxLength
+                ? text.substring(0, maxLength) + "..."
+                : text;
+
+        System.out.println(CYAN + " " + index + ". " + RESET + "💬 " + preview);
     }
 }

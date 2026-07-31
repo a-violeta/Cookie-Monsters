@@ -33,6 +33,8 @@ public class Post {
     private LocalDateTime createdAt;
 
     @OneToOne(cascade = CascadeType.ALL)
+    // cascade: whatever operation happens to a Post, propagate that same operation to the Media automatically
+    // consequence: deleting a Post also deletes the Media
     @JoinColumn(name = "media_id")
     private Media media;
 
@@ -59,26 +61,4 @@ public class Post {
         this.media = media;
     }
 
-    /*
-    this is dead code, may be useful if we move this logic to services
-
-    public void addComment(Comment comment){
-
-        // moved all validations to services
-        comment.setPost(this);
-        commentList.add(comment);
-    }
-
-    public void removeComment(long commentId) {
-        Iterator<Comment> it = commentList.iterator();
-        // removing from list by using iterator
-        while (it.hasNext()) {
-            Comment c = it.next();
-            if (c.getCommentId() == commentId) {
-                it.remove();
-                break;
-            }
-        }
-    }
-    */
 }

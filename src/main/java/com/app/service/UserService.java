@@ -3,10 +3,12 @@ package com.app.service;
 import com.app.model.User;
 import com.app.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@ConditionalOnProperty(name = "app.http.client.enabled", havingValue = "false", matchIfMissing = true)
 public class UserService implements UserUseCases {
 
     private final UserRepository userRepository;
@@ -38,7 +40,7 @@ public class UserService implements UserUseCases {
 
     @Override
     public User login(String identifier, String password) {
-        // Căutăm utilizatorul transmițând același 'identifier' atât pentru username cât și pentru email
+        // search for the user sending the same 'identifier' for both username and email
         User user = userRepository.findByUsernameOrEmail(identifier, identifier)
                 .orElseThrow(() -> new IllegalArgumentException("Incorrect username/email or password."));
 

@@ -5,7 +5,7 @@ import com.app.service.CommunityUseCases;
 
 public class FindCommunityCommand extends Command {
 
-    private CommunityUseCases communityUseCases;
+    private final CommunityUseCases communityUseCases;
 
     public FindCommunityCommand(ConsolePrinter consolePrinter, CommunityUseCases communityUseCases) {
         super(consolePrinter);

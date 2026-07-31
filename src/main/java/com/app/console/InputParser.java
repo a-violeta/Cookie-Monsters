@@ -34,32 +34,24 @@ public class InputParser {
         commandMap.put("exit", new ExitCommand(printer));
         commandMap.put("0", new ExitCommand(printer));
         commandMap.put("delete-community", new DeleteCommunityCommand(printer, communityUseCases));
-        commandMap.put("edit-community", new EditCommunityCommand(printer, communityUseCases));
-        commandMap.put("exit-community", new ExitCommunityCommand(printer, communityUseCases));
+        commandMap.put("edit-community", new EditCommunityCommand(printer, communityUseCases, reader));
+        commandMap.put("exit-community", new ExitCommunityCommand(printer, communityUseCases, userUseCases, reader));
         commandMap.put("find-community", new FindCommunityCommand(printer, communityUseCases));
-        commandMap.put("join-community", new JoinCommunityCommand(printer, communityUseCases));
-        //commandMap.put("remove-post", new RemovePostFromCommunityCommand(printer, communityUseCases));
-        //commandMap.put("edit-comment", new EditCommentCommand(printer, commentUseCases));
-        // edit comment implies we keep a current comment in CommentService
-        // a current comment is memorized in the service class when you create it
-        // but if you create 5 comments on a single post, and you want to edit one made previously
-        // then you should be able to search that comment, but search by what? you need to list comments and make the user choose
-        // too much hassle for now
-        commandMap.put("delete-comment", new DeleteCommentCommand(printer, commentUseCases));
-        commandMap.put("add-comment", new CreateCommentCommand(printer, commentUseCases, userUseCases));
+        commandMap.put("join-community", new JoinCommunityCommand(printer, communityUseCases, userUseCases, reader));
+        commandMap.put("edit-comment", new EditCommentCommand(printer, commentUseCases, reader));
+        commandMap.put("delete-comment", new DeleteCommentCommand(printer, commentUseCases, reader));
+        commandMap.put("add-comment", new CreateCommentCommand(printer, commentUseCases, postUseCases, reader, userUseCases));
         commandMap.put("help", new HelpCommand(printer));
         commandMap.put("h", new HelpCommand(printer));
-        commandMap.put("add-post", new AddPostCommand(printer, postUseCases, userUseCases));
+        commandMap.put("add-post", new AddPostCommand(printer, postUseCases, userUseCases, communityUseCases, reader));
         commandMap.put("posts-feed", new PostsFeedCommand(printer, postUseCases));
-        commandMap.put("list-posts", new ListPostsCommand(printer, postUseCases));
-        commandMap.put("delete-post", new DeletePostCommand(printer, postUseCases));
-        commandMap.put("edit-post", new EditPostCommand(printer, postUseCases));
-        commandMap.put("list-comments", new ListCommentCommand(printer,commentUseCases));
+        commandMap.put("list-posts", new ListPostsCommand(printer, postUseCases, communityUseCases, reader));
+        commandMap.put("delete-post", new DeletePostCommand(printer, postUseCases, reader));
+        commandMap.put("edit-post", new EditPostCommand(printer, postUseCases, reader));
+        commandMap.put("list-comments", new ListCommentCommand(printer,commentUseCases, postUseCases, reader));
 
         // Add Commands Classes to the map of commands
     }
-
-    //Scanner ReadInput = new Scanner(System.in);
 
     private String[] tokenizeInput(String input) {
         List<String> tokens = new ArrayList<>();
@@ -84,8 +76,8 @@ public class InputParser {
     }
 
     public void startListening() {
-        //while user is logged, parser will read commands
-        //after logout call userUserCase.logout, the loggerInUser=null and exit while
+        // while user is logged, parser will read commands
+        // after logout call userUserCase.logout, the loggerInUser=null and exit while
         while(userUseCases.getLoggedInUser() != null) {
             try {
                 reader.cliPrompt();
@@ -104,12 +96,8 @@ public class InputParser {
                     helpCommand.execute(new String[0]);
                 }
             } catch (Exception e) {
-                printer.printError("An error as occurred during the Input Reading : " + e.getMessage());
+                printer.printError("Error : " + e.getMessage());
             }
         }
     }
 }
-
-
-
-

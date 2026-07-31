@@ -7,8 +7,4 @@ public interface UserUseCases {
     User login(String username, String password);
     void logout();
     User getLoggedInUser();
-    //User findUserById(long userId);
-    //User findUserByUsername(String username);
-    //void editUser(long userId, ...);
-    // + more methods
 }

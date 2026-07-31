@@ -1,36 +1,69 @@
 package com.app.console;
 
+import com.app.model.Community;
 import com.app.service.CommunityUseCases;
+
+import java.util.List;
 
 public class EditCommunityCommand extends Command {
 
-    private CommunityUseCases communityUseCases;
+    private final CommunityUseCases communityUseCases;
+    private final ConsoleReader consoleReader;
 
-    public EditCommunityCommand(ConsolePrinter consolePrinter, CommunityUseCases communityUseCases) {
+    public EditCommunityCommand(ConsolePrinter consolePrinter, CommunityUseCases communityUseCases, ConsoleReader consoleReader) {
         super(consolePrinter);
         this.communityUseCases=communityUseCases;
+        this.consoleReader = consoleReader;
     }
 
     @Override
     public void execute(String[] args) {
-        // 18 communityid description
 
-        if (args.length < 2) {
+        if (args.length < 1) {
             consolePrinter.printError("Missing Arguments");
-            consolePrinter.printExplanation("edit-community 'Community Id' 'New Description' ");
+            consolePrinter.printExplanation("edit-community 'New Description' ");
             return;
-        } else if (args.length > 2) {
+        } else if (args.length > 1) {
             consolePrinter.printError("Too Many Arguments");
-            consolePrinter.printExplanation("edit-community 'Community Id' 'New Description' ");
+            consolePrinter.printExplanation("edit-community 'New Description' ");
             return;
         }
 
         try {
-            Long communityId = Long.parseLong(args[0]);
-            communityUseCases.editCommunity(communityId, args[1]);
+            List<Community> communities = communityUseCases.listCommunities();
+
+            for (int i = 0; i < communities.size(); i++) {
+                consolePrinter.printCommunityListItem(i+1, communities.get(i));
+            }
+
+            consolePrinter.printPrompt("Choose a community by typing its index");
+
+            // read with console
+            // and check the number chosen for validity
+            String input = consoleReader.readLine();
+
+            int chosenIndex;
+            try {
+                chosenIndex = Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("'" + input + "' is not a valid number!");
+            }
+
+            if (chosenIndex < 1 || chosenIndex > communities.size()) {
+                throw new IllegalArgumentException("Index out of bounds!");
+            }
+
+            Long communityId = communities.get(chosenIndex-1).getId();
+            String newDescription = args[0];
+
+            communityUseCases.editCommunity(communityId, newDescription);
+
             consolePrinter.printSuccess("Community successfully updated!");
-        } catch (NumberFormatException e) {
-            consolePrinter.printError("Community Id must be a number");
+
+            // all of this just to print the community after the edit
+            List<Community> communitiesNewList = communityUseCases.listCommunities();
+            Community community = communitiesNewList.get(chosenIndex-1);
+            consolePrinter.displayCommunity(community);
         } catch (Exception e) {
             consolePrinter.printError(e.getMessage());
         }

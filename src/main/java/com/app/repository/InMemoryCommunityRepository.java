@@ -1,14 +1,14 @@
 package com.app.repository;
 
 import com.app.model.Community;
-import org.springframework.context.annotation.Primary;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+
+// not really using this anymore, we have a DB
 
 // @Primary tells Spring which repo to choose for CommunityService
 // because in CommunityService we have an instance of CommunityRepository which can be JpaCommunityRepository or InMemoryCommunityRepository

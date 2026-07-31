@@ -7,6 +7,7 @@ import com.app.repository.CommunityRepository;
 import com.app.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import com.app.repository.PostRepository;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,7 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
+@ConditionalOnProperty(name = "app.http.client.enabled", havingValue = "false", matchIfMissing = true)
 public class PostService implements PostUseCases{
 
     private final PostRepository postRepository;

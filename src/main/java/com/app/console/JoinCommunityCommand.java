@@ -1,43 +1,68 @@
 package com.app.console;
 
+import com.app.model.Community;
 import com.app.service.CommunityUseCases;
+import com.app.service.UserUseCases;
+
+import java.util.List;
 
 public class JoinCommunityCommand extends Command {
 
-    private CommunityUseCases communityUseCases;
+    private final CommunityUseCases communityUseCases;
+    private final UserUseCases userUseCases;
+    private final ConsoleReader consoleReader;
 
-    public JoinCommunityCommand(ConsolePrinter consolePrinter, CommunityUseCases communityUseCases) {
+    public JoinCommunityCommand(ConsolePrinter consolePrinter, CommunityUseCases communityUseCases, UserUseCases userUseCases, ConsoleReader consoleReader) {
         super(consolePrinter);
         this.communityUseCases=communityUseCases;
+        this.userUseCases = userUseCases;
+        this.consoleReader = consoleReader;
     }
 
     @Override
     public void execute(String[] args) {
-        // 17 communityid, userid
 
         // Arguments Validations
-        if (args.length < 2) {
-
-            consolePrinter.printError("Missing Arguments");
-            consolePrinter.printExplanation("join-community 'Community Id' 'User Id'");
-            return;
-
-        } else if (args.length > 2) {
+        if (args.length > 0) {
 
             consolePrinter.printError("Too Many Arguments");
-            consolePrinter.printExplanation("join-community 'Community Id' 'User Id'");
+            consolePrinter.printExplanation("join-community");
             return;
         }
 
         try {
-            Long communityId = Long.parseLong(args[0]);
-            Long userId = Long.parseLong(args[1]);
+            //Long communityId = Long.parseLong(args[0]);
+
+            List<Community> communities = communityUseCases.listCommunities();
+
+            for (int i = 0; i < communities.size(); i++) {
+                consolePrinter.printCommunityListItem(i+1, communities.get(i));
+            }
+
+            consolePrinter.printPrompt("Choose a community by typing its index");
+
+            // read with console
+            // and check the number chosen for validity
+            String input = consoleReader.readLine();
+
+            int chosenIndex;
+            try {
+                chosenIndex = Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("'" + input + "' is not a valid number!");
+            }
+
+            if (chosenIndex < 1 || chosenIndex > communities.size()) {
+                throw new IllegalArgumentException("Index out of bounds!");
+            }
+
+            Long communityId = communities.get(chosenIndex-1).getId();
+
+            Long userId = userUseCases.getLoggedInUser().getId();
 
             communityUseCases.joinCommunity(communityId, userId);
 
             consolePrinter.printSuccess("Successfully joined the community!");
-        } catch (NumberFormatException e) {
-            consolePrinter.printError("Community Id and User Id must be numbers");
         } catch (Exception e) {
             consolePrinter.printError(e.getMessage());
         }

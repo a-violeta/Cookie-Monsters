@@ -3,14 +3,12 @@ package com.app.console;
 import com.app.model.*;
 import com.app.service.*;
 
-import java.util.List;
-
 public class SeedData {
 
     private final UserUseCases userUseCases;
-    private final CommunityService communityService;
-    private final PostService postService;
-    private final CommentService commentService;
+    private final CommunityUseCases communityUseCases;
+    private final PostUseCases postUseCases;
+    private final CommentUseCases commentUseCases;
 
     // users
     private User ion, anca, petru, adela, mihai, elena, radu, cristina;
@@ -21,12 +19,12 @@ public class SeedData {
     // posts
     private Post catPost1, catPost2, catPost3, gamePost1, gamePost2, bookPost1, foodPost1, foodPost2;
 
-    public SeedData(UserUseCases userUseCases, CommunityService communityService,
-                    PostService postService, CommentService commentService) {
+    public SeedData(UserUseCases userUseCases, CommunityUseCases communityUseCases,
+                    PostUseCases postUseCases, CommentUseCases commentUseCases) {
         this.userUseCases = userUseCases;
-        this.communityService = communityService;
-        this.postService = postService;
-        this.commentService = commentService;
+        this.communityUseCases = communityUseCases;
+        this.postUseCases = postUseCases;
+        this.commentUseCases = commentUseCases;
     }
 
     public void seed() {
@@ -48,39 +46,54 @@ public class SeedData {
     }
 
     private void seedCommunities() {
-        catLovers = communityService.addCommunity(
-                new Community("The cat lovers", "we really love cats", List.of(ion, anca, petru), null));
+        userUseCases.login("Ion", "ion123");
+        catLovers = communityUseCases.createCommunity("The_cat_lovers", "we really love cats");
+        communityUseCases.joinCommunity(catLovers.getId(), anca.getId());
+        communityUseCases.joinCommunity(catLovers.getId(), petru.getId());
+        userUseCases.logout();
 
-        ancaCommunity = communityService.addCommunity(
-                new Community("Anca s community", "Anca is here", List.of(anca), null));
+        userUseCases.login("Anca", "anca123");
+        ancaCommunity = communityUseCases.createCommunity("Anca_s_community", "Anca is here");
+        userUseCases.logout();
 
-        gamers = communityService.addCommunity(
-                new Community("Gamers United", "for anyone who games, casually or not", List.of(cristina, radu, mihai), null));
+        userUseCases.login("Cristina", "cristina123");
+        gamers = communityUseCases.createCommunity("Gamers_United", "for anyone who games, casually or not");
+        communityUseCases.joinCommunity(gamers.getId(), radu.getId());
+        communityUseCases.joinCommunity(gamers.getId(), mihai.getId());
+        userUseCases.logout();
 
-        bookClub = communityService.addCommunity(
-                new Community("Monthly Book Club", "one book a month, no exceptions", List.of(elena, adela, anca), null));
+        userUseCases.login("Elena", "elena123");
+        bookClub = communityUseCases.createCommunity("Monthly_Book_Club", "one book a month, no exceptions");
+        communityUseCases.joinCommunity(bookClub.getId(), adela.getId());
+        communityUseCases.joinCommunity(bookClub.getId(), anca.getId());
+        userUseCases.logout();
 
-        foodies = communityService.addCommunity(
-                new Community("Foodies", "share recipes, rate restaurants, argue about pineapple on pizza", List.of(radu, petru, mihai, cristina), null));
+        userUseCases.login("Radu", "radu123");
+        foodies = communityUseCases.createCommunity("Foodies", "share recipes, rate restaurants, argue about pineapple on pizza");
+        communityUseCases.joinCommunity(foodies.getId(), petru.getId());
+        communityUseCases.joinCommunity(foodies.getId(), mihai.getId());
+        communityUseCases.joinCommunity(foodies.getId(), cristina.getId());
+        userUseCases.logout();
     }
 
     private void seedPosts() {
-        catPost1 = postService.addPost(catLovers.getId(), ion.getId(), "First post about cats", "Cats are awesome");
+        catPost1 = postUseCases.addPost(catLovers.getId(), ion.getId(), "First post about cats", "Cats are awesome");
+
         //attachImage(catPost1, "134110683555465878.jpg");
 
-        catPost2 = postService.addPost(catLovers.getId(), anca.getId(), "My cat knocked over my plant again", "Third time this week. I've given up on plants.");
+        catPost2 = postUseCases.addPost(catLovers.getId(), anca.getId(), "My cat knocked over my plant again", "Third time this week. I've given up on plants.");
 
-        catPost3 = postService.addPost(catLovers.getId(), petru.getId(), "Cat vs guitar", "She sits on the strings every single time I practice.");
+        catPost3 = postUseCases.addPost(catLovers.getId(), petru.getId(), "Cat vs guitar", "She sits on the strings every single time I practice.");
 
-        gamePost1 = postService.addPost(gamers.getId(), cristina.getId(), "New PB on my speedrun!", "Shaved off 40 seconds, finally under 2 hours.");
+        gamePost1 = postUseCases.addPost(gamers.getId(), cristina.getId(), "New PB on my speedrun!", "Shaved off 40 seconds, finally under 2 hours.");
 
-        gamePost2 = postService.addPost(gamers.getId(), radu.getId(), "What are you all playing this weekend?", "Looking for co-op recommendations.");
+        gamePost2 = postUseCases.addPost(gamers.getId(), radu.getId(), "What are you all playing this weekend?", "Looking for co-op recommendations.");
 
-        bookPost1 = postService.addPost(bookClub.getId(), elena.getId(), "This month's pick: Project Hail Mary", "Starting Monday, discussion thread up next week.");
+        bookPost1 = postUseCases.addPost(bookClub.getId(), elena.getId(), "This month's pick: Project Hail Mary", "Starting Monday, discussion thread up next week.");
 
-        foodPost1 = postService.addPost(foodies.getId(), radu.getId(), "Made carbonara from scratch", "No cream, I promise. Recipe in comments if anyone wants it.");
+        foodPost1 = postUseCases.addPost(foodies.getId(), radu.getId(), "Made carbonara from scratch", "No cream, I promise. Recipe in comments if anyone wants it.");
 
-        foodPost2 = postService.addPost(foodies.getId(), mihai.getId(), "Best coffee spots near the office?", "Need something stronger than what the office machine makes.");
+        foodPost2 = postUseCases.addPost(foodies.getId(), mihai.getId(), "Best coffee spots near the office?", "Need something stronger than what the office machine makes.");
     }
 
     /*private void attachImage(Post post, String fileName) {
@@ -94,25 +107,25 @@ public class SeedData {
     }*/
 
     private void seedComments() {
-        commentService.addComment("So true", anca.getId(), catPost1.getId());
-        commentService.addComment("Yesss", petru.getId(), catPost1.getId());
+        commentUseCases.addComment("So true", anca.getId(), catPost1.getId());
+        commentUseCases.addComment("Yesss", petru.getId(), catPost1.getId());
 
-        commentService.addComment("Classic cat behavior honestly", petru.getId(), catPost2.getId());
-        commentService.addComment("Mine does the same, get a cactus instead", ion.getId(), catPost2.getId());
+        commentUseCases.addComment("Classic cat behavior honestly", petru.getId(), catPost2.getId());
+        commentUseCases.addComment("Mine does the same, get a cactus instead", ion.getId(), catPost2.getId());
 
-        commentService.addComment("Lol get a cat-proof stand", anca.getId(), catPost3.getId());
+        commentUseCases.addComment("Lol get a cat-proof stand", anca.getId(), catPost3.getId());
 
-        commentService.addComment("Nice! What route did you change?", radu.getId(), gamePost1.getId());
-        commentService.addComment("That's insane, congrats", mihai.getId(), gamePost1.getId());
+        commentUseCases.addComment("Nice! What route did you change?", radu.getId(), gamePost1.getId());
+        commentUseCases.addComment("That's insane, congrats", mihai.getId(), gamePost1.getId());
 
-        commentService.addComment("I'm down, what time?", cristina.getId(), gamePost2.getId());
+        commentUseCases.addComment("I'm down, what time?", cristina.getId(), gamePost2.getId());
 
-        commentService.addComment("Loved that one, great pick", adela.getId(), bookPost1.getId());
-        commentService.addComment("Ordering it today", anca.getId(), bookPost1.getId());
+        commentUseCases.addComment("Loved that one, great pick", adela.getId(), bookPost1.getId());
+        commentUseCases.addComment("Ordering it today", anca.getId(), bookPost1.getId());
 
-        commentService.addComment("Yes please, share the recipe", mihai.getId(), foodPost1.getId());
-        commentService.addComment("Looks so much better than mine", cristina.getId(), foodPost1.getId());
+        commentUseCases.addComment("Yes please, share the recipe", mihai.getId(), foodPost1.getId());
+        commentUseCases.addComment("Looks so much better than mine", cristina.getId(), foodPost1.getId());
 
-        commentService.addComment("Try the place two blocks from the station", petru.getId(), foodPost2.getId());
+        commentUseCases.addComment("Try the place two blocks from the station", petru.getId(), foodPost2.getId());
     }
 }

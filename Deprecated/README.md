@@ -1,2 +1,2 @@
-Non Spring version of the app
+Non-Spring version of the app
 The Spring version is in `src`

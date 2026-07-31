@@ -7,7 +7,7 @@ import java.util.List;
 
 public class ListCommunityCommand extends Command{
 
-    private CommunityUseCases communityUseCases;
+    private final CommunityUseCases communityUseCases;
 
     public ListCommunityCommand(ConsolePrinter consolePrinter, CommunityUseCases communityUseCases) {
         super(consolePrinter);

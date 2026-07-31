@@ -3,14 +3,13 @@ package com.app.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@ToString(exclude = {"password", "communities", "posts", "comments"})
+//@ToString(exclude = {"password", "communities", "posts", "comments"})
 @Entity
 @Table(name = "app_users") // user is a reserved name in postgres
 public class User {
@@ -32,6 +31,8 @@ public class User {
     private List<Community> communities;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    // cascade: whatever operation happens to a User, propagate that same operation to all the Posts in its posts list automatically
+    // consequence: deleting a User also deletes all their Posts
     private List<Post> posts;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)

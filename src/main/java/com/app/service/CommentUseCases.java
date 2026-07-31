@@ -1,6 +1,7 @@
 package com.app.service;
 
 import com.app.model.Comment;
+
 import java.util.List;
 
 public interface CommentUseCases {
@@ -9,5 +10,6 @@ public interface CommentUseCases {
     Comment findCommentById(long commentId);
     void editComment(long commentId, String newText);
     void removeComment(long commentId);
+    List<Comment> listComments();
     List<Comment> listCommentByPostId(long postId);
 }
