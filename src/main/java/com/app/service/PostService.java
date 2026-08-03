@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +38,7 @@ public class PostService implements PostUseCases{
     }
 
     @Transactional
-    public Post addPost(long communityId, long userId, String title, String text) {
+    public Post addPost(UUID communityId, long userId, String title, String text) {
         validatePost(title, text);
 
         Community community = communityRepository.findById(communityId)
@@ -72,7 +73,7 @@ public class PostService implements PostUseCases{
     }
 
     @Transactional
-    public List<Post> listPosts(long communityId) {
+    public List<Post> listPosts(UUID communityId) {
         Community community = communityRepository.findById(communityId)
                 .orElseThrow(() -> new IllegalArgumentException("Community with id " + communityId + " not found"));
 

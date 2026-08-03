@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -46,7 +47,7 @@ public class PostController {
     }
 
     @GetMapping("/api/communities/{communityId}/posts")
-    public ResponseEntity<List<PostDto>> listPostsForCommunity(@PathVariable long communityId) {
+    public ResponseEntity<List<PostDto>> listPostsForCommunity(@PathVariable UUID communityId) {
         // the one nested route, listPosts(communityId), is scoped this way
         return ResponseEntity.ok(postService.listPosts(communityId).stream().map(postMapper::toDto).toList());
     }

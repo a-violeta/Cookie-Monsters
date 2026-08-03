@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/subreddits")
@@ -61,13 +62,13 @@ public class CommunityController {
     }
 
     @PostMapping("/{communityId}/members/{userId}")
-    public ResponseEntity<Void> joinCommunity(@PathVariable Long communityId, @PathVariable Long userId) {
+    public ResponseEntity<Void> joinCommunity(@PathVariable UUID communityId, @PathVariable Long userId) {
         communityService.joinCommunity(communityId, userId);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{communityId}/members/{userId}")
-    public ResponseEntity<Void> exitCommunity(@PathVariable Long communityId, @PathVariable Long userId) {
+    public ResponseEntity<Void> exitCommunity(@PathVariable UUID communityId, @PathVariable Long userId) {
         communityService.exitCommunity(communityId, userId);
         return ResponseEntity.noContent().build();
     }

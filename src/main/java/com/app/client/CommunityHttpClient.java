@@ -18,6 +18,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -100,7 +101,7 @@ public class CommunityHttpClient implements CommunityUseCases {
     }
 
     @Override
-    public Community findCommunityById(long communityId) {
+    public Community findCommunityById(UUID communityId) {
         String url = clientConfig.getBaseUrl() + "/subreddits/" + communityId;
         try {
             return toCommunity(restTemplate.getForObject(url, CommunityDto.class));
@@ -137,7 +138,7 @@ public class CommunityHttpClient implements CommunityUseCases {
     }
 
     @Override
-    public void joinCommunity(Long communityId, Long userId) {
+    public void joinCommunity(UUID communityId, Long userId) {
         String url = clientConfig.getBaseUrl() + "/subreddits/" + communityId + "/members/" + userId;
         try {
             restTemplate.postForLocation(url, null);
@@ -147,7 +148,7 @@ public class CommunityHttpClient implements CommunityUseCases {
     }
 
     @Override
-    public void exitCommunity(Long communityId, Long userId) {
+    public void exitCommunity(UUID communityId, Long userId) {
         String url = clientConfig.getBaseUrl() + "/subreddits/" + communityId + "/members/" + userId;
         try {
             restTemplate.delete(url);

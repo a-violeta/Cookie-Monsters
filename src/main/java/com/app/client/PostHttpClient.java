@@ -17,6 +17,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -38,7 +39,7 @@ public class PostHttpClient implements PostUseCases {
     }
 
     @Override
-    public Post addPost(long communityId, long userId, String title, String text) {
+    public Post addPost(UUID communityId, long userId, String title, String text) {
         validatePost(title, text);
         String url = clientConfig.getBaseUrl() + "/api/posts";
 
@@ -72,7 +73,7 @@ public class PostHttpClient implements PostUseCases {
     }
 
     @Override
-    public List<Post> listPosts(long communityId) {
+    public List<Post> listPosts(UUID communityId) {
         String url = clientConfig.getBaseUrl() + "/api/communities/" + communityId + "/posts";
         try {
             ResponseEntity<List<PostDto>> response = restTemplate.exchange(

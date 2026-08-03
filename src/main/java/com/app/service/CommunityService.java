@@ -10,11 +10,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Objects;
-
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -52,7 +48,7 @@ public class CommunityService implements CommunityUseCases {
     }
 
     @Transactional(readOnly = true)
-    public Community findCommunityById(long communityId) {
+    public Community findCommunityById(UUID communityId) {
         return communityRepository.findById(communityId)
                 .orElseThrow(() ->
                         new IllegalArgumentException(
@@ -108,7 +104,7 @@ public class CommunityService implements CommunityUseCases {
     }
 
     @Transactional
-    public void joinCommunity(Long communityId, Long userId) {
+    public void joinCommunity(UUID communityId, Long userId) {
         // right now, join means immediate approval into the community
         Community community = findCommunityById(communityId);
         User user = userRepository.findById(userId)
@@ -123,7 +119,7 @@ public class CommunityService implements CommunityUseCases {
     }
 
     @Transactional
-    public void exitCommunity(Long communityId, Long userId) {
+    public void exitCommunity(UUID communityId, Long userId) {
         // exiting doesn't need approval either
         // if the community has only one user then tell user to delete the community instead
         Community community = findCommunityById(communityId);
