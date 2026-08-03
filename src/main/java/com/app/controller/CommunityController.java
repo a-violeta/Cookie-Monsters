@@ -26,7 +26,7 @@ public class CommunityController {
 
     @PostMapping
     public ResponseEntity<CommunityDto> createCommunity(@Valid @RequestBody CommunityDto dto) {
-        Community created = communityService.createCommunity(dto.getName(), dto.getDisplayName(), dto.getDescription());
+        Community created = communityService.createCommunity(dto.getName(), dto.getDisplayName(), dto.getDescription(), dto.getIconUrl());
         return ResponseEntity.status(HttpStatus.CREATED).body(communityMapper.toDto(created));
     }
 

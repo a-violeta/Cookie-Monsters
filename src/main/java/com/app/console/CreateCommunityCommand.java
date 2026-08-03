@@ -16,23 +16,24 @@ public class CreateCommunityCommand extends Command {
     public void execute(String[] args) {
 
         // Arguments Validations
-        if (args.length < 3) {
+        if (args.length < 4) {
 
             consolePrinter.printError("Missing Arguments");
-            consolePrinter.printExplanation("create-community 'Community Name' 'Community Display Name' 'Description'");
+            consolePrinter.printExplanation("create-community 'Community Name' 'Community Display Name' 'Description' 'Icon URL'");
             return;
 
-        } else if (args.length > 3) {
+        } else if (args.length > 4) {
 
             consolePrinter.printError("Too Many Arguments");
-            consolePrinter.printExplanation("create-community 'Community Name' 'Community Display Name' 'Description'");
+            consolePrinter.printExplanation("create-community 'Community Name' 'Community Display Name' 'Description' 'Icon URL'");
             return;
         }
 
         String name = args[0];
         String displayName = args[1];
         String description = args[2];
-        Community newCommunity = communityUseCases.createCommunity(name, displayName, description);
+        String iconUrl = args[3];
+        Community newCommunity = communityUseCases.createCommunity(name, displayName, description, iconUrl);
 
         consolePrinter.printSuccess("Community successfully created!");
         consolePrinter.displayCommunity(newCommunity);

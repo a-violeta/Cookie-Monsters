@@ -21,4 +21,5 @@ public class CommunityDto {
     @NotBlank(message = "Description is required")
     private String description;
     private LocalDateTime createdAt;
+    private String iconUrl;
 }

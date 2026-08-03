@@ -82,25 +82,25 @@ public class ConsolePrinter {
     public void printHelp() {
 
         String[] lines = {
-                "create-community <name> <displayName> <description>   — Create a new community",
-                "list-communities                                      — List all communities",
-                "find-community <name>                                 — Find a community by name",
-                "join-community                                        — Join an existing community",
-                "exit-community                                        — Leave a community",
-                "edit-community <newName> <newDesc>                    — Edit a community's name and description",
-                "delete-community <name>                               — Delete a community",
-                "add-post <title> <text>                               — Create a post in a community",
-                "posts-feed                                            — List all posts",
-                "list-posts                                            — List all posts of a community",
-                "edit-post <newText>                                   — Edit an existing post",
-                "delete-post                                           — Delete a post",
-                "add-comment <text>                                    — Comment on a post",
-                "edit-comment <newText>                                — Edit an existing comment",
-                "delete-comment                                        — Delete a comment",
-                "list-comments                                         — List comments on a post",
-                "logout                                                — Log out of your account",
-                "help / h                                              — Display this help menu",
-                "exit / 0                                              — Exit the application"
+                "create-community <name> <displayName> <description> <icon URL>   — Create a new community",
+                "list-communities                                                 — List all communities",
+                "find-community <name>                                            — Find a community by name",
+                "join-community                                                   — Join an existing community",
+                "exit-community                                                   — Leave a community",
+                "edit-community <newName> <newDesc>                               — Edit a community's name and description",
+                "delete-community <name>                                          — Delete a community",
+                "add-post <title> <text>                                          — Create a post in a community",
+                "posts-feed                                                       — List all posts",
+                "list-posts                                                       — List all posts of a community",
+                "edit-post <newText>                                              — Edit an existing post",
+                "delete-post                                                      — Delete a post",
+                "add-comment <text>                                               — Comment on a post",
+                "edit-comment <newText>                                           — Edit an existing comment",
+                "delete-comment                                                   — Delete a comment",
+                "list-comments                                                    — List comments on a post",
+                "logout                                                           — Log out of your account",
+                "help / h                                                         — Display this help menu",
+                "exit / 0                                                         — Exit the application"
         };
 
         int width = 4;

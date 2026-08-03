@@ -160,7 +160,7 @@ public class CommunityService implements CommunityUseCases {
     }
 
     @Transactional
-    public Community createCommunity(String communityName, String displayName, String description) {
+    public Community createCommunity(String communityName, String displayName, String description, String iconUrl) {
         validateCommunity(communityName, displayName, description);
 
         if (communityRepository.existsByName(communityName)) {
@@ -170,6 +170,7 @@ public class CommunityService implements CommunityUseCases {
         community.setName(communityName);
         community.setDisplayName(displayName);
         community.setDescription(description);
+        community.setIconUrl(iconUrl);
 
         // also, take the active user and add him to the community members
         User currentUser = userService.getLoggedInUser();

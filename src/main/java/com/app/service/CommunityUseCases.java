@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface CommunityUseCases {
-    Community createCommunity(String communityName, String displayName, String description);
+    Community createCommunity(String communityName, String displayName, String description, String iconUrl);
     void validateCommunity(String name, String displayName, String description);
     void deleteCommunity(String name);
     List<Community> listCommunities();

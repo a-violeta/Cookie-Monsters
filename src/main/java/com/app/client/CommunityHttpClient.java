@@ -58,7 +58,7 @@ public class CommunityHttpClient implements CommunityUseCases {
     }
 
     @Override
-    public Community createCommunity(String name, String displayName, String description) {
+    public Community createCommunity(String name, String displayName, String description, String iconUrl) {
         validateCommunity(name, displayName, description);
         String url = clientConfig.getBaseUrl() + "/subreddits";
 
@@ -66,6 +66,7 @@ public class CommunityHttpClient implements CommunityUseCases {
         request.setName(name);
         request.setDisplayName(displayName);
         request.setDescription(description);
+        request.setIconUrl(iconUrl);
 
         try {
             CommunityDto response = restTemplate.postForObject(url, request, CommunityDto.class);
@@ -200,6 +201,7 @@ public class CommunityHttpClient implements CommunityUseCases {
         community.setDisplayName(dto.getDisplayName());
         community.setDescription(dto.getDescription());
         community.setCreatedAt(dto.getCreatedAt());
+        community.setIconUrl(dto.getIconUrl());
         // communityUsers/communityPosts intentionally left null, console has no datasource to hydrate them
         return community;
     }
