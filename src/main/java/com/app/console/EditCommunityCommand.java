@@ -53,10 +53,10 @@ public class EditCommunityCommand extends Command {
                 throw new IllegalArgumentException("Index out of bounds!");
             }
 
-            Long communityId = communities.get(chosenIndex-1).getId();
+            String communityName = communities.get(chosenIndex-1).getCommunityName();
             String newDescription = args[0];
 
-            communityUseCases.editCommunity(communityId, newDescription);
+            communityUseCases.editCommunity(communityName, newDescription);
 
             consolePrinter.printSuccess("Community successfully updated!");
 

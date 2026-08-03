@@ -1,6 +1,7 @@
 package com.app.service;
 
 import com.app.model.Community;
+import com.app.model.Post;
 import com.app.model.User;
 import com.app.repository.CommunityRepository;
 import com.app.repository.UserRepository;
@@ -59,7 +60,6 @@ public class CommunityService implements CommunityUseCases {
                         ));
     }
 
-    // could be improved to search for 1 word and return all communities with that word in their name
     public Community findCommunityByName(String name) {
         for (Community c : communityRepository.findAll()) {
             if (Objects.equals(c.getCommunityName().toLowerCase(), name.toLowerCase())) {
@@ -70,8 +70,8 @@ public class CommunityService implements CommunityUseCases {
     }
 
     @Transactional
-    public void editCommunity(long communityId, String description) {
-        Community community = findCommunityById(communityId);
+    public void editCommunity(String name, String description) {
+        Community community = findCommunityByName(name);
 
         if (!community.getCommunityUsers().contains(userService.getLoggedInUser())) {
             throw new IllegalArgumentException("You are not a member of this community");
@@ -89,8 +89,8 @@ public class CommunityService implements CommunityUseCases {
     }
 
     @Transactional
-    public void deleteCommunity(long communityId) {
-        Community community = findCommunityById(communityId);
+    public void deleteCommunity(String name) {
+        Community community = findCommunityByName(name);
 
         if (!community.getCommunityUsers().contains(userService.getLoggedInUser())) {
             throw new IllegalArgumentException("You are not a member of this community");
@@ -185,5 +185,12 @@ public class CommunityService implements CommunityUseCases {
         community.setCommunityUsers(communityMembers);
 
         return communityRepository.save(community);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Post> listCommunityPosts(String name){
+        Community community = findCommunityByName(name);
+
+        return community.getCommunityPosts();
     }
 }
