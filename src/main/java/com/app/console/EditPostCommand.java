@@ -4,6 +4,7 @@ import com.app.model.Post;
 import com.app.service.PostUseCases;
 
 import java.util.List;
+import java.util.UUID;
 
 public class EditPostCommand extends Command {
     private final PostUseCases postUseCases;
@@ -51,7 +52,7 @@ public class EditPostCommand extends Command {
                 throw new IllegalArgumentException("Index out of bounds!");
             }
 
-            Long postId = posts.get(chosenIndex-1).getId();
+            UUID postId = posts.get(chosenIndex-1).getId();
 
             String newText = args[0];
 

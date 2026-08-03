@@ -6,6 +6,7 @@ import com.app.service.CommentUseCases;
 import com.app.service.PostUseCases;
 
 import java.util.List;
+import java.util.UUID;
 
 public class ListCommentCommand extends Command{
 
@@ -53,7 +54,7 @@ public class ListCommentCommand extends Command{
             }
 
             Post post = posts.get(chosenIndex-1);
-            Long postId = post.getId();
+            UUID postId = post.getId();
             List<Comment> comments = commentUseCases.listCommentByPostId(postId);
 
             consolePrinter.displayPost(post);

@@ -81,27 +81,7 @@ public class ConsolePrinter {
 
     public void printHelp() {
 
-        String[] lines = {
-                "create-community <name> <description>   — Create a new community",
-                "list-communities                        — List all communities",
-                "find-community <name>                   — Find a community by name",
-                "join-community                          — Join an existing community",
-                "exit-community                          — Leave a community",
-                "edit-community <newDesc>                — Edit a community's description",
-                "delete-community <name>                 — Delete a community",
-                "add-post <title> <text>                 — Create a post in a community",
-                "posts-feed                              — List all posts",
-                "list-posts                              — List all posts of a community",
-                "edit-post <newText>                     — Edit an existing post",
-                "delete-post                             — Delete a post",
-                "add-comment <text>                      — Comment on a post",
-                "edit-comment <newText>                  — Edit an existing comment",
-                "delete-comment                          — Delete a comment",
-                "list-comments                           — List comments on a post",
-                "logout                                  — Log out of your account",
-                "help / h                                — Display this help menu",
-                "exit / 0                                — Exit the application"
-        };
+        String[] lines = {"create-community <name> <description>   — Create a new community", "list-communities                        — List all communities", "find-community <name>                   — Find a community by name", "join-community                          — Join an existing community", "exit-community                          — Leave a community", "edit-community <newDesc>                — Edit a community's description", "delete-community <name>                 — Delete a community", "add-post <title> <content>              — Create a post in a community", "posts-feed                              — List all posts", "list-posts                              — List all posts of a community", "edit-post <newContent>                  — Edit an existing post", "delete-post                             — Delete a post", "add-comment <text>                      — Comment on a post", "edit-comment <newText>                  — Edit an existing comment", "delete-comment                          — Delete a comment", "list-comments                           — List comments on a post", "logout                                  — Log out of your account", "help / h                                — Display this help menu", "exit / 0                                — Exit the application"};
 
         int width = 4;
         for (String line : lines) {
@@ -128,22 +108,19 @@ public class ConsolePrinter {
 
     public void printPostLoginHint() {
         System.out.println();
-        System.out.println(GRAY + "Commands are no longer numbered — " + RESET
-                + "type the command name and its parameters to use it.");
-        System.out.println(GRAY + "Type " + RESET + CYAN + "help" + RESET + GRAY
-                + " or " + RESET + CYAN + "h" + RESET + GRAY + " to see all available commands." + RESET);
+        System.out.println(GRAY + "Commands are no longer numbered — " + RESET + "type the command name and its parameters to use it.");
+        System.out.println(GRAY + "Type " + RESET + CYAN + "help" + RESET + GRAY + " or " + RESET + CYAN + "h" + RESET + GRAY + " to see all available commands." + RESET);
         System.out.println();
     }
 
     public void displayPost(Post post) {
         System.out.println("\n" + CYAN + "┌──────────────────────────────────────────────" + RESET);
-        System.out.println(CYAN + "│ " + RESET + "📌 " + BOLD + post.getCommunity().getCommunityName() + RESET
-                + GRAY + "  •  Post #" + post.getId() + RESET);
+        System.out.println(CYAN + "│ " + RESET + "📌 " + BOLD + post.getSubreddit().getCommunityName() + RESET + GRAY + "  •  Post #" + post.getId() + RESET);
         System.out.println(CYAN + "│ " + RESET + BOLD + YELLOW + post.getTitle() + RESET);
         System.out.println(CYAN + "│" + RESET);
-        System.out.println(CYAN + "│ " + RESET + post.getText());
+        System.out.println(CYAN + "│ " + RESET + post.getContent());
         System.out.println(CYAN + "│" + RESET);
-        System.out.println(CYAN + "│ " + RESET + "👤 " + GRAY + "author: " + post.getUser().getUsername() + RESET);
+        System.out.println(CYAN + "│ " + RESET + "👤 " + GRAY + "author: " + post.getAuthor().getUsername() + RESET);
         System.out.println(CYAN + "└──────────────────────────────────────────────" + RESET + "\n");
     }
 
@@ -161,8 +138,7 @@ public class ConsolePrinter {
         System.out.println(BLUE + "│" + RESET);
         System.out.println(BLUE + "│ " + RESET + user.getDescription());
         System.out.println(BLUE + "│" + RESET);
-        System.out.println(BLUE + "│ " + RESET + GRAY + "joined: "
-                + user.getCreatedAt().format(DateTimeFormatter.ofPattern("MMM d, yyyy")) + RESET);
+        System.out.println(BLUE + "│ " + RESET + GRAY + "joined: " + user.getCreatedAt().format(DateTimeFormatter.ofPattern("MMM d, yyyy")) + RESET);
         System.out.println(BLUE + "└──────────────────────────────────────────────" + RESET + "\n");
     }
 
@@ -186,9 +162,7 @@ public class ConsolePrinter {
         int maxLength = 40;
         String text = comment.getText();
         // the preview is the first 40 characters of the post followed by '...'
-        String preview = text.length() > maxLength
-                ? text.substring(0, maxLength) + "..."
-                : text;
+        String preview = text.length() > maxLength ? text.substring(0, maxLength) + "..." : text;
 
         System.out.println(CYAN + " " + index + ". " + RESET + "💬 " + preview);
     }

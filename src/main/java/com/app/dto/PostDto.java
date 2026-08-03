@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 // why ids instead of objects:
 // circular references would break JSON serialization
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class PostDto {
-    private Long id;
+    private UUID id;
 
     // ids reference to the parent Community/User
     // the server always re-derives the real relationships from communityId/userId
@@ -30,14 +31,14 @@ public class PostDto {
     // so the console has something readable to print without a second lookup
     // if a client sends a create/update PostDto without these,
     // the server ignores them and derives the real values from communityId/userId
-    private String communityName;
-    private String username;
+    private String subreddit;
+    private String author;
 
     @NotBlank(message = "Title is required")
     private String title;
 
-    @NotBlank(message = "Text is required")
-    private String text;
+    @NotBlank(message = "Content is required")
+    private String content;
 
     private LocalDateTime createdAt;
 }

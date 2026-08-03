@@ -17,6 +17,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -28,25 +29,26 @@ public class PostHttpClient implements PostUseCases {
     private final HttpClientConfig clientConfig;
 
     @Override
-    public void validatePost(String title, String text) {
+    public void validatePost(String title, String content) {
         if (title == null || title.isBlank()) {
             throw new IllegalArgumentException("Title is required");
         }
-        if (text == null || text.isBlank()) {
-            throw new IllegalArgumentException("Text is required");
+
+        if (content == null || content.isBlank()) {
+            throw new IllegalArgumentException("Content is required");
         }
     }
 
     @Override
-    public Post addPost(long communityId, long userId, String title, String text) {
-        validatePost(title, text);
-        String url = clientConfig.getBaseUrl() + "/api/posts";
+    public Post addPost(long communityId, long userId, String title, String content) {
+        validatePost(title, content);
+        String url = clientConfig.getBaseUrl() + "/posts";
 
         PostDto request = new PostDto();
         request.setCommunityId(communityId);
         request.setUserId(userId);
         request.setTitle(title);
-        request.setText(text);
+        request.setContent(content);
 
         try {
             PostDto response = restTemplate.postForObject(url, request, PostDto.class);
@@ -59,8 +61,9 @@ public class PostHttpClient implements PostUseCases {
     }
 
     @Override
-    public Post findPostById(long postId) {
-        String url = clientConfig.getBaseUrl() + "/api/posts/" + postId;
+    public Post findPostById(UUID postId) {
+        String url = clientConfig.getBaseUrl() + "/posts/" + postId;
+
         try {
             PostDto response = restTemplate.getForObject(url, PostDto.class);
             return toPost(response);
@@ -73,11 +76,13 @@ public class PostHttpClient implements PostUseCases {
 
     @Override
     public List<Post> listPosts(long communityId) {
-        String url = clientConfig.getBaseUrl() + "/api/communities/" + communityId + "/posts";
+        String url = clientConfig.getBaseUrl() + "/subreddits/" + communityId + "/posts";
+
         try {
-            ResponseEntity<List<PostDto>> response = restTemplate.exchange(
-                    url, HttpMethod.GET, null, new ParameterizedTypeReference<List<PostDto>>() {});
-            return response.getBody().stream().map(this::toPost).toList();
+            ResponseEntity<List<PostDto>> response = restTemplate.exchange(url, HttpMethod.GET, null,
+                    new ParameterizedTypeReference<>() {
+            });
+            return response.getBody() != null ? response.getBody().stream().map(this::toPost).toList() : null;
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             throw new RuntimeException("Failed to list posts: " + e.getResponseBodyAsString(), e);
         }
@@ -85,21 +90,24 @@ public class PostHttpClient implements PostUseCases {
 
     @Override
     public List<Post> listPosts() {
-        String url = clientConfig.getBaseUrl() + "/api/posts";
+        String url = clientConfig.getBaseUrl() + "/posts";
+
         try {
-            ResponseEntity<List<PostDto>> response = restTemplate.exchange(
-                    url, HttpMethod.GET, null, new ParameterizedTypeReference<List<PostDto>>() {});
-            return response.getBody().stream().map(this::toPost).toList();
+            ResponseEntity<List<PostDto>> response = restTemplate.exchange(url, HttpMethod.GET, null,
+                    new ParameterizedTypeReference<>() {
+            });
+            return response.getBody() != null ? response.getBody().stream().map(this::toPost).toList() : null;
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             throw new RuntimeException("Failed to list posts: " + e.getResponseBodyAsString(), e);
         }
     }
 
     @Override
-    public void editPost(long postId, String newText) {
-        String url = clientConfig.getBaseUrl() + "/api/posts/" + postId;
+    public void editPost(UUID postId, String newContent) {
+        String url = clientConfig.getBaseUrl() + "/posts/" + postId;
         PostDto request = new PostDto();
-        request.setText(newText);
+        request.setContent(newContent);
+
         try {
             restTemplate.put(url, request);
         } catch (HttpClientErrorException | HttpServerErrorException e) {
@@ -108,8 +116,8 @@ public class PostHttpClient implements PostUseCases {
     }
 
     @Override
-    public void deletePost(long postId) {
-        String url = clientConfig.getBaseUrl() + "/api/posts/" + postId;
+    public void deletePost(UUID postId) {
+        String url = clientConfig.getBaseUrl() + "/posts/" + postId;
         try {
             restTemplate.delete(url);
         } catch (HttpClientErrorException | HttpServerErrorException e) {
@@ -121,21 +129,22 @@ public class PostHttpClient implements PostUseCases {
     private Post toPost(PostDto dto) {
         if (dto == null) return null;
 
-        Community community = new Community();
-        community.setId(dto.getCommunityId());
-        community.setCommunityName(dto.getCommunityName());
+        Community subreddit = new Community();
+        subreddit.setId(dto.getCommunityId());
+        subreddit.setCommunityName(dto.getSubreddit());
 
-        User user = new User();
-        user.setId(dto.getUserId());
-        user.setUsername(dto.getUsername());
+        User author = new User();
+        author.setId(dto.getUserId());
+        author.setUsername(dto.getAuthor());
 
         Post post = new Post();
         post.setId(dto.getId());
-        post.setCommunity(community);
-        post.setUser(user);
+        post.setSubreddit(subreddit);
+        post.setAuthor(author);
         post.setTitle(dto.getTitle());
-        post.setText(dto.getText());
+        post.setContent(dto.getContent());
         post.setCreatedAt(dto.getCreatedAt());
+
         return post;
     }
 }
