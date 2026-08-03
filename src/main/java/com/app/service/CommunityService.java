@@ -186,4 +186,9 @@ public class CommunityService implements CommunityUseCases {
 
         return communityRepository.save(community);
     }
+
+    @Override
+    public List<Community> listCommunitiesByUserId(Long userId) {
+        return communityRepository.findAllByCommunityUsers_Id(userId);
+    }
 }

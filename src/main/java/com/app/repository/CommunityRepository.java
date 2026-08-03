@@ -11,4 +11,5 @@ public interface CommunityRepository {
     void delete(Community community);
     List<Community> findAll();
     boolean existsByCommunityName(String communityName);
+    List<Community> findAllByCommunityUsers_Id(Long userId);
 }

@@ -11,7 +11,9 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -145,6 +147,17 @@ public class CommunityHttpClient implements CommunityUseCases {
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             throw new IllegalArgumentException(extractMessage(e));
         }
+    }
+
+    @Override
+    public List<Community> listCommunitiesByUserId(Long userId) {
+        CommunityDto[] dtos = restTemplate.getForObject(
+                clientConfig.getBaseUrl() + "/api/users/" + userId + "/communities",
+                CommunityDto[].class
+        );
+        return Arrays.stream(dtos)
+                .map(this::toCommunity)
+                .collect(Collectors.toList());
     }
 
     private Community toCommunity(CommunityDto dto) {
