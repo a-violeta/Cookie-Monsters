@@ -12,5 +12,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 // because in CommunityService we have an instance of CommunityRepository which can be JpaCommunityRepository or InMemoryCommunityRepository
 // without @Primary Spring would not know what bean to choose
 public interface JpaCommunityRepository extends JpaRepository<Community, Long>, CommunityRepository {
-    boolean existsByCommunityName(String communityName);
+    boolean existsByName(String name);
 }

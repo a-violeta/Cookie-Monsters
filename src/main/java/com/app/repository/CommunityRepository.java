@@ -10,5 +10,5 @@ public interface CommunityRepository {
     Community save(Community community);
     void delete(Community community);
     List<Community> findAll();
-    boolean existsByCommunityName(String communityName);
+    boolean existsByName(String name);
 }

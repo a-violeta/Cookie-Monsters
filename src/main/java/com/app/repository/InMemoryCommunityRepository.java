@@ -47,8 +47,8 @@ public class InMemoryCommunityRepository implements CommunityRepository {
     }
 
     @Override
-    public boolean existsByCommunityName(String communityName) {
+    public boolean existsByName(String name) {
         return storage.values().stream()
-                .anyMatch(c -> c.getName().equals(communityName));
+                .anyMatch(c -> c.getName().equals(name));
     }
 }
