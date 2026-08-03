@@ -155,7 +155,7 @@ public class CommunityService implements CommunityUseCases {
     @Transactional
     public Community addCommunity(Community community) {
 
-        if (communityRepository.existsByCommunityName(community.getName())) {
+        if (communityRepository.existsByName(community.getName())) {
             throw new IllegalArgumentException("Community name is already taken");
         }
 
@@ -167,7 +167,7 @@ public class CommunityService implements CommunityUseCases {
     public Community createCommunity(String communityName, String displayName, String description) {
         validateCommunity(communityName, displayName, description);
 
-        if (communityRepository.existsByCommunityName(communityName)) {
+        if (communityRepository.existsByName(communityName)) {
             throw new IllegalArgumentException("Community name is already taken");
         }
         Community community = new Community();
