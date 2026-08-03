@@ -123,7 +123,7 @@ public class PostHttpClient implements PostUseCases {
 
         Community community = new Community();
         community.setId(dto.getCommunityId());
-        community.setCommunityName(dto.getCommunityName());
+        community.setName(dto.getCommunityName());
 
         User user = new User();
         user.setId(dto.getUserId());

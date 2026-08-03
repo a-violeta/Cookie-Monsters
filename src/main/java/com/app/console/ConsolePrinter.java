@@ -137,7 +137,7 @@ public class ConsolePrinter {
 
     public void displayPost(Post post) {
         System.out.println("\n" + CYAN + "┌──────────────────────────────────────────────" + RESET);
-        System.out.println(CYAN + "│ " + RESET + "📌 " + BOLD + post.getCommunity().getCommunityName() + RESET
+        System.out.println(CYAN + "│ " + RESET + "📌 " + BOLD + post.getCommunity().getDisplayName() + RESET
                 + GRAY + "  •  Post #" + post.getId() + RESET);
         System.out.println(CYAN + "│ " + RESET + BOLD + YELLOW + post.getTitle() + RESET);
         System.out.println(CYAN + "│" + RESET);
@@ -149,7 +149,7 @@ public class ConsolePrinter {
 
     public void displayCommunity(Community community) {
         System.out.println("\n" + PURPLE + "┌──────────────────────────────────────────────" + RESET);
-        System.out.println(PURPLE + "│ " + RESET + "🌐 " + BOLD + community.getCommunityName() + RESET);
+        System.out.println(PURPLE + "│ " + RESET + "🌐 " + BOLD + community.getDisplayName() + RESET);
         System.out.println(PURPLE + "│" + RESET);
         System.out.println(PURPLE + "│ " + RESET + GRAY + community.getDescription() + RESET);
         System.out.println(PURPLE + "└──────────────────────────────────────────────" + RESET + "\n");
@@ -175,7 +175,7 @@ public class ConsolePrinter {
     }
 
     public void printCommunityListItem(int index, Community community) {
-        System.out.println(CYAN + " " + index + ". " + RESET + "🌐 " + community.getCommunityName());
+        System.out.println(CYAN + " " + index + ". " + RESET + "🌐 " + community.getDisplayName());
     }
 
     public void printPostListItem(int index, Post post) {

@@ -25,20 +25,20 @@ public class CommunityService implements CommunityUseCases {
     private final UserRepository userRepository;
     private final UserService userService;
 
-    public void validateCommunity(String communityName, String description) {
-        if (communityName == null || communityName.isBlank()) {
+    public void validateCommunity(String name, String displayName, String description) {
+        if (name == null || name.isBlank() || displayName == null || displayName.isBlank()) {
             throw new IllegalArgumentException("Community name is required");
         }
 
-        if (!communityName.matches("^[a-zA-Z0-9_]+$")) {
+        if (!name.matches("^[a-zA-Z0-9_]+$")) {
             throw new IllegalArgumentException("Community name must contain only letters, numbers, and '_'");
         }
 
-        if (communityName.length() < 3) {
+        if (name.length() < 3 || displayName.length() < 3) {
             throw new IllegalArgumentException("Community name must have at least 3 characters");
         }
 
-        if (communityName.length() > 50) {
+        if (name.length() > 50 || displayName.length() > 50) {
             throw new IllegalArgumentException("Community name is too long");
         }
 
@@ -62,7 +62,7 @@ public class CommunityService implements CommunityUseCases {
 
     public Community findCommunityByName(String name) {
         for (Community c : communityRepository.findAll()) {
-            if (Objects.equals(c.getCommunityName().toLowerCase(), name.toLowerCase())) {
+            if (Objects.equals(c.getName().toLowerCase(), name.toLowerCase())) {
                 return c;
             }
         }
@@ -70,14 +70,14 @@ public class CommunityService implements CommunityUseCases {
     }
 
     @Transactional
-    public void editCommunity(String name, String description) {
+    public void editCommunity(String name, String displayName, String description) {
         Community community = findCommunityByName(name);
 
         if (!community.getCommunityUsers().contains(userService.getLoggedInUser())) {
             throw new IllegalArgumentException("You are not a member of this community");
         }
 
-        validateCommunity(community.getCommunityName(), description);
+        validateCommunity(community.getName(), displayName, description);
 
         // just a user from that community should be able to edit
         if (!community.getCommunityUsers().contains(userService.getLoggedInUser())) {
@@ -85,6 +85,7 @@ public class CommunityService implements CommunityUseCases {
         }
 
         community.setDescription(description);
+        community.setDisplayName(displayName);
         communityRepository.save(community);
     }
 
@@ -154,7 +155,7 @@ public class CommunityService implements CommunityUseCases {
     @Transactional
     public Community addCommunity(Community community) {
 
-        if (communityRepository.existsByCommunityName(community.getCommunityName())) {
+        if (communityRepository.existsByCommunityName(community.getName())) {
             throw new IllegalArgumentException("Community name is already taken");
         }
 
@@ -163,14 +164,15 @@ public class CommunityService implements CommunityUseCases {
     }
 
     @Transactional
-    public Community createCommunity(String communityName, String description) {
-        validateCommunity(communityName, description);
+    public Community createCommunity(String communityName, String displayName, String description) {
+        validateCommunity(communityName, displayName, description);
 
         if (communityRepository.existsByCommunityName(communityName)) {
             throw new IllegalArgumentException("Community name is already taken");
         }
         Community community = new Community();
-        community.setCommunityName(communityName);
+        community.setName(communityName);
+        community.setDisplayName(displayName);
         community.setDescription(description);
 
         // also, take the active user and add him to the community members

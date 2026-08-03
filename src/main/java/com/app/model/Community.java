@@ -20,7 +20,8 @@ public class Community {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String communityName;
+    private String name;
+    private String displayName;
     private String description;
     private LocalDateTime createdAt;
 
@@ -38,15 +39,17 @@ public class Community {
     private List<Post> communityPosts;
 
     public Community() {
-        this.communityName = "";
+        this.name = "";
+        this.displayName = "";
         this.description = "";
         this.createdAt = LocalDateTime.now();
         this.communityUsers = null;
         this.communityPosts = null;
     }
 
-    public Community(String communityName, String description, List<User> communityUsers, List<Post> communityPosts) {
-        this.communityName = communityName;
+    public Community(String communityName, String displayName, String description, List<User> communityUsers, List<Post> communityPosts) {
+        this.name = communityName;
+        this.displayName = displayName;
         this.description = description;
         this.createdAt = LocalDateTime.now();
         this.communityUsers = communityUsers;

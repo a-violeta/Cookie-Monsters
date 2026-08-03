@@ -57,17 +57,18 @@ public class CommunityHttpClient implements CommunityUseCases {
     }
 
     @Override
-    public Community createCommunity(String communityName, String description) {
-        validateCommunity(communityName, description);
+    public Community createCommunity(String name, String displayName, String description) {
+        validateCommunity(name, displayName, description);
         String url = clientConfig.getBaseUrl() + "/subreddits";
 
         CommunityDto request = new CommunityDto();
-        request.setCommunityName(communityName);
+        request.setName(name);
+        request.setDisplayName(displayName);
         request.setDescription(description);
 
         try {
             CommunityDto response = restTemplate.postForObject(url, request, CommunityDto.class);
-            log.info("Community created via HTTP: {}", communityName);
+            log.info("Community created via HTTP: {}", name);
             return toCommunity(response);
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             throw new IllegalArgumentException(extractMessage(e));
@@ -123,10 +124,11 @@ public class CommunityHttpClient implements CommunityUseCases {
     }
 
     @Override
-    public void editCommunity(String name, String description) {
+    public void editCommunity(String name, String displayName, String description) {
         String url = clientConfig.getBaseUrl() + "/subreddits/" + name;
         CommunityDto request = new CommunityDto();
         request.setDescription(description);
+        request.setDisplayName(displayName);
         try {
             restTemplate.put(url, request);
         } catch (HttpClientErrorException | HttpServerErrorException e) {
@@ -173,7 +175,7 @@ public class CommunityHttpClient implements CommunityUseCases {
 
         Community community = new Community();
         community.setId(dto.getCommunityId());
-        community.setCommunityName(dto.getCommunityName());
+        community.setName(dto.getCommunityName());
 
         User user = new User();
         user.setId(dto.getUserId());
@@ -193,7 +195,7 @@ public class CommunityHttpClient implements CommunityUseCases {
         if (dto == null) return null;
         Community community = new Community();
         community.setId(dto.getId());
-        community.setCommunityName(dto.getCommunityName());
+        community.setName(dto.getName());
         community.setDescription(dto.getDescription());
         community.setCreatedAt(dto.getCreatedAt());
         // communityUsers/communityPosts intentionally left null, console has no datasource to hydrate them

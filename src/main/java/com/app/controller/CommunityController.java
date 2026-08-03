@@ -25,7 +25,7 @@ public class CommunityController {
 
     @PostMapping
     public ResponseEntity<CommunityDto> createCommunity(@Valid @RequestBody CommunityDto dto) {
-        Community created = communityService.createCommunity(dto.getCommunityName(), dto.getDescription());
+        Community created = communityService.createCommunity(dto.getName(), dto.getDisplayName(), dto.getDescription());
         return ResponseEntity.status(HttpStatus.CREATED).body(communityMapper.toDto(created));
     }
 
@@ -46,7 +46,7 @@ public class CommunityController {
 
     @PutMapping("/{name}")
     public ResponseEntity<Void> editCommunity(@PathVariable String name, @RequestBody CommunityDto dto) {
-        communityService.editCommunity(name, dto.getDescription());
+        communityService.editCommunity(name, dto.getDisplayName(), dto.getDescription());
         return ResponseEntity.noContent().build();
     }
 

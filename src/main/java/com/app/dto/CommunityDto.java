@@ -14,7 +14,9 @@ public class CommunityDto {
     @NotBlank(message = "Community name is required")
     @Size(min = 3, message = "Community name must have at least 3 characters")
     @Size(max = 50, message = "Community name is too long")
-    private String communityName;
+    private String name;
+    @NotBlank(message = "Community display name is required")
+    private String displayName;
     @NotBlank(message = "Description is required")
     private String description;
     private LocalDateTime createdAt;

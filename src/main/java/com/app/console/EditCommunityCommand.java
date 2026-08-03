@@ -19,13 +19,13 @@ public class EditCommunityCommand extends Command {
     @Override
     public void execute(String[] args) {
 
-        if (args.length < 1) {
+        if (args.length < 2) {
             consolePrinter.printError("Missing Arguments");
-            consolePrinter.printExplanation("edit-community 'New Description' ");
+            consolePrinter.printExplanation("edit-community 'New Display Name' 'New Description' ");
             return;
-        } else if (args.length > 1) {
+        } else if (args.length > 2) {
             consolePrinter.printError("Too Many Arguments");
-            consolePrinter.printExplanation("edit-community 'New Description' ");
+            consolePrinter.printExplanation("edit-community 'New Display Name' 'New Description' ");
             return;
         }
 
@@ -53,10 +53,11 @@ public class EditCommunityCommand extends Command {
                 throw new IllegalArgumentException("Index out of bounds!");
             }
 
-            String communityName = communities.get(chosenIndex-1).getCommunityName();
-            String newDescription = args[0];
+            String communityName = communities.get(chosenIndex-1).getName();
+            String newDisplayName = args[0];
+            String newDescription = args[1];
 
-            communityUseCases.editCommunity(communityName, newDescription);
+            communityUseCases.editCommunity(communityName, newDisplayName, newDescription);
 
             consolePrinter.printSuccess("Community successfully updated!");
 
