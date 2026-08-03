@@ -34,18 +34,18 @@ public class CommunityHttpClient implements CommunityUseCases {
     // UserService.createUser's validation DOES need the DB to check username uniqueness
     // and so createUser is never duplicated
     @Override
-    public void validateCommunity(String communityName, String description) {
+    public void validateCommunity(String communityName, String displayName, String description) {
         // pure validation, no I/O, mirrors CommunityService, safe to duplicate
-        if (communityName == null || communityName.isBlank()) {
+        if (communityName == null || communityName.isBlank() || displayName == null || displayName.isBlank()) {
             throw new IllegalArgumentException("Community name is required");
         }
         if (!communityName.matches("^[a-zA-Z0-9_]+$")) {
             throw new IllegalArgumentException("Community name must contain only letters, numbers, and '_'");
         }
-        if (communityName.length() < 3) {
+        if (communityName.length() < 3 || displayName.length() < 3) {
             throw new IllegalArgumentException("Community name must have at least 3 characters");
         }
-        if (communityName.length() > 50) {
+        if (communityName.length() > 50 || displayName.length() > 50) {
             throw new IllegalArgumentException("Community name is too long");
         }
         if (description == null || description.isBlank()) {
@@ -196,6 +196,7 @@ public class CommunityHttpClient implements CommunityUseCases {
         Community community = new Community();
         community.setId(dto.getId());
         community.setName(dto.getName());
+        community.setDisplayName(dto.getDisplayName());
         community.setDescription(dto.getDescription());
         community.setCreatedAt(dto.getCreatedAt());
         // communityUsers/communityPosts intentionally left null, console has no datasource to hydrate them
