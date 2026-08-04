@@ -15,9 +15,9 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface PostMapper {
 
-    @Mapping(target = "communityId", source = "community.id")
-    @Mapping(target = "subreddit", source = "community.communityName")
-    @Mapping(target = "userId", source = "user.id")
-    @Mapping(target = "author", source = "user.username")
+    @Mapping(target = "communityId", source = "subreddit.id")
+    @Mapping(target = "subreddit", source = "subreddit.communityName")
+    @Mapping(target = "userId", source = "author.id")
+    @Mapping(target = "author", source = "author.username")
     PostDto toDto(Post post);
 }
