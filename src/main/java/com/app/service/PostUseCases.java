@@ -7,9 +7,8 @@ import java.util.UUID;
 
 public interface PostUseCases {
     void validatePost(String title, String text);
-    Post addPost(long communityId, long userId, String title, String text);
+    Post addPost(UUID communityId, long userId, String title, String text);
     void deletePost(UUID postId);
-    List<Post> listPosts(long communityId);
     List<Post> listPosts();
     Post findPostById(UUID postId);
     void editPost(UUID postId, String newText);

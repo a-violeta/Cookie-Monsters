@@ -26,8 +26,8 @@ public class DeleteCommunityCommand extends Command{
         }
 
         try {
-            Long communityId = communityUseCases.findCommunityByName(args[0].toLowerCase()).getId();
-            communityUseCases.deleteCommunity(communityId);
+            String communityName = communityUseCases.findCommunityByName(args[0].toLowerCase()).getName();
+            communityUseCases.deleteCommunity(communityName);
 
             consolePrinter.printSuccess("Community successfully deleted!");
         } catch (Exception e) {

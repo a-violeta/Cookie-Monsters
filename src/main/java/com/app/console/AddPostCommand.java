@@ -7,6 +7,7 @@ import com.app.service.PostUseCases;
 import com.app.service.UserUseCases;
 
 import java.util.List;
+import java.util.UUID;
 
 public class AddPostCommand extends Command {
     private final PostUseCases postUseCases;
@@ -61,7 +62,7 @@ public class AddPostCommand extends Command {
                 throw new IllegalArgumentException("Index out of bounds!");
             }
 
-            Long communityId = communities.get(chosenIndex-1).getId();
+            UUID communityId = communities.get(chosenIndex-1).getId();
 
             long userId = userUseCases.getLoggedInUser().getId();
 

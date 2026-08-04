@@ -42,7 +42,7 @@ public class PostHttpClient implements PostUseCases {
     }
 
     @Override
-    public Post addPost(long communityId, long userId, String title, String content) {
+    public Post addPost(UUID communityId, long userId, String title, String content) {
         validatePost(title, content);
         String url = clientConfig.getBaseUrl() + "/posts";
 
@@ -77,23 +77,8 @@ public class PostHttpClient implements PostUseCases {
     }
 
     @Override
-    public List<Post> listPosts(long communityId) {
-        String url = clientConfig.getBaseUrl() + "/subreddits/" + communityId + "/posts";
-
-        try {
-            ResponseEntity<List<PostDto>> response = restTemplate.exchange(url, HttpMethod.GET, null,
-                    new ParameterizedTypeReference<>() {
-            });
-            return response.getBody() != null ? response.getBody().stream().map(this::toPost).toList() : null;
-        } catch (HttpClientErrorException | HttpServerErrorException e) {
-            throw new RuntimeException("Failed to list posts: " + e.getResponseBodyAsString(), e);
-        }
-    }
-
-    @Override
     public List<Post> listPosts() {
         String url = clientConfig.getBaseUrl() + "/posts";
-
         try {
             ResponseEntity<List<PostDto>> response = restTemplate.exchange(url, HttpMethod.GET, null,
                     new ParameterizedTypeReference<>() {
@@ -157,7 +142,7 @@ public class PostHttpClient implements PostUseCases {
 
         Community subreddit = new Community();
         subreddit.setId(dto.getCommunityId());
-        subreddit.setCommunityName(dto.getSubreddit());
+        subreddit.setName(dto.getSubreddit());
 
         User author = new User();
         author.setId(dto.getUserId());

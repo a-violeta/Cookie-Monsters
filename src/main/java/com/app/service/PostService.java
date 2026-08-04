@@ -38,7 +38,7 @@ public class PostService implements PostUseCases {
     }
 
     @Transactional
-    public Post addPost(long communityId, long userId, String title, String content) {
+    public Post addPost(UUID communityId, long userId, String title, String content) {
         validatePost(title, content);
 
         Community subreddit = communityRepository.findById(communityId)
@@ -82,20 +82,6 @@ public class PostService implements PostUseCases {
                         new IllegalArgumentException(
                                 "Post with id " + postId + " not found"
                         ));
-    }
-
-    @Transactional
-    public List<Post> listPosts(long communityId) {
-        Community subreddit = communityRepository.findById(communityId)
-                .orElseThrow(() -> new IllegalArgumentException("Community with id " + communityId + " not found"));
-
-        List<Post> posts = new ArrayList<>();
-        for (Post post : postRepository.findAll()) {
-            if (Objects.equals(post.getSubreddit(), subreddit)) {
-                posts.add(post);
-            }
-        }
-        return posts;
     }
 
     @Transactional(readOnly = true)

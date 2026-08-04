@@ -47,12 +47,6 @@ public class PostController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/subreddits/{communityId}/posts")
-    public ResponseEntity<List<PostDto>> listPostsForCommunity(@PathVariable long communityId) {
-        // the one nested route, listPosts(communityId), is scoped this way
-        return ResponseEntity.ok(postService.listPosts(communityId).stream().map(postMapper::toDto).toList());
-    }
-
     @GetMapping("/posts")
     public ResponseEntity<List<PostDto>> listAllPosts(@RequestParam(required = false) String subreddit) {
         return ResponseEntity.ok(postService.listPosts().stream().map(postMapper::toDto).toList());

@@ -18,12 +18,14 @@ public class Community {
 
     @EqualsAndHashCode.Include
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
-    private String communityName;
+    private String name;
+    private String displayName;
     private String description;
     private LocalDateTime createdAt;
+    private String iconUrl;
 
     @ManyToMany
     @JoinTable(
@@ -39,17 +41,21 @@ public class Community {
     private List<Post> communityPosts;
 
     public Community() {
-        this.communityName = "";
+        this.name = "";
+        this.displayName = "";
         this.description = "";
         this.createdAt = LocalDateTime.now();
+        this.iconUrl = null;
         this.communityUsers = null;
         this.communityPosts = null;
     }
 
-    public Community(String communityName, String description, List<User> communityUsers, List<Post> communityPosts) {
-        this.communityName = communityName;
+    public Community(String communityName, String displayName, String description, String iconUrl, List<User> communityUsers, List<Post> communityPosts) {
+        this.name = communityName;
+        this.displayName = displayName;
         this.description = description;
         this.createdAt = LocalDateTime.now();
+        this.iconUrl = iconUrl;
         this.communityUsers = communityUsers;
         this.communityPosts = communityPosts;
     }

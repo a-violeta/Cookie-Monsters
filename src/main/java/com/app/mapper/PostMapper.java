@@ -16,7 +16,7 @@ import org.mapstruct.Mapping;
 public interface PostMapper {
 
     @Mapping(target = "communityId", source = "subreddit.id")
-    @Mapping(target = "subreddit", source = "subreddit.communityName")
+    @Mapping(target = "subreddit", source = "subreddit.name")
     @Mapping(target = "userId", source = "author.id")
     @Mapping(target = "author", source = "author.username")
     PostDto toDto(Post post);

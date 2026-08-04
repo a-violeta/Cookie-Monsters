@@ -22,7 +22,7 @@ public class PostDto {
     // using the repositories, not trusting what the client sent
     // that's what keeps the Service classes' checks useful
     @NotNull(message = "Community id is required")
-    private Long communityId;
+    private UUID communityId;
 
     @NotNull(message = "User id is required")
     private Long userId;
