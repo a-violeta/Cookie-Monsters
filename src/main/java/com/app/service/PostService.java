@@ -1,10 +1,9 @@
 package com.app.service;
 
-import com.app.model.Community;
-import com.app.model.Post;
-import com.app.model.User;
+import com.app.model.*;
 import com.app.repository.CommunityRepository;
 import com.app.repository.UserRepository;
+import com.app.repository.VoteRepository;
 import lombok.RequiredArgsConstructor;
 import com.app.repository.PostRepository;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -26,6 +25,7 @@ public class PostService implements PostUseCases {
     private final CommunityRepository communityRepository;
     private final UserRepository userRepository;
     private final UserService userService;
+    private final VoteRepository voteRepository;
 
     public void validatePost(String title, String content) {
         if (title == null || title.isBlank()) {
@@ -60,7 +60,19 @@ public class PostService implements PostUseCases {
         post.setCreatedAt(LocalDateTime.now());
         post.setCommentList(new ArrayList<>());
 
-        return postRepository.save(post);
+        post.setUpvotes(1);
+        post.setScore(1);
+        post.setUserVote("up");
+
+        postRepository.save(post);
+
+        Vote vote = new Vote();
+        vote.setAuthor(author);
+        vote.setPost(post);
+        vote.setUserVote(VoteType.UP);
+        voteRepository.save(vote);
+
+        return post;
     }
 
     @Transactional(readOnly = true)
@@ -112,5 +124,50 @@ public class PostService implements PostUseCases {
         }
 
         postRepository.delete(post);
+    }
+
+    @Transactional
+    public Post votePost(UUID postId, String voteType) {
+        Post post = findPostById(postId);
+        User currentUser = userService.getLoggedInUser();
+        Vote vote = voteRepository.findByPostAndAuthor(post, currentUser).orElse(null);
+
+        if (vote == null) {
+            vote = new Vote();
+            vote.setPost(post);
+            vote.setAuthor(currentUser);
+        } else {
+            if (vote.getUserVote() == VoteType.UP) {
+                post.setUpvotes(post.getUpvotes() - 1);
+            }
+            if (vote.getUserVote() == VoteType.DOWN) {
+                post.setDownvotes(post.getDownvotes() - 1);
+            }
+        }
+
+        switch (voteType) {
+            case "up" -> {
+                post.setUpvotes(post.getUpvotes() + 1);
+                vote.setUserVote(VoteType.UP);
+            }
+            case "down" -> {
+                post.setDownvotes(post.getDownvotes() + 1);
+                vote.setUserVote(VoteType.DOWN);
+            }
+            case "none" -> vote.setUserVote(null);
+            case null, default -> throw new IllegalArgumentException("Invalid vote.");
+        }
+
+        post.setScore(post.getUpvotes() - post.getDownvotes());
+
+        if (vote.getUserVote() != null) {
+            post.setUserVote(vote.getUserVote().toString().toLowerCase());
+        } else {
+            post.setUserVote(null);
+        }
+
+        voteRepository.save(vote);
+        postRepository.save(post);
+        return post;
     }
 }

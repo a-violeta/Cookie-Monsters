@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -116,6 +118,30 @@ public class PostHttpClient implements PostUseCases {
     }
 
     @Override
+    public Post votePost(UUID postId, String voteType) {
+        String url = clientConfig.getBaseUrl() + "/posts/" + postId + "/vote";
+
+        Map<String, String> requestBody = Map.of("voteType", voteType);
+
+        try {
+            HttpEntity<Map<String, String>> requestEntity =
+                    new HttpEntity<>(requestBody);
+
+            ResponseEntity<PostDto> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.PUT,
+                    requestEntity,
+                    PostDto.class
+            );
+
+            return toPost(response.getBody());
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            log.error("Failed to vote post via HTTP", e);
+            throw new RuntimeException("Failed to vote on post: " + e.getResponseBodyAsString(), e);
+        }
+    }
+
+    @Override
     public void deletePost(UUID postId) {
         String url = clientConfig.getBaseUrl() + "/posts/" + postId;
         try {
@@ -143,6 +169,10 @@ public class PostHttpClient implements PostUseCases {
         post.setAuthor(author);
         post.setTitle(dto.getTitle());
         post.setContent(dto.getContent());
+        post.setUpvotes(dto.getUpvotes());
+        post.setDownvotes(dto.getDownvotes());
+        post.setScore(dto.getScore());
+        post.setUserVote(dto.getUserVote());
         post.setCreatedAt(dto.getCreatedAt());
 
         return post;

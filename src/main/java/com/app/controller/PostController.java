@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -55,5 +56,12 @@ public class PostController {
     @GetMapping("/posts")
     public ResponseEntity<List<PostDto>> listAllPosts(@RequestParam(required = false) String subreddit) {
         return ResponseEntity.ok(postService.listPosts().stream().map(postMapper::toDto).toList());
+    }
+
+    @PutMapping("/posts/{id}/vote")
+    public ResponseEntity<PostDto> votePost(@PathVariable UUID id, @RequestBody Map<String, String> requestBody) {
+        String voteType = requestBody.get("voteType");
+        Post updated = postService.votePost(id, voteType);
+        return ResponseEntity.ok(postMapper.toDto(updated));
     }
 }

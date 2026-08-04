@@ -13,4 +13,5 @@ public interface PostUseCases {
     List<Post> listPosts();
     Post findPostById(UUID postId);
     void editPost(UUID postId, String newText);
+    Post votePost(UUID postId, String voteType);
 }
