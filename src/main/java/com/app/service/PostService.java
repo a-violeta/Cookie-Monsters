@@ -20,43 +20,43 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "app.http.client.enabled", havingValue = "false", matchIfMissing = true)
-public class PostService implements PostUseCases {
+public class PostService implements PostUseCases{
 
     private final PostRepository postRepository;
     private final CommunityRepository communityRepository;
     private final UserRepository userRepository;
     private final UserService userService;
 
-    public void validatePost(String title, String content) {
+    public void validatePost(String title, String text) {
         if (title == null || title.isBlank()) {
             throw new IllegalArgumentException("Title is required");
         }
 
-        if (content == null || content.isBlank()) {
-            throw new IllegalArgumentException("Content is required");
+        if (text == null || text.isBlank()) {
+            throw new IllegalArgumentException("Text is required");
         }
     }
 
     @Transactional
-    public Post addPost(long communityId, long userId, String title, String content) {
-        validatePost(title, content);
+    public Post addPost(UUID communityId, long userId, String title, String text) {
+        validatePost(title, text);
 
-        Community subreddit = communityRepository.findById(communityId)
+        Community community = communityRepository.findById(communityId)
                 .orElseThrow(() -> new IllegalArgumentException("Community with id " + communityId + " not found"));
 
-        User author = userRepository.findById(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User with id " + userId + " not found"));
 
-        if (subreddit.findUserById(userId) == null) {
-            throw new IllegalArgumentException("You are not a member of this community");
+        if (community.findUserById(userId) == null) {
+            throw new IllegalArgumentException("User is not a member of this community");
         }
 
         Post post = new Post();
 
-        post.setSubreddit(subreddit);
-        post.setAuthor(author);
+        post.setCommunity(community);
+        post.setUser(user);
         post.setTitle(title);
-        post.setContent(content);
+        post.setText(text);
         post.setCreatedAt(LocalDateTime.now());
         post.setCommentList(new ArrayList<>());
 
@@ -64,7 +64,7 @@ public class PostService implements PostUseCases {
     }
 
     @Transactional(readOnly = true)
-    public Post findPostById(UUID postId) {
+    public Post findPostById(long postId) {
         return postRepository.findById(postId)
                 .orElseThrow(() ->
                         new IllegalArgumentException(
@@ -73,13 +73,13 @@ public class PostService implements PostUseCases {
     }
 
     @Transactional
-    public List<Post> listPosts(long communityId) {
-        Community subreddit = communityRepository.findById(communityId)
+    public List<Post> listPosts(UUID communityId) {
+        Community community = communityRepository.findById(communityId)
                 .orElseThrow(() -> new IllegalArgumentException("Community with id " + communityId + " not found"));
 
         List<Post> posts = new ArrayList<>();
         for (Post post : postRepository.findAll()) {
-            if (Objects.equals(post.getSubreddit(), subreddit)) {
+            if (Objects.equals(post.getCommunity(), community)) {
                 posts.add(post);
             }
         }
@@ -92,22 +92,22 @@ public class PostService implements PostUseCases {
     }
 
     @Transactional
-    public void editPost(UUID postId, String newContent) {
+    public void editPost(long postId, String newText) {
         Post post = findPostById(postId);
 
-        if (!Objects.equals(post.getAuthor(), userService.getLoggedInUser())) {
+        if (!Objects.equals(post.getUser(), userService.getLoggedInUser())) {
             throw new IllegalArgumentException("You are not the author of this post");
         }
 
-        validatePost(post.getTitle(), newContent);
-        post.setContent(newContent);
+        validatePost(post.getTitle(), newText);
+        post.setText(newText);
         postRepository.save(post);
     }
 
-    public void deletePost(UUID postId) {
+    public void deletePost(long postId) {
         Post post = findPostById(postId);
 
-        if (!Objects.equals(post.getAuthor(), userService.getLoggedInUser())) {
+        if (!Objects.equals(post.getUser(), userService.getLoggedInUser())) {
             throw new IllegalArgumentException("You are not the author of this post");
         }
 
