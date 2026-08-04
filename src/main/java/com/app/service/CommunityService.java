@@ -187,9 +187,10 @@ public class CommunityService implements CommunityUseCases {
     }
 
     @Transactional(readOnly = true)
-    public List<Post> listCommunityPosts(String name){
+    public List<Post> listCommunityPosts(String name) {
         Community community = findCommunityByName(name);
-
-        return community.getCommunityPosts();
+        List<Post> posts = community.getCommunityPosts();
+        posts.size(); // lazy loading was producing a list of posts that were not loaded, force it to load now
+        return new ArrayList<>(posts); // so we return a detached list, not the Hibernate proxy
     }
 }

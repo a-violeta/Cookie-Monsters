@@ -5,11 +5,13 @@ import com.app.dto.PostDto;
 import com.app.model.Community;
 import com.app.model.Post;
 import com.app.model.User;
+import com.app.response.ApiResponse;
 import com.app.service.CommunityUseCases;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -69,9 +71,13 @@ public class CommunityHttpClient implements CommunityUseCases {
         request.setIconUrl(iconUrl);
 
         try {
-            CommunityDto response = restTemplate.postForObject(url, request, CommunityDto.class);
+            ResponseEntity<ApiResponse<CommunityDto>> response = restTemplate.exchange(
+                    url, HttpMethod.POST, new HttpEntity<>(request),
+                    new ParameterizedTypeReference<ApiResponse<CommunityDto>>() {});
+
             log.info("Community created via HTTP: {}", name);
-            return toCommunity(response);
+
+            return toCommunity(response.getBody().getData());
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             throw new IllegalArgumentException(extractMessage(e));
         }
@@ -91,11 +97,10 @@ public class CommunityHttpClient implements CommunityUseCases {
     public List<Community> listCommunities() {
         String url = clientConfig.getBaseUrl() + "/subreddits";
         try {
-            org.springframework.http.ResponseEntity<List<CommunityDto>> response = restTemplate.exchange(
-                    url, org.springframework.http.HttpMethod.GET, null,
-                    new org.springframework.core.ParameterizedTypeReference<List<CommunityDto>>() {});
-            assert response.getBody() != null; // intellij warning that this might be null
-            return response.getBody().stream().map(this::toCommunity).toList();
+            ResponseEntity<ApiResponse<List<CommunityDto>>> response = restTemplate.exchange(
+                    url, HttpMethod.GET, null,
+                    new ParameterizedTypeReference<ApiResponse<List<CommunityDto>>>() {});
+            return response.getBody().getData().stream().map(this::toCommunity).toList();
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             throw new IllegalArgumentException(extractMessage(e));
         }
@@ -105,7 +110,10 @@ public class CommunityHttpClient implements CommunityUseCases {
     public Community findCommunityById(UUID communityId) {
         String url = clientConfig.getBaseUrl() + "/subreddits/" + communityId;
         try {
-            return toCommunity(restTemplate.getForObject(url, CommunityDto.class));
+            ResponseEntity<ApiResponse<CommunityDto>> response = restTemplate.exchange(
+                    url, HttpMethod.GET, null,
+                    new ParameterizedTypeReference<ApiResponse<CommunityDto>>() {});
+            return toCommunity(response.getBody().getData());
         } catch (HttpClientErrorException.NotFound e) {
             throw new IllegalArgumentException("Community with id " + communityId + " not found");
         } catch (HttpClientErrorException | HttpServerErrorException e) {
@@ -117,7 +125,10 @@ public class CommunityHttpClient implements CommunityUseCases {
     public Community findCommunityByName(String name) {
         String url = clientConfig.getBaseUrl() + "/subreddits/" + name;
         try {
-            return toCommunity(restTemplate.getForObject(url, CommunityDto.class));
+            ResponseEntity<ApiResponse<CommunityDto>> response = restTemplate.exchange(
+                    url, HttpMethod.GET, null,
+                    new ParameterizedTypeReference<ApiResponse<CommunityDto>>() {});
+            return toCommunity(response.getBody().getData());
         } catch (HttpClientErrorException.NotFound e) {
             throw new IllegalArgumentException("Community with name " + name + " not found");
         } catch (HttpClientErrorException | HttpServerErrorException e) {
@@ -162,11 +173,10 @@ public class CommunityHttpClient implements CommunityUseCases {
     public List<Post> listCommunityPosts(String name){
         String url = clientConfig.getBaseUrl() + "/subreddits/" + name + "/posts";
         try {
-            ResponseEntity<List<PostDto>> response = restTemplate.exchange(
+            ResponseEntity<ApiResponse<List<PostDto>>> response = restTemplate.exchange(
                     url, HttpMethod.GET, null,
-                    new ParameterizedTypeReference<List<PostDto>>() {});
-            assert response.getBody() != null; // warning from intellij that this might be null
-            return response.getBody().stream().map(this::toPost).toList();
+                    new ParameterizedTypeReference<ApiResponse<List<PostDto>>>() {});
+            return response.getBody().getData().stream().map(this::toPost).toList();
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             throw new IllegalArgumentException(extractMessage(e));
         }

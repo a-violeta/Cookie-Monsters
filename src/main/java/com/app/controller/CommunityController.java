@@ -5,10 +5,10 @@ import com.app.dto.PostDto;
 import com.app.mapper.CommunityMapper;
 import com.app.mapper.PostMapper;
 import com.app.model.Community;
+import com.app.response.ApiResponse;
 import com.app.service.CommunityUseCases;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,14 +25,24 @@ public class CommunityController {
     private final PostMapper postMapper;
 
     @PostMapping
-    public ResponseEntity<CommunityDto> createCommunity(@Valid @RequestBody CommunityDto dto) {
+    public ResponseEntity<ApiResponse<CommunityDto>> createCommunity(@Valid @RequestBody CommunityDto dto) {
         Community created = communityService.createCommunity(dto.getName(), dto.getDisplayName(), dto.getDescription(), dto.getIconUrl());
-        return ResponseEntity.status(HttpStatus.CREATED).body(communityMapper.toDto(created));
+        return ResponseEntity.ok(ApiResponse.ok(communityMapper.toDto(created)));
     }
 
+    /*
     @GetMapping
     public ResponseEntity<List<CommunityDto>> listCommunities() {
         return ResponseEntity.ok(communityService.listCommunities().stream().map(communityMapper::toDto).toList());
+    }
+    */
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<CommunityDto>>> listCommunities() {
+        List<CommunityDto> dtos = communityService.listCommunities().stream()
+                .map(communityMapper::toDto)
+                .toList();
+        return ResponseEntity.ok(ApiResponse.ok(dtos, dtos.size()));
     }
 
     // it has the same path as find community by name: /subreddits/{parameter}
@@ -45,36 +55,37 @@ public class CommunityController {
     */
 
     @GetMapping("/{name}")
-    public ResponseEntity<CommunityDto> getCommunityByName(@PathVariable String name) {
-        return ResponseEntity.ok(communityMapper.toDto(communityService.findCommunityByName(name)));
+    public ResponseEntity<ApiResponse<CommunityDto>> getCommunityByName(@PathVariable String name) {
+        return ResponseEntity.ok(ApiResponse.ok(communityMapper.toDto(communityService.findCommunityByName(name))));
     }
 
     @PutMapping("/{name}")
-    public ResponseEntity<Void> editCommunity(@PathVariable String name, @RequestBody CommunityDto dto) {
+    public ResponseEntity<ApiResponse<Void>> editCommunity(@PathVariable String name, @RequestBody CommunityDto dto) {
         communityService.editCommunity(name, dto.getDisplayName(), dto.getDescription());
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(ApiResponse.message("Community updated successfully"));
     }
 
     @DeleteMapping("/{name}")
-    public ResponseEntity<Void> deleteCommunity(@PathVariable String name) {
+    public ResponseEntity<ApiResponse<Void>> deleteCommunity(@PathVariable String name) {
         communityService.deleteCommunity(name);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(ApiResponse.message("Community deleted successfully"));
     }
 
     @PostMapping("/{communityId}/members/{userId}")
-    public ResponseEntity<Void> joinCommunity(@PathVariable UUID communityId, @PathVariable Long userId) {
+    public ResponseEntity<ApiResponse<Void>> joinCommunity(@PathVariable UUID communityId, @PathVariable Long userId) {
         communityService.joinCommunity(communityId, userId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(ApiResponse.message("Joined community successfully"));
     }
 
     @DeleteMapping("/{communityId}/members/{userId}")
-    public ResponseEntity<Void> exitCommunity(@PathVariable UUID communityId, @PathVariable Long userId) {
+    public ResponseEntity<ApiResponse<Void>> exitCommunity(@PathVariable UUID communityId, @PathVariable Long userId) {
         communityService.exitCommunity(communityId, userId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(ApiResponse.message("Left community successfully"));
     }
 
     @GetMapping("/{name}/posts")
-    public ResponseEntity<List<PostDto>> listCommunityPosts(@PathVariable String name){
-        return ResponseEntity.ok(communityService.listCommunityPosts(name).stream().map(postMapper::toDto).toList());
+    public ResponseEntity<ApiResponse<List<PostDto>>> listCommunityPosts(@PathVariable String name){
+        List<PostDto> dtos = communityService.listCommunityPosts(name).stream().map(postMapper::toDto).toList();
+        return ResponseEntity.ok(ApiResponse.ok(dtos, dtos.size()));
     }
 }
