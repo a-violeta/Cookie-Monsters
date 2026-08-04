@@ -54,9 +54,9 @@ public class ListPostsCommand extends Command {
                 throw new IllegalArgumentException("Index out of bounds!");
             }
 
-            UUID communityId = communities.get(chosenIndex-1).getId();
+            String communityName = communities.get(chosenIndex-1).getName();
 
-            List<Post> posts = postUseCases.listPosts(communityId);
+            List<Post> posts = communityUseCases.listCommunityPosts(communityName);
 
             if (posts.isEmpty()) {
                 consolePrinter.printError("No posts to list!");

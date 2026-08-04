@@ -9,7 +9,6 @@ public interface PostUseCases {
     void validatePost(String title, String text);
     Post addPost(UUID communityId, long userId, String title, String text);
     void deletePost(UUID postId);
-    List<Post> listPosts(UUID communityId);
     List<Post> listPosts();
     Post findPostById(UUID postId);
     void editPost(UUID postId, String newText);

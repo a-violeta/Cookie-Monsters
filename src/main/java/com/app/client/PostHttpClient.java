@@ -44,7 +44,7 @@ public class PostHttpClient implements PostUseCases {
     @Override
     public Post addPost(UUID communityId, long userId, String title, String content) {
         validatePost(title, content);
-        String url = clientConfig.getBaseUrl() + "/api/posts";
+        String url = clientConfig.getBaseUrl() + "/posts";
 
         PostDto request = new PostDto();
         request.setCommunityId(communityId);
@@ -73,19 +73,6 @@ public class PostHttpClient implements PostUseCases {
             throw new IllegalArgumentException("Post with id " + postId + " not found");
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             throw new RuntimeException("Failed to fetch post: " + e.getResponseBodyAsString(), e);
-        }
-    }
-
-    @Override
-    public List<Post> listPosts(UUID communityId) {
-        String url = clientConfig.getBaseUrl() + "/subreddits/" + communityId + "/posts";
-        try {
-            ResponseEntity<List<PostDto>> response = restTemplate.exchange(url, HttpMethod.GET, null,
-                    new ParameterizedTypeReference<>() {
-            });
-            return response.getBody() != null ? response.getBody().stream().map(this::toPost).toList() : null;
-        } catch (HttpClientErrorException | HttpServerErrorException e) {
-            throw new RuntimeException("Failed to list posts: " + e.getResponseBodyAsString(), e);
         }
     }
 
@@ -155,7 +142,7 @@ public class PostHttpClient implements PostUseCases {
 
         Community subreddit = new Community();
         subreddit.setId(dto.getCommunityId());
-        subreddit.setCommunityName(dto.getSubreddit());
+        subreddit.setName(dto.getSubreddit());
 
         User author = new User();
         author.setId(dto.getUserId());

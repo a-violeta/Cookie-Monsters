@@ -187,18 +187,18 @@ public class CommunityHttpClient implements CommunityUseCases {
 
         Community community = new Community();
         community.setId(dto.getCommunityId());
-        community.setName(dto.getCommunityName());
+        community.setName(dto.getSubreddit());
 
         User user = new User();
         user.setId(dto.getUserId());
-        user.setUsername(dto.getUsername());
+        user.setUsername(dto.getAuthor());
 
         Post post = new Post();
         post.setId(dto.getId());
-        post.setCommunity(community);
-        post.setUser(user);
+        post.setSubreddit(community);
+        post.setAuthor(user);
         post.setTitle(dto.getTitle());
-        post.setText(dto.getText());
+        post.setContent(dto.getContent());
         post.setCreatedAt(dto.getCreatedAt());
         return post;
     }

@@ -84,20 +84,6 @@ public class PostService implements PostUseCases {
                         ));
     }
 
-    @Transactional
-    public List<Post> listPosts(UUID communityId) {
-        Community subreddit = communityRepository.findById(communityId)
-                .orElseThrow(() -> new IllegalArgumentException("Community with id " + communityId + " not found"));
-
-        List<Post> posts = new ArrayList<>();
-        for (Post post : postRepository.findAll()) {
-            if (Objects.equals(post.getSubreddit(), subreddit)) {
-                posts.add(post);
-            }
-        }
-        return posts;
-    }
-
     @Transactional(readOnly = true)
     public List<Post> listPosts() {
         return postRepository.findAll();
