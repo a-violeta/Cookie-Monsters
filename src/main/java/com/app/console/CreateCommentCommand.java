@@ -7,6 +7,7 @@ import com.app.service.UserUseCases;
 import com.app.service.PostUseCases;
 
 import java.util.List;
+import java.util.UUID;
 
 public class CreateCommentCommand extends Command {
 
@@ -60,7 +61,7 @@ public class CreateCommentCommand extends Command {
                 throw new IllegalArgumentException("Index out of bounds!");
             }
 
-            Long postId = posts.get(chosenIndex-1).getId();
+            UUID postId = posts.get(chosenIndex-1).getId();
 
             String text = args[0];
             long userId = userUseCases.getLoggedInUser().getId();

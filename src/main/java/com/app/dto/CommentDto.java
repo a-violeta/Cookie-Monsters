@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 // why id instead of the whole object? check out explanation in PostDto
 
@@ -24,7 +25,7 @@ public class CommentDto {
     // using the repositories, not trusting what the client sent
     // that's what keeps the Service classes checks useful instead of bypassable
     @NotNull(message = "Post id is required")
-    private Long postId;
+    private UUID postId;
 
     private String username; // convenience display field, response-only
 
