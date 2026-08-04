@@ -17,6 +17,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +37,7 @@ public class CommentHttpClient implements CommentUseCases {
     }
 
     @Override
-    public Comment addComment(String text, long userId, long postId) {
+    public Comment addComment(String text, long userId, UUID postId) {
         validateComment(text);
         String url = clientConfig.getBaseUrl() + "/api/comments";
 
@@ -93,20 +94,22 @@ public class CommentHttpClient implements CommentUseCases {
         String url = clientConfig.getBaseUrl() + "/api/comments";
         try {
             ResponseEntity<List<CommentDto>> response = restTemplate.exchange(
-                    url, HttpMethod.GET, null, new ParameterizedTypeReference<List<CommentDto>>() {});
-            return response.getBody().stream().map(this::toComment).toList();
+                    url, HttpMethod.GET, null, new ParameterizedTypeReference<>() {
+                    });
+            return response.getBody() != null ? response.getBody().stream().map(this::toComment).toList() : null;
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             throw new IllegalArgumentException(extractMessage(e));
         }
     }
 
     @Override
-    public List<Comment> listCommentByPostId(long postId) {
+    public List<Comment> listCommentByPostId(UUID postId) {
         String url = clientConfig.getBaseUrl() + "/api/comments/post/" + postId;
         try {
             ResponseEntity<List<CommentDto>> response = restTemplate.exchange(
-                    url, HttpMethod.GET, null, new ParameterizedTypeReference<List<CommentDto>>() {});
-            return response.getBody().stream().map(this::toComment).toList();
+                    url, HttpMethod.GET, null, new ParameterizedTypeReference<>() {
+                    });
+            return response.getBody() != null ? response.getBody().stream().map(this::toComment).toList() : null;
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             throw new IllegalArgumentException(extractMessage(e));
         }

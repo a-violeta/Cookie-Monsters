@@ -137,13 +137,13 @@ public class ConsolePrinter {
 
     public void displayPost(Post post) {
         System.out.println("\n" + CYAN + "┌──────────────────────────────────────────────" + RESET);
-        System.out.println(CYAN + "│ " + RESET + "📌 " + BOLD + post.getCommunity().getDisplayName() + RESET
+        System.out.println(CYAN + "│ " + RESET + "📌 " + BOLD + post.getSubreddit().getDisplayName() + RESET
                 + GRAY + "  •  Post #" + post.getId() + RESET);
         System.out.println(CYAN + "│ " + RESET + BOLD + YELLOW + post.getTitle() + RESET);
         System.out.println(CYAN + "│" + RESET);
-        System.out.println(CYAN + "│ " + RESET + post.getText());
+        System.out.println(CYAN + "│ " + RESET + post.getContent());
         System.out.println(CYAN + "│" + RESET);
-        System.out.println(CYAN + "│ " + RESET + "👤 " + GRAY + "author: " + post.getUser().getUsername() + RESET);
+        System.out.println(CYAN + "│ " + RESET + "👤 " + GRAY + "author: " + post.getAuthor().getUsername() + RESET);
         System.out.println(CYAN + "└──────────────────────────────────────────────" + RESET + "\n");
     }
 
@@ -161,8 +161,7 @@ public class ConsolePrinter {
         System.out.println(BLUE + "│" + RESET);
         System.out.println(BLUE + "│ " + RESET + user.getDescription());
         System.out.println(BLUE + "│" + RESET);
-        System.out.println(BLUE + "│ " + RESET + GRAY + "joined: "
-                + user.getCreatedAt().format(DateTimeFormatter.ofPattern("MMM d, yyyy")) + RESET);
+        System.out.println(BLUE + "│ " + RESET + GRAY + "joined: " + user.getCreatedAt().format(DateTimeFormatter.ofPattern("MMM d, yyyy")) + RESET);
         System.out.println(BLUE + "└──────────────────────────────────────────────" + RESET + "\n");
     }
 

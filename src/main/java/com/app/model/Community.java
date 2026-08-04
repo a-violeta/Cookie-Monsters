@@ -35,7 +35,7 @@ public class Community {
     )
     private List<User> communityUsers;
 
-    @OneToMany(mappedBy = "community", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "subreddit", cascade = CascadeType.ALL)
     // cascade: whatever operation happens to a Community, propagate that same operation to all the Posts in its posts list automatically
     // consequence: deleting a Community also deletes all their Posts
     private List<Post> communityPosts;
@@ -60,7 +60,7 @@ public class Community {
         this.communityPosts = communityPosts;
     }
 
-    public Post findPostById(long postId){
+    public Post findPostById(UUID postId){
 
         // if there are any posts at all, we search
         if (this.getCommunityPosts() != null && !this.getCommunityPosts().isEmpty()) {
