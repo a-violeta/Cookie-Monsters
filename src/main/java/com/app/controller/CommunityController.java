@@ -1,6 +1,7 @@
 package com.app.controller;
 
 import com.app.dto.CommunityDto;
+import com.app.dto.CommunityUpdateRequest;
 import com.app.dto.PostDto;
 import com.app.mapper.CommunityMapper;
 import com.app.mapper.PostMapper;
@@ -60,8 +61,8 @@ public class CommunityController {
     }
 
     @PutMapping("/{name}")
-    public ResponseEntity<ApiResponse<Void>> editCommunity(@PathVariable String name, @RequestBody CommunityDto dto) {
-        communityService.editCommunity(name, dto.getDisplayName(), dto.getDescription());
+    public ResponseEntity<ApiResponse<Void>> editCommunity(@PathVariable String name, @Valid @RequestBody CommunityUpdateRequest dto) {
+        communityService.editCommunity(name, dto.getDisplayName(), dto.getIconUrl(), dto.getDescription());
         return ResponseEntity.ok(ApiResponse.message("Community updated successfully"));
     }
 

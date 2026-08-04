@@ -66,22 +66,27 @@ public class CommunityService implements CommunityUseCases {
     }
 
     @Transactional
-    public void editCommunity(String name, String displayName, String description) {
+    public void editCommunity(String name, String displayName, String iconUrl, String description) {
+        if (displayName == null && description == null && iconUrl == null) {
+            throw new IllegalArgumentException("At least one field must be provided to update the community");
+        }
+
         Community community = findCommunityByName(name);
 
         if (!community.getCommunityUsers().contains(userService.getLoggedInUser())) {
             throw new IllegalArgumentException("You are not a member of this community");
         }
 
-        validateCommunity(community.getName(), displayName, description);
-
-        // just a user from that community should be able to edit
-        if (!community.getCommunityUsers().contains(userService.getLoggedInUser())) {
-            throw new IllegalStateException("User is not in community!");
+        if (displayName != null) {
+            community.setDisplayName(displayName);
+        }
+        if (description != null) {
+            community.setDescription(description);
+        }
+        if (iconUrl != null) {
+            community.setIconUrl(iconUrl);
         }
 
-        community.setDescription(description);
-        community.setDisplayName(displayName);
         communityRepository.save(community);
     }
 
