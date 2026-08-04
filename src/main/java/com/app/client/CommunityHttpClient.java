@@ -1,24 +1,19 @@
 package com.app.client;
 
 import com.app.dto.CommunityDto;
-import com.app.dto.PostDto;
 import com.app.model.Community;
-import com.app.model.Post;
-import com.app.model.User;
 import com.app.service.CommunityUseCases;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,18 +30,18 @@ public class CommunityHttpClient implements CommunityUseCases {
     // UserService.createUser's validation DOES need the DB to check username uniqueness
     // and so createUser is never duplicated
     @Override
-    public void validateCommunity(String communityName, String displayName, String description) {
+    public void validateCommunity(String communityName, String description) {
         // pure validation, no I/O, mirrors CommunityService, safe to duplicate
-        if (communityName == null || communityName.isBlank() || displayName == null || displayName.isBlank()) {
+        if (communityName == null || communityName.isBlank()) {
             throw new IllegalArgumentException("Community name is required");
         }
         if (!communityName.matches("^[a-zA-Z0-9_]+$")) {
             throw new IllegalArgumentException("Community name must contain only letters, numbers, and '_'");
         }
-        if (communityName.length() < 3 || displayName.length() < 3) {
+        if (communityName.length() < 3) {
             throw new IllegalArgumentException("Community name must have at least 3 characters");
         }
-        if (communityName.length() > 50 || displayName.length() > 50) {
+        if (communityName.length() > 50) {
             throw new IllegalArgumentException("Community name is too long");
         }
         if (description == null || description.isBlank()) {
@@ -58,19 +53,17 @@ public class CommunityHttpClient implements CommunityUseCases {
     }
 
     @Override
-    public Community createCommunity(String name, String displayName, String description, String iconUrl) {
-        validateCommunity(name, displayName, description);
-        String url = clientConfig.getBaseUrl() + "/subreddits";
+    public Community createCommunity(String communityName, String description) {
+        validateCommunity(communityName, description);
+        String url = clientConfig.getBaseUrl() + "/api/communities";
 
         CommunityDto request = new CommunityDto();
-        request.setName(name);
-        request.setDisplayName(displayName);
+        request.setCommunityName(communityName);
         request.setDescription(description);
-        request.setIconUrl(iconUrl);
 
         try {
             CommunityDto response = restTemplate.postForObject(url, request, CommunityDto.class);
-            log.info("Community created via HTTP: {}", name);
+            log.info("Community created via HTTP: {}", communityName);
             return toCommunity(response);
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             throw new IllegalArgumentException(extractMessage(e));
@@ -78,8 +71,8 @@ public class CommunityHttpClient implements CommunityUseCases {
     }
 
     @Override
-    public void deleteCommunity(String name) {
-        String url = clientConfig.getBaseUrl() + "/subreddits/" + name;
+    public void deleteCommunity(long communityId) {
+        String url = clientConfig.getBaseUrl() + "/api/communities/" + communityId;
         try {
             restTemplate.delete(url);
         } catch (HttpClientErrorException | HttpServerErrorException e) {
@@ -89,12 +82,11 @@ public class CommunityHttpClient implements CommunityUseCases {
 
     @Override
     public List<Community> listCommunities() {
-        String url = clientConfig.getBaseUrl() + "/subreddits";
+        String url = clientConfig.getBaseUrl() + "/api/communities";
         try {
             org.springframework.http.ResponseEntity<List<CommunityDto>> response = restTemplate.exchange(
                     url, org.springframework.http.HttpMethod.GET, null,
                     new org.springframework.core.ParameterizedTypeReference<List<CommunityDto>>() {});
-            assert response.getBody() != null; // intellij warning that this might be null
             return response.getBody().stream().map(this::toCommunity).toList();
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             throw new IllegalArgumentException(extractMessage(e));
@@ -102,8 +94,8 @@ public class CommunityHttpClient implements CommunityUseCases {
     }
 
     @Override
-    public Community findCommunityById(UUID communityId) {
-        String url = clientConfig.getBaseUrl() + "/subreddits/" + communityId;
+    public Community findCommunityById(long communityId) {
+        String url = clientConfig.getBaseUrl() + "/api/communities/" + communityId;
         try {
             return toCommunity(restTemplate.getForObject(url, CommunityDto.class));
         } catch (HttpClientErrorException.NotFound e) {
@@ -115,7 +107,7 @@ public class CommunityHttpClient implements CommunityUseCases {
 
     @Override
     public Community findCommunityByName(String name) {
-        String url = clientConfig.getBaseUrl() + "/subreddits/" + name;
+        String url = clientConfig.getBaseUrl() + "/api/communities/name/" + name;
         try {
             return toCommunity(restTemplate.getForObject(url, CommunityDto.class));
         } catch (HttpClientErrorException.NotFound e) {
@@ -126,11 +118,10 @@ public class CommunityHttpClient implements CommunityUseCases {
     }
 
     @Override
-    public void editCommunity(String name, String displayName, String description) {
-        String url = clientConfig.getBaseUrl() + "/subreddits/" + name;
+    public void editCommunity(long communityId, String description) {
+        String url = clientConfig.getBaseUrl() + "/api/communities/" + communityId;
         CommunityDto request = new CommunityDto();
         request.setDescription(description);
-        request.setDisplayName(displayName);
         try {
             restTemplate.put(url, request);
         } catch (HttpClientErrorException | HttpServerErrorException e) {
@@ -139,8 +130,8 @@ public class CommunityHttpClient implements CommunityUseCases {
     }
 
     @Override
-    public void joinCommunity(UUID communityId, Long userId) {
-        String url = clientConfig.getBaseUrl() + "/subreddits/" + communityId + "/members/" + userId;
+    public void joinCommunity(Long communityId, Long userId) {
+        String url = clientConfig.getBaseUrl() + "/api/communities/" + communityId + "/members/" + userId;
         try {
             restTemplate.postForLocation(url, null);
         } catch (HttpClientErrorException | HttpServerErrorException e) {
@@ -149,8 +140,8 @@ public class CommunityHttpClient implements CommunityUseCases {
     }
 
     @Override
-    public void exitCommunity(UUID communityId, Long userId) {
-        String url = clientConfig.getBaseUrl() + "/subreddits/" + communityId + "/members/" + userId;
+    public void exitCommunity(Long communityId, Long userId) {
+        String url = clientConfig.getBaseUrl() + "/api/communities/" + communityId + "/members/" + userId;
         try {
             restTemplate.delete(url);
         } catch (HttpClientErrorException | HttpServerErrorException e) {
@@ -159,49 +150,23 @@ public class CommunityHttpClient implements CommunityUseCases {
     }
 
     @Override
-    public List<Post> listCommunityPosts(String name){
-        String url = clientConfig.getBaseUrl() + "/subreddits/" + name + "/posts";
-        try {
-            ResponseEntity<List<PostDto>> response = restTemplate.exchange(
-                    url, HttpMethod.GET, null,
-                    new ParameterizedTypeReference<List<PostDto>>() {});
-            assert response.getBody() != null; // warning from intellij that this might be null
-            return response.getBody().stream().map(this::toPost).toList();
-        } catch (HttpClientErrorException | HttpServerErrorException e) {
-            throw new IllegalArgumentException(extractMessage(e));
-        }
-    }
-
-    private Post toPost(PostDto dto) {
-        if (dto == null) return null;
-
-        Community community = new Community();
-        community.setId(dto.getCommunityId());
-        community.setName(dto.getCommunityName());
-
-        User user = new User();
-        user.setId(dto.getUserId());
-        user.setUsername(dto.getUsername());
-
-        Post post = new Post();
-        post.setId(dto.getId());
-        post.setCommunity(community);
-        post.setUser(user);
-        post.setTitle(dto.getTitle());
-        post.setText(dto.getText());
-        post.setCreatedAt(dto.getCreatedAt());
-        return post;
+    public List<Community> listCommunitiesByUserId(Long userId) {
+        CommunityDto[] dtos = restTemplate.getForObject(
+                clientConfig.getBaseUrl() + "/api/users/" + userId + "/communities",
+                CommunityDto[].class
+        );
+        return Arrays.stream(dtos)
+                .map(this::toCommunity)
+                .collect(Collectors.toList());
     }
 
     private Community toCommunity(CommunityDto dto) {
         if (dto == null) return null;
         Community community = new Community();
         community.setId(dto.getId());
-        community.setName(dto.getName());
-        community.setDisplayName(dto.getDisplayName());
+        community.setCommunityName(dto.getCommunityName());
         community.setDescription(dto.getDescription());
         community.setCreatedAt(dto.getCreatedAt());
-        community.setIconUrl(dto.getIconUrl());
         // communityUsers/communityPosts intentionally left null, console has no datasource to hydrate them
         return community;
     }
