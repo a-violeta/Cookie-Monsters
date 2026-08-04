@@ -7,6 +7,7 @@ import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
@@ -17,12 +18,14 @@ public class Community {
 
     @EqualsAndHashCode.Include
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
-    private String communityName;
+    private String name;
+    private String displayName;
     private String description;
     private LocalDateTime createdAt;
+    private String iconUrl;
 
     @ManyToMany
     @JoinTable(
@@ -32,28 +35,32 @@ public class Community {
     )
     private List<User> communityUsers;
 
-    @OneToMany(mappedBy = "community", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "subreddit", cascade = CascadeType.ALL)
     // cascade: whatever operation happens to a Community, propagate that same operation to all the Posts in its posts list automatically
     // consequence: deleting a Community also deletes all their Posts
     private List<Post> communityPosts;
 
     public Community() {
-        this.communityName = "";
+        this.name = "";
+        this.displayName = "";
         this.description = "";
         this.createdAt = LocalDateTime.now();
+        this.iconUrl = null;
         this.communityUsers = null;
         this.communityPosts = null;
     }
 
-    public Community(String communityName, String description, List<User> communityUsers, List<Post> communityPosts) {
-        this.communityName = communityName;
+    public Community(String communityName, String displayName, String description, String iconUrl, List<User> communityUsers, List<Post> communityPosts) {
+        this.name = communityName;
+        this.displayName = displayName;
         this.description = description;
         this.createdAt = LocalDateTime.now();
+        this.iconUrl = iconUrl;
         this.communityUsers = communityUsers;
         this.communityPosts = communityPosts;
     }
 
-    public Post findPostById(long postId){
+    public Post findPostById(UUID postId){
 
         // if there are any posts at all, we search
         if (this.getCommunityPosts() != null && !this.getCommunityPosts().isEmpty()) {

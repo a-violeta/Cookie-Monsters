@@ -5,6 +5,7 @@ import com.app.service.CommunityUseCases;
 import com.app.service.UserUseCases;
 
 import java.util.List;
+import java.util.UUID;
 
 public class JoinCommunityCommand extends Command {
 
@@ -56,7 +57,7 @@ public class JoinCommunityCommand extends Command {
                 throw new IllegalArgumentException("Index out of bounds!");
             }
 
-            Long communityId = communities.get(chosenIndex-1).getId();
+            UUID communityId = communities.get(chosenIndex-1).getId();
 
             Long userId = userUseCases.getLoggedInUser().getId();
 

@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/comments")
@@ -51,7 +52,7 @@ public class CommentController {
     }
 
     @GetMapping("/post/{postId}")
-    public ResponseEntity<List<CommentDto>> listCommentsByPost(@PathVariable long postId) {
+    public ResponseEntity<List<CommentDto>> listCommentsByPost(@PathVariable UUID postId) {
         return ResponseEntity.ok(commentService.listCommentByPostId(postId).stream().map(commentMapper::toDto).toList());
     }
 }

@@ -15,12 +15,13 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 
 @Service
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "app.http.client.enabled", havingValue = "false", matchIfMissing = true)
-public class CommentService implements CommentUseCases{
+public class CommentService implements CommentUseCases {
 
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
@@ -34,7 +35,7 @@ public class CommentService implements CommentUseCases{
     }
 
     @Transactional
-    public Comment addComment(String text, long userId, long postId) {
+    public Comment addComment(String text, long userId, UUID postId) {
         validateComment(text);
 
         User user = userRepository.findById(userId)
@@ -43,7 +44,7 @@ public class CommentService implements CommentUseCases{
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("Post with id " + postId + " not found"));
 
-        if (post.getCommunity().findUserById(userId) == null) {
+        if (post.getSubreddit().findUserById(userId) == null) {
             throw new IllegalArgumentException("User is not a member of the community this post belongs to");
         }
 
@@ -68,7 +69,7 @@ public class CommentService implements CommentUseCases{
     }
 
     @Transactional
-    public List<Comment> listCommentByPostId(long postId) {
+    public List<Comment> listCommentByPostId(UUID postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("Post with id " + postId + " not found"));
 
