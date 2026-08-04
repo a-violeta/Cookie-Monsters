@@ -17,6 +17,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -36,12 +37,12 @@ public class CommentHttpClient implements CommentUseCases {
     }
 
     @Override
-    public Comment addComment(String text, long userId, long postId) {
+    public Comment addComment(String text, long userId, UUID postId) {
         validateComment(text);
         String url = clientConfig.getBaseUrl() + "/api/comments";
 
         CommentDto request = new CommentDto();
-        request.setText(text);
+        request.setContent(text);
         request.setUserId(userId);
         request.setPostId(postId);
 
@@ -55,7 +56,7 @@ public class CommentHttpClient implements CommentUseCases {
     }
 
     @Override
-    public Comment findCommentById(long commentId) {
+    public Comment findCommentById(UUID commentId) {
         String url = clientConfig.getBaseUrl() + "/api/comments/" + commentId;
         try {
             return toComment(restTemplate.getForObject(url, CommentDto.class));
@@ -67,7 +68,7 @@ public class CommentHttpClient implements CommentUseCases {
     }
 
     @Override
-    public void editComment(long commentId, String newText) {
+    public void editComment(UUID commentId, String newText) {
         String url = clientConfig.getBaseUrl() + "/api/comments/" + commentId;
         CommentDto request = new CommentDto();
         request.setText(newText);
@@ -79,7 +80,7 @@ public class CommentHttpClient implements CommentUseCases {
     }
 
     @Override
-    public void removeComment(long commentId) {
+    public void removeComment(UUID commentId) {
         String url = clientConfig.getBaseUrl() + "/api/comments/" + commentId;
         try {
             restTemplate.delete(url);
@@ -101,7 +102,7 @@ public class CommentHttpClient implements CommentUseCases {
     }
 
     @Override
-    public List<Comment> listCommentByPostId(long postId) {
+    public List<Comment> listCommentByPostId(UUID postId) {
         String url = clientConfig.getBaseUrl() + "/api/comments/post/" + postId;
         try {
             ResponseEntity<List<CommentDto>> response = restTemplate.exchange(
@@ -126,7 +127,7 @@ public class CommentHttpClient implements CommentUseCases {
 
         Comment comment = new Comment();
         comment.setId(dto.getId());
-        comment.setText(dto.getText());
+        comment.setContent(dto.getText());
         comment.setUser(user);
         comment.setPost(post);
         comment.setCreatedAt(dto.getCreatedAt());

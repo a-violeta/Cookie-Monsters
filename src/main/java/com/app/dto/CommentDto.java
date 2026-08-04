@@ -5,28 +5,37 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 // why id instead of the whole object? check out explanation in PostDto
 
 @Data
 public class CommentDto {
-    private Long id;
 
-    @NotBlank(message = "Text is required")
-    private String text;
+    @NotNull
+    private UUID id;
+
+    @NotNull
+    private UUID postId;
+
+    private UUID parentId;
+
+    @NotBlank(message = "Content is required")
+    private String content;
 
     // these are not full objects anymore because they carry back references to each other
     // and because they are flat, we need a mapper to create the full object
     @NotNull(message = "User id is required")
     private Long userId;
 
+    @NotBlank(message =  "Username is required")
+    private String username;
+
     // the server always re-derives the real relationships from communityId/userId
     // using the repositories, not trusting what the client sent
     // that's what keeps the Service classes checks useful instead of bypassable
-    @NotNull(message = "Post id is required")
-    private Long postId;
-
-    private String username; // convenience display field, response-only
 
     private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
 }

@@ -3,10 +3,7 @@ package com.app.repository;
 import com.app.model.Post;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -21,7 +18,7 @@ public class InMemoryPostRepository implements PostRepository {
     private final AtomicLong idSequence = new AtomicLong(1);
 
     @Override
-    public Optional<Post> findById(Long id) {
+    public Optional<Post> findById(UUID id) {
         // can be null if not found
         return Optional.ofNullable(storage.get(id));
     }

@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 
 @Service
@@ -34,8 +35,8 @@ public class CommentService implements CommentUseCases{
     }
 
     @Transactional
-    public Comment addComment(String text, long userId, long postId) {
-        validateComment(text);
+    public Comment addComment(String content, long userId, UUID postId) {
+        validateComment(content);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User with id " + userId + " not found"));
@@ -48,7 +49,7 @@ public class CommentService implements CommentUseCases{
         }
 
         Comment newComment = new Comment();
-        newComment.setText(text);
+        newComment.setContent(content);
         newComment.setUser(user);
         newComment.setPost(post);
         newComment.setCreatedAt(LocalDateTime.now());
@@ -57,7 +58,7 @@ public class CommentService implements CommentUseCases{
     }
 
     @Transactional(readOnly = true)
-    public Comment findCommentById(long commentId) {
+    public Comment findCommentById(UUID commentId) {
         return commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("Comment with id " + commentId + " not found"));
     }
@@ -68,7 +69,7 @@ public class CommentService implements CommentUseCases{
     }
 
     @Transactional
-    public List<Comment> listCommentByPostId(long postId) {
+    public List<Comment> listCommentByPostId(UUID postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("Post with id " + postId + " not found"));
 
@@ -82,19 +83,19 @@ public class CommentService implements CommentUseCases{
     }
 
     @Transactional
-    public void editComment(long commentId, String newText) {
+    public void editComment(UUID commentId, String newText) {
         Comment comment = findCommentById(commentId);
 
         if (!Objects.equals(comment.getUser().getId(), userUseCases.getLoggedInUser().getId())) {
             throw new IllegalStateException("This comment was not created by You ");
         }
         validateComment(newText);
-        comment.setText(newText);
+        comment.setContent(newText);
         commentRepository.save(comment);
     }
 
     @Transactional
-    public void removeComment(long commentId) {
+    public void removeComment(UUID commentId) {
         // try to find this comment
         Comment comment = findCommentById(commentId);
 

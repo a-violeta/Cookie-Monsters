@@ -4,6 +4,7 @@ import com.app.model.Comment;
 import com.app.service.CommentUseCases;
 
 import java.util.List;
+import java.util.UUID;
 
 public class DeleteCommentCommand extends Command {
 
@@ -49,7 +50,7 @@ public class DeleteCommentCommand extends Command {
                 throw new IllegalArgumentException("Index out of bounds!");
             }
 
-            Long commentId = comments.get(chosenIndex-1).getId();
+            UUID commentId = comments.get(chosenIndex-1).getId();
 
             commentUseCases.removeComment(commentId);
             consolePrinter.printSuccess("Comment successfully deleted!");

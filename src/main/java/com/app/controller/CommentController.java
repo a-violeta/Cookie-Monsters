@@ -11,37 +11,37 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/comments")
 @RequiredArgsConstructor
 public class CommentController {
 
     private final CommentUseCases commentService;
     private final CommentMapper commentMapper;
 
-    @PostMapping
-    public ResponseEntity<CommentDto> addComment(@Valid @RequestBody CommentDto dto) {
+    @PostMapping("/posts/{postId}/comments")
+    public ResponseEntity<CommentDto> addComment(@PathVariable UUID postId, @Valid @RequestBody CommentDto dto) {
         // CommentUseCases re-derives Post/User from the ids
         // CommentUseCases checks the person is a member of the post's community
-        Comment created = commentService.addComment(dto.getText(), dto.getUserId(), dto.getPostId());
+        Comment created = commentService.addComment(dto.getContent(), dto.getUserId(), postId);
         return ResponseEntity.status(HttpStatus.CREATED).body(commentMapper.toDto(created));
     }
 
-    @GetMapping("/{commentId}")
-    public ResponseEntity<CommentDto> getComment(@PathVariable long commentId) {
-        return ResponseEntity.ok(commentMapper.toDto(commentService.findCommentById(commentId)));
+    @GetMapping("/comments/{id}")
+    public ResponseEntity<CommentDto> getComment(@PathVariable UUID id) {
+        return ResponseEntity.ok(commentMapper.toDto(commentService.findCommentById(id)));
     }
 
-    @PutMapping("/{commentId}")
-    public ResponseEntity<Void> editComment(@PathVariable long commentId, @RequestBody CommentDto dto) {
-        commentService.editComment(commentId, dto.getText());
+    @PutMapping("/comments/{id}")
+    public ResponseEntity<Void> editComment(@PathVariable UUID id, @RequestBody CommentDto dto) {
+        commentService.editComment(id, dto.getContent());
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/{commentId}")
-    public ResponseEntity<Void> removeComment(@PathVariable long commentId) {
-        commentService.removeComment(commentId);
+    @DeleteMapping("/comments/{id}")
+    public ResponseEntity<Void> removeComment(@PathVariable UUID id) {
+        commentService.removeComment(id);
         return ResponseEntity.noContent().build();
     }
 
@@ -50,8 +50,8 @@ public class CommentController {
         return ResponseEntity.ok(commentService.listComments().stream().map(commentMapper::toDto).toList());
     }
 
-    @GetMapping("/post/{postId}")
-    public ResponseEntity<List<CommentDto>> listCommentsByPost(@PathVariable long postId) {
-        return ResponseEntity.ok(commentService.listCommentByPostId(postId).stream().map(commentMapper::toDto).toList());
+    @GetMapping("/posts/{id}/comments")
+    public ResponseEntity<List<CommentDto>> listCommentsByPost(@PathVariable UUID id) {
+        return ResponseEntity.ok(commentService.listCommentByPostId(id).stream().map(commentMapper::toDto).toList());
     }
 }

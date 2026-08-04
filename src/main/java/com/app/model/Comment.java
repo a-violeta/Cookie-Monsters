@@ -3,8 +3,8 @@ package com.app.model;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.EqualsAndHashCode;
-
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
@@ -14,11 +14,10 @@ import java.time.LocalDateTime;
 public class Comment {
 
     @Id // PK of the table
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @EqualsAndHashCode.Include
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
-    private String text;
+    private String content;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -30,8 +29,12 @@ public class Comment {
 
     private LocalDateTime createdAt;
 
+    private LocalDateTime UpdatedAt;
+
+    private LocalDateTime DeletedAt;
+
     public Comment(){
-        this.text = "";
+        this.content = "";
         this.user = null;
         this.post = null;
         this.createdAt = LocalDateTime.now();
@@ -39,8 +42,8 @@ public class Comment {
         // I think it s better to use current time though
     }
 
-    public Comment(String text, User user, Post post){
-        this.text = text;
+    public Comment(String content, User user, Post post){
+        this.content = content;
         this.user = user;
         this.post = post;
         this.createdAt = LocalDateTime.now();

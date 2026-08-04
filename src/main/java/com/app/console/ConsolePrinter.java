@@ -168,7 +168,7 @@ public class ConsolePrinter {
 
     public void displayComment(Comment comment) {
         System.out.println("\n" + GRAY + "┌──────────────────────────────────────────────" + RESET);
-        System.out.println(GRAY + "│ " + RESET + "💬 " + comment.getText());
+        System.out.println(GRAY + "│ " + RESET + "💬 " + comment.getContent());
         System.out.println(GRAY + "│" + RESET);
         System.out.println(GRAY + "│ " + RESET + "👤 " + GRAY + "author: " + comment.getUser().getUsername() + RESET);
         System.out.println(GRAY + "└──────────────────────────────────────────────" + RESET + "\n");
@@ -184,7 +184,7 @@ public class ConsolePrinter {
 
     public void printCommentListItem(int index, Comment comment) {
         int maxLength = 40;
-        String text = comment.getText();
+        String text = comment.getContent();
         // the preview is the first 40 characters of the post followed by '...'
         String preview = text.length() > maxLength
                 ? text.substring(0, maxLength) + "..."
