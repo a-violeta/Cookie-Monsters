@@ -35,7 +35,6 @@ public class PostHttpClient implements PostUseCases {
         if (title == null || title.isBlank()) {
             throw new IllegalArgumentException("Title is required");
         }
-
         if (content == null || content.isBlank()) {
             throw new IllegalArgumentException("Content is required");
         }
@@ -65,7 +64,6 @@ public class PostHttpClient implements PostUseCases {
     @Override
     public Post findPostById(UUID postId) {
         String url = clientConfig.getBaseUrl() + "/posts/" + postId;
-
         try {
             PostDto response = restTemplate.getForObject(url, PostDto.class);
             return toPost(response);
@@ -77,12 +75,23 @@ public class PostHttpClient implements PostUseCases {
     }
 
     @Override
+    public List<Post> listPosts(UUID communityId) {
+        String url = clientConfig.getBaseUrl() + "/subreddits/" + communityId + "/posts";
+        try {
+            ResponseEntity<List<PostDto>> response = restTemplate.exchange(
+                    url, HttpMethod.GET, null, new ParameterizedTypeReference<List<PostDto>>() {});
+            return response.getBody() != null ? response.getBody().stream().map(this::toPost).toList() : null;
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            throw new RuntimeException("Failed to list posts: " + e.getResponseBodyAsString(), e);
+        }
+    }
+
+    @Override
     public List<Post> listPosts() {
         String url = clientConfig.getBaseUrl() + "/posts";
         try {
-            ResponseEntity<List<PostDto>> response = restTemplate.exchange(url, HttpMethod.GET, null,
-                    new ParameterizedTypeReference<>() {
-            });
+            ResponseEntity<List<PostDto>> response = restTemplate.exchange(
+                    url, HttpMethod.GET, null, new ParameterizedTypeReference<List<PostDto>>() {});
             return response.getBody() != null ? response.getBody().stream().map(this::toPost).toList() : null;
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             throw new RuntimeException("Failed to list posts: " + e.getResponseBodyAsString(), e);
@@ -94,7 +103,6 @@ public class PostHttpClient implements PostUseCases {
         String url = clientConfig.getBaseUrl() + "/posts/" + postId;
         PostDto request = new PostDto();
         request.setContent(newContent);
-
         try {
             restTemplate.put(url, request);
         } catch (HttpClientErrorException | HttpServerErrorException e) {
@@ -105,20 +113,16 @@ public class PostHttpClient implements PostUseCases {
     @Override
     public Post votePost(UUID postId, String voteType) {
         String url = clientConfig.getBaseUrl() + "/posts/" + postId + "/vote";
-
         Map<String, String> requestBody = Map.of("voteType", voteType);
 
         try {
-            HttpEntity<Map<String, String>> requestEntity =
-                    new HttpEntity<>(requestBody);
-
+            HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(requestBody);
             ResponseEntity<PostDto> response = restTemplate.exchange(
                     url,
                     HttpMethod.PUT,
                     requestEntity,
                     PostDto.class
             );
-
             return toPost(response.getBody());
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             log.error("Failed to vote post via HTTP", e);
@@ -136,7 +140,6 @@ public class PostHttpClient implements PostUseCases {
         }
     }
 
-    // builds a Post for displaying, along with a Community and a User
     private Post toPost(PostDto dto) {
         if (dto == null) return null;
 

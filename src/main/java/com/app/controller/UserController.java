@@ -6,9 +6,9 @@ import com.app.dto.UserDto;
 import com.app.mapper.CommunityMapper;
 import com.app.model.Community;
 import com.app.model.User;
-import com.app.service.CommentUseCases;
 import com.app.service.CommunityUseCases;
 import com.app.service.UserUseCases;
+import com.app.service.AsyncLoggerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,21 +24,34 @@ import java.util.stream.Collectors;
 public class UserController {
 
     private final UserUseCases userService;
+
+    // Restored the missing fields required for listCommunitiesByUserId
     private final CommunityUseCases communityService;
     private final CommunityMapper communityMapper;
 
+    // Injected the asynchronous logger
+    private final AsyncLoggerService asyncLogger;
+
+    // Restored the missing createUser method
     @PostMapping
     public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto dto) {
-        // the validation happens inside the UseCases
-        // controller just unpacks the DTO
         User created = userService.createUser(dto.getUsername(), dto.getEmail(), dto.getPassword(), dto.getDescription());
+
+        // You can also use your new logger here!
+        asyncLogger.logInfo("New user account created: " + created.getUsername());
+
         return ResponseEntity.status(HttpStatus.CREATED).body(toDto(created));
     }
 
     @PostMapping("/login")
     public ResponseEntity<UserDto> login(@Valid @RequestBody LoginRequest request) {
-        // sets UseCases's loggedInUser
+
         User user = userService.login(request.getIdentifier(), request.getPassword());
+
+        // Send the log to the background thread
+        // The main thread will instantly return the HTTP response without waiting for the console print
+        asyncLogger.logInfo("User logged in successfully: " + user.getUsername());
+
         return ResponseEntity.ok(toDto(user));
     }
 

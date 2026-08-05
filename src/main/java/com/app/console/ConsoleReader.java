@@ -8,7 +8,7 @@ public class ConsoleReader {
     private final Scanner scanner;
 
     public ConsoleReader() {
-        // Initialize the Scanner
+        //Initialize the Scanner
         this.scanner = new Scanner(System.in);
     }
 

@@ -10,7 +10,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +25,7 @@ public class CommunityService implements CommunityUseCases {
     private final UserRepository userRepository;
     private final UserService userService;
 
+    @Override
     public void validateCommunity(String name, String displayName, String description) {
         if (name == null || name.isBlank() || displayName == null || displayName.isBlank()) {
             throw new IllegalArgumentException("Community name is required");
@@ -47,6 +52,7 @@ public class CommunityService implements CommunityUseCases {
         }
     }
 
+    @Override
     @Transactional(readOnly = true)
     public Community findCommunityById(UUID communityId) {
         return communityRepository.findById(communityId)
@@ -56,6 +62,7 @@ public class CommunityService implements CommunityUseCases {
                         ));
     }
 
+    @Override
     @Transactional(readOnly = true)
     public Community findCommunityByName(String name) {
         for (Community c : communityRepository.findAll()) {
@@ -68,6 +75,7 @@ public class CommunityService implements CommunityUseCases {
         throw new IllegalArgumentException("Community with name " + name + " not found");
     }
 
+    @Override
     @Transactional
     public void editCommunity(String name, String displayName, String iconUrl, String description) {
         if (displayName == null && description == null && iconUrl == null) {
@@ -93,6 +101,7 @@ public class CommunityService implements CommunityUseCases {
         communityRepository.save(community);
     }
 
+    @Override
     @Transactional
     public void deleteCommunity(String name) {
         Community community = findCommunityByName(name);
@@ -102,22 +111,22 @@ public class CommunityService implements CommunityUseCases {
         }
 
         communityRepository.delete(community);
-
     }
 
+    @Override
     @Transactional(readOnly = true)
     public List<Community> listCommunities() {
         List<Community> communities = communityRepository.findAll();
         for (Community community : communities) {
-            community.getCommunityUsers().size();   // force lazy collection to load now, while session is open
-            community.getCommunityPosts().size();   // same for posts since the mapper needs both
+            community.getCommunityUsers().size();
+            community.getCommunityPosts().size();
         }
         return communities;
     }
 
+    @Override
     @Transactional
     public void joinCommunity(UUID communityId, Long userId) {
-        // right now, join means immediate approval into the community
         Community community = findCommunityById(communityId);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User with id " + userId + " not found"));
@@ -130,13 +139,11 @@ public class CommunityService implements CommunityUseCases {
         communityRepository.save(community);
     }
 
+    @Override
     @Transactional
     public void exitCommunity(UUID communityId, Long userId) {
-        // exiting doesn't need approval either
-        // if the community has only one user then tell user to delete the community instead
         Community community = findCommunityById(communityId);
 
-        // check that the person is part of the community
         if (community.findUserById(userId) == null) {
             throw new IllegalArgumentException("User is not part of the community");
         }
@@ -145,10 +152,7 @@ public class CommunityService implements CommunityUseCases {
             throw new IllegalStateException("You are the last member. You cannot exit the community.");
         }
 
-        // exit means removing person from community s communityUsers list
-
         Iterator<User> it = community.getCommunityUsers().iterator();
-        // removing from list by using iterator
         while (it.hasNext()) {
             User u = it.next();
             if (Objects.equals(u.getId(), userId)) {
@@ -162,7 +166,6 @@ public class CommunityService implements CommunityUseCases {
 
     @Transactional
     public Community addCommunity(Community community) {
-
         if (communityRepository.existsByName(community.getName())) {
             throw new IllegalArgumentException("Community name is already taken");
         }
@@ -171,6 +174,7 @@ public class CommunityService implements CommunityUseCases {
         return communityRepository.save(community);
     }
 
+    @Override
     @Transactional
     public Community createCommunity(String communityName, String displayName, String description, String iconUrl) {
         validateCommunity(communityName, displayName, description);
@@ -184,7 +188,6 @@ public class CommunityService implements CommunityUseCases {
         community.setDescription(description);
         community.setIconUrl(iconUrl);
 
-        // also, take the active user and add him to the community members
         User currentUser = userService.getLoggedInUser();
 
         if (currentUser == null) {
@@ -203,11 +206,12 @@ public class CommunityService implements CommunityUseCases {
         return communityRepository.findAllByCommunityUsers_Id(userId);
     }
 
+    @Override
     @Transactional(readOnly = true)
     public List<Post> listCommunityPosts(String name) {
         Community community = findCommunityByName(name);
         List<Post> posts = community.getCommunityPosts();
-        posts.size(); // lazy loading was producing a list of posts that were not loaded, force it to load now
-        return new ArrayList<>(posts); // so we return a detached list, not the Hibernate proxy
+        posts.size();
+        return new ArrayList<>(posts);
     }
 }
