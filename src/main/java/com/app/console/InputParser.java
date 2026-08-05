@@ -28,14 +28,14 @@ public class InputParser {
         this.userUseCases = userUseCases;
         this.postUseCases = postUseCases;
 
-        commandMap.put("create-community", new CreateCommunityCommand(printer, communityUseCases));
+        commandMap.put("create-community", new CreateCommunityCommand(printer, communityUseCases, reader));
         commandMap.put("list-communities", new ListCommunityCommand(printer, communityUseCases));
         commandMap.put("logout", new LogoutCommand(printer, userUseCases));
         commandMap.put("exit", new ExitCommand(printer));
-        commandMap.put("delete-community", new DeleteCommunityCommand(printer, communityUseCases));
+        commandMap.put("delete-community", new DeleteCommunityCommand(printer, communityUseCases, reader));
         commandMap.put("edit-community", new EditCommunityCommand(printer, communityUseCases, reader));
         commandMap.put("exit-community", new ExitCommunityCommand(printer, communityUseCases, userUseCases, reader));
-        commandMap.put("find-community", new FindCommunityCommand(printer, communityUseCases));
+        commandMap.put("find-community", new FindCommunityCommand(printer, communityUseCases, reader));
         commandMap.put("join-community", new JoinCommunityCommand(printer, communityUseCases, userUseCases, reader));
         commandMap.put("edit-comment", new EditCommentCommand(printer, commentUseCases, reader, postUseCases, userUseCases, communityUseCases));
         commandMap.put("delete-comment", new DeleteCommentCommand(printer, commentUseCases, reader, communityUseCases, userUseCases));
@@ -51,12 +51,12 @@ public class InputParser {
 
         commandMap.put("0", new ExitCommand(printer));
         commandMap.put("1", new ListCommunityCommand(printer, communityUseCases));
-        commandMap.put("2", new FindCommunityCommand(printer, communityUseCases));
-        commandMap.put("3", new CreateCommunityCommand(printer, communityUseCases));
+        commandMap.put("2", new FindCommunityCommand(printer, communityUseCases, reader));
+        commandMap.put("3", new CreateCommunityCommand(printer, communityUseCases, reader));
         commandMap.put("4", new JoinCommunityCommand(printer, communityUseCases, userUseCases, reader));
         commandMap.put("5", new ExitCommunityCommand(printer, communityUseCases, userUseCases, reader));
         commandMap.put("6", new EditCommunityCommand(printer, communityUseCases, reader));
-        commandMap.put("7", new DeleteCommunityCommand(printer, communityUseCases));
+        commandMap.put("7", new DeleteCommunityCommand(printer, communityUseCases, reader));
         commandMap.put("8", new PostsFeedCommand(printer, postUseCases));
         commandMap.put("9", new ListPostsCommand(printer, postUseCases, communityUseCases, reader));
         commandMap.put("10", new AddPostCommand(printer, postUseCases, userUseCases, communityUseCases, reader));
