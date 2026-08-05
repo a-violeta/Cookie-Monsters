@@ -1,6 +1,7 @@
 package com.app.controller;
 
 import com.app.dto.PostDto;
+import com.app.dto.PostUpdateRequest;
 import com.app.mapper.PostMapper;
 import com.app.model.Post;
 import com.app.response.ApiResponse;
@@ -42,15 +43,15 @@ public class PostController {
     }
 
     @PutMapping("/{id}")
-    public ApiResponse<PostDto> editPost(@PathVariable UUID postId, @RequestBody PostDto dto) {
+    public ApiResponse<PostDto> editPost(@PathVariable UUID id, @RequestBody PostUpdateRequest dto) {
         // authorship check is in PostUseCases
-        Post updated = postService.editPost(postId, dto.getContent());
+        Post updated = postService.editPost(id, dto.getTitle(), dto.getContent());
         return ApiResponse.ok(postMapper.toDto(updated));
     }
 
     @DeleteMapping("/{id}")
-    public ApiResponse<Void> deletePost(@PathVariable UUID postId) {
-        postService.deletePost(postId);
+    public ApiResponse<Void> deletePost(@PathVariable UUID id) {
+        postService.deletePost(id);
         return ApiResponse.message("The post was deleted successfully");
     }
 

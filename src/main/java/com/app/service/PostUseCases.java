@@ -11,7 +11,7 @@ public interface PostUseCases {
     void deletePost(UUID postId);
     List<Post> listPosts();
     Post findPostById(UUID postId);
-    Post editPost(UUID postId, String newContent);
+    Post editPost(UUID postId, String newTitle, String newContent);
     Post votePost(UUID postId, String voteType);
     List<Post> listPostsBySubreddit(String subreddit);
 }

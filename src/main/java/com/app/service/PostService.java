@@ -79,13 +79,28 @@ public class PostService implements PostUseCases {
         return post;
     }
 
+    private void populateUserVoteStatus(Post post, User currentUser) {
+        if (currentUser == null) {
+            return;
+        }
+
+        voteRepository.findByPostAndAuthor(post, currentUser).ifPresent(vote -> {
+            if (vote.getUserVote() != null) {
+                post.setUserVote(vote.getUserVote().toString().toLowerCase());
+            }
+        });
+    }
+
     @Transactional(readOnly = true)
     public Post findPostById(UUID postId) {
-        return postRepository.findById(postId)
+        Post post = postRepository.findById(postId)
                 .orElseThrow(() ->
                         new IllegalArgumentException(
                                 "Post with id " + postId + " not found"
                         ));
+
+        populateUserVoteStatus(post, userService.getLoggedInUser());
+        return post;
     }
 
     @Transactional(readOnly = true)
@@ -93,29 +108,30 @@ public class PostService implements PostUseCases {
         List<Post> posts = postRepository.findAll();
         User currentUser = userService.getLoggedInUser();
 
-        if (currentUser == null) {
-            return posts;
-        }
-
-        for (Post post : posts) {
-            Vote vote = voteRepository.findByPostAndAuthor(post, currentUser).orElse(null);
-            if (vote != null && vote.getUserVote() != null) {
-                post.setUserVote(vote.getUserVote().toString().toLowerCase());
-            }
-        }
+        posts.forEach(post -> populateUserVoteStatus(post, currentUser));
         return posts;
     }
 
     @Transactional
-    public Post editPost(UUID postId, String newContent) {
+    public Post editPost(UUID postId, String newTitle, String newContent) {
+        if (newTitle == null && newContent == null) {
+            throw new IllegalArgumentException("At least one field must be provided to update the post");
+        }
+
         Post post = findPostById(postId);
 
         if (!Objects.equals(post.getAuthor(), userService.getLoggedInUser())) {
             throw new IllegalArgumentException("You are not the author of this post");
         }
 
-        validatePost(post.getTitle(), newContent);
-        post.setContent(newContent);
+        if (newTitle != null) {
+            post.setTitle(newTitle);
+        }
+
+        if (newContent != null) {
+            post.setContent(newContent);
+        }
+
         post.setUpdatedAt(LocalDateTime.now());
         postRepository.save(post);
         return post;
@@ -187,13 +203,11 @@ public class PostService implements PostUseCases {
 
     @Transactional(readOnly = true)
     public List<Post> listPostsBySubreddit(String subredditName) {
-        List<Post> posts = new ArrayList<>();
-        for(Post post: postRepository.findAll()) {
-            if (Objects.equals(post.getSubreddit().getName(), subredditName)) {
-                posts.add(post);
-            }
-        }
-        
+        List<Post> posts = postRepository.findBySubredditName(subredditName);
+        User currentUser = userService.getLoggedInUser();
+
+        posts.forEach(post -> populateUserVoteStatus(post, currentUser));
+
         return posts;
     }
 }

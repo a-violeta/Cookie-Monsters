@@ -56,7 +56,7 @@ public class EditPostCommand extends Command {
 
             String newText = args[0];
 
-            postUseCases.editPost(postId, newText);
+            postUseCases.editPost(postId, null, newText);
             consolePrinter.printSuccess("Post successfully edited!");
 
             List<Post> postsAfterChange = postUseCases.listPosts();
