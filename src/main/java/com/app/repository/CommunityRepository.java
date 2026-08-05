@@ -12,4 +12,6 @@ public interface CommunityRepository {
     void delete(Community community);
     List<Community> findAll();
     boolean existsByName(String name);
+    List<Community> findAllByCommunityUsers_Id(Long userId);
+    // Spring Data JPA breaks the method name into pieces and returns all communities with a specific user in them
 }
