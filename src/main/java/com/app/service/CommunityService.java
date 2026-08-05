@@ -56,9 +56,12 @@ public class CommunityService implements CommunityUseCases {
                         ));
     }
 
+    @Transactional(readOnly = true)
     public Community findCommunityByName(String name) {
         for (Community c : communityRepository.findAll()) {
             if (Objects.equals(c.getName().toLowerCase(), name.toLowerCase())) {
+                c.getCommunityUsers().size();
+                c.getCommunityPosts().size();  // force lazy collection to load
                 return c;
             }
         }
@@ -66,22 +69,27 @@ public class CommunityService implements CommunityUseCases {
     }
 
     @Transactional
-    public void editCommunity(String name, String displayName, String description) {
+    public void editCommunity(String name, String displayName, String iconUrl, String description) {
+        if (displayName == null && description == null && iconUrl == null) {
+            throw new IllegalArgumentException("At least one field must be provided to update the community");
+        }
+
         Community community = findCommunityByName(name);
 
         if (!community.getCommunityUsers().contains(userService.getLoggedInUser())) {
             throw new IllegalArgumentException("You are not a member of this community");
         }
 
-        validateCommunity(community.getName(), displayName, description);
-
-        // just a user from that community should be able to edit
-        if (!community.getCommunityUsers().contains(userService.getLoggedInUser())) {
-            throw new IllegalStateException("User is not in community!");
+        if (displayName != null) {
+            community.setDisplayName(displayName);
+        }
+        if (description != null) {
+            community.setDescription(description);
+        }
+        if (iconUrl != null) {
+            community.setIconUrl(iconUrl);
         }
 
-        community.setDescription(description);
-        community.setDisplayName(displayName);
         communityRepository.save(community);
     }
 
@@ -99,8 +107,12 @@ public class CommunityService implements CommunityUseCases {
 
     @Transactional(readOnly = true)
     public List<Community> listCommunities() {
-
-        return communityRepository.findAll();
+        List<Community> communities = communityRepository.findAll();
+        for (Community community : communities) {
+            community.getCommunityUsers().size();   // force lazy collection to load now, while session is open
+            community.getCommunityPosts().size();   // same for posts since the mapper needs both
+        }
+        return communities;
     }
 
     @Transactional

@@ -13,7 +13,7 @@ public interface CommunityUseCases {
     List<Community> listCommunities();
     Community findCommunityById(UUID communityId);
     Community findCommunityByName(String name);
-    void editCommunity(String name, String displayName, String description);
+    void editCommunity(String name, String displayName, String iconUrl, String description);
     void joinCommunity(UUID communityId, Long userId);
     void exitCommunity(UUID communityId, Long userId);
     List<Post> listCommunityPosts(String name);
