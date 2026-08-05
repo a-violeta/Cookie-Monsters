@@ -137,11 +137,12 @@ public class CommunityHttpClient implements CommunityUseCases {
     }
 
     @Override
-    public void editCommunity(String name, String displayName, String description) {
+    public void editCommunity(String name, String displayName, String iconUrl, String description) {
         String url = clientConfig.getBaseUrl() + "/subreddits/" + name;
         CommunityDto request = new CommunityDto();
         request.setDescription(description);
         request.setDisplayName(displayName);
+        request.setIconUrl(iconUrl);
         try {
             restTemplate.put(url, request);
         } catch (HttpClientErrorException | HttpServerErrorException e) {
