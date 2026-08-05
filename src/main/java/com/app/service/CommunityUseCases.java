@@ -7,8 +7,9 @@ import java.util.List;
 import java.util.UUID;
 
 public interface CommunityUseCases {
-    Community createCommunity(String communityName, String displayName, String description, String iconUrl);
-    void validateCommunity(String name, String displayName, String description);
+    void validateCommunity(String communityName, String displayName, String description);
+
+    Community createCommunity(String name, String displayName, String description, String iconUrl);
     void deleteCommunity(String name);
     List<Community> listCommunities();
     Community findCommunityById(UUID communityId);
@@ -16,6 +17,6 @@ public interface CommunityUseCases {
     void editCommunity(String name, String displayName, String iconUrl, String description);
     void joinCommunity(UUID communityId, Long userId);
     void exitCommunity(UUID communityId, Long userId);
-    List<Post> listCommunityPosts(String name);
     List<Community> listCommunitiesByUserId(Long userId);
+    List<Post> listCommunityPosts(String name);
 }
