@@ -4,6 +4,7 @@ import com.app.model.User;
 import com.app.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService implements UserUseCases {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     // Local session cache for non-HTTP (database/CLI) mode
     private User loggedInUser = null;
@@ -26,7 +28,12 @@ public class UserService implements UserUseCases {
         if (userRepository.existsByEmail(email)) {
             throw new IllegalArgumentException("Email is already taken");
         }
-        User user = new User(username, email, password, description);
+        User user = new User(
+                username,
+                email,
+                passwordEncoder.encode(password),
+                description
+        );
         return userRepository.save(user);
     }
 
@@ -84,10 +91,10 @@ public class UserService implements UserUseCases {
     @Transactional
     public void changePassword(String username, String currentPassword, String newPassword) {
         User user = findByUsername(username);
-        if (!user.getPassword().equals(currentPassword)) {
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
             throw new IllegalArgumentException("Current password is incorrect");
         }
-        user.setPassword(newPassword);
+        user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }
 }
