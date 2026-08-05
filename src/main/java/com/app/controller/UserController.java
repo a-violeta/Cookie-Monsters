@@ -1,8 +1,13 @@
 package com.app.controller;
 
+import com.app.dto.CommunityDto;
 import com.app.dto.LoginRequest;
 import com.app.dto.UserDto;
+import com.app.mapper.CommunityMapper;
+import com.app.model.Community;
 import com.app.model.User;
+import com.app.service.CommentUseCases;
+import com.app.service.CommunityUseCases;
 import com.app.service.UserUseCases;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -10,12 +15,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserUseCases userService;
+    private final CommunityUseCases communityService;
+    private final CommunityMapper communityMapper;
 
     @PostMapping
     public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto dto) {
@@ -43,6 +53,14 @@ public class UserController {
         User user = userService.getLoggedInUser();
         if (user == null) return ResponseEntity.noContent().build();
         return ResponseEntity.ok(toDto(user));
+    }
+
+    @GetMapping("/{userId}/communities")
+    public List<CommunityDto> listCommunitiesByUserId(@PathVariable Long userId) {
+        List<Community> communities = communityService.listCommunitiesByUserId(userId);
+        return communities.stream()
+                .map(communityMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     // manual mapping

@@ -19,7 +19,9 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.UUID;
 
 @Service
@@ -137,11 +139,12 @@ public class CommunityHttpClient implements CommunityUseCases {
     }
 
     @Override
-    public void editCommunity(String name, String displayName, String description) {
+    public void editCommunity(String name, String displayName, String iconUrl, String description) {
         String url = clientConfig.getBaseUrl() + "/subreddits/" + name;
         CommunityDto request = new CommunityDto();
         request.setDescription(description);
         request.setDisplayName(displayName);
+        request.setIconUrl(iconUrl);
         try {
             restTemplate.put(url, request);
         } catch (HttpClientErrorException | HttpServerErrorException e) {
@@ -167,6 +170,17 @@ public class CommunityHttpClient implements CommunityUseCases {
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             throw new IllegalArgumentException(extractMessage(e));
         }
+    }
+
+    @Override
+    public List<Community> listCommunitiesByUserId(Long userId) {
+        CommunityDto[] dtos = restTemplate.getForObject(
+                clientConfig.getBaseUrl() + "/api/users/" + userId + "/communities",
+                CommunityDto[].class
+        );
+        return Arrays.stream(dtos)
+                .map(this::toCommunity)
+                .collect(Collectors.toList());
     }
 
     @Override
