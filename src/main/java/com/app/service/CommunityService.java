@@ -198,9 +198,16 @@ public class CommunityService implements CommunityUseCases {
         return communityRepository.save(community);
     }
 
-    @Override
+    @Transactional(readOnly = true)
     public List<Community> listCommunitiesByUserId(Long userId) {
-        return communityRepository.findAllByCommunityUsers_Id(userId);
+        List<Community> communities = communityRepository.findAllByCommunityUsers_Id(userId);
+
+        for (Community community : communities) {
+            community.getCommunityUsers().size();
+            community.getCommunityPosts().size();
+        }
+
+        return communities;
     }
 
     @Transactional(readOnly = true)

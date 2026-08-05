@@ -28,13 +28,8 @@ public class CreateCommentCommand extends Command {
     @Override
     public void execute(String[] args) {
 
-        if (args.length < 1) {
-            consolePrinter.printError("Missing Arguments");
-            consolePrinter.printExplanation("add-comment <Text>");
-            return;
-        } else if (args.length > 1) {
+        if (args.length >= 1) {
             consolePrinter.printError("Too Many Arguments");
-            consolePrinter.printExplanation("add-comment <Text>");
             return;
         }
 
@@ -94,7 +89,10 @@ public class CreateCommentCommand extends Command {
             Post post = posts.get(postChosenIndex-1);
             UUID postId = post.getId();
 
-            String text = args[0];
+            consolePrinter.printPrompt("Type comment");
+
+            // read with console
+            String text = consoleReader.readLine();
 
             Comment newComment = commentUseCases.addComment(text, loggedInUserId, postId);
             consolePrinter.printSuccess("Comment successfully created!");
