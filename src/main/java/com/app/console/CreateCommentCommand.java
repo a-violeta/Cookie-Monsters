@@ -6,7 +6,6 @@ import com.app.model.Post;
 import com.app.service.CommentUseCases;
 import com.app.service.CommunityUseCases;
 import com.app.service.UserUseCases;
-import com.app.service.PostUseCases;
 
 import java.util.List;
 import java.util.UUID;
