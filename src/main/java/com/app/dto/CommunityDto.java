@@ -20,6 +20,8 @@ public class CommunityDto {
     private String displayName;
     @NotBlank(message = "Description is required")
     private String description;
-    private LocalDateTime createdAt;
+    private Integer memberCount;
+    private Integer postCount;
     private String iconUrl;
+    private LocalDateTime createdAt;
 }

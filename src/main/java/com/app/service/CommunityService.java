@@ -56,9 +56,12 @@ public class CommunityService implements CommunityUseCases {
                         ));
     }
 
+    @Transactional(readOnly = true)
     public Community findCommunityByName(String name) {
         for (Community c : communityRepository.findAll()) {
             if (Objects.equals(c.getName().toLowerCase(), name.toLowerCase())) {
+                c.getCommunityUsers().size();
+                c.getCommunityPosts().size();  // force lazy collection to load
                 return c;
             }
         }
@@ -104,8 +107,12 @@ public class CommunityService implements CommunityUseCases {
 
     @Transactional(readOnly = true)
     public List<Community> listCommunities() {
-
-        return communityRepository.findAll();
+        List<Community> communities = communityRepository.findAll();
+        for (Community community : communities) {
+            community.getCommunityUsers().size();   // force lazy collection to load now, while session is open
+            community.getCommunityPosts().size();   // same for posts since the mapper needs both
+        }
+        return communities;
     }
 
     @Transactional
