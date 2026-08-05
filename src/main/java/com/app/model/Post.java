@@ -32,10 +32,13 @@ public class Post {
     private String title;
     private String content;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     private long upvotes;
     private long downvotes;
     private long score;
+
+    private long commentCount;
 
     @Transient
     private String userVote;

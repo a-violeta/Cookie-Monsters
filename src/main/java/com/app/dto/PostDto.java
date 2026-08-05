@@ -2,6 +2,7 @@ package com.app.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -17,34 +18,32 @@ import java.util.UUID;
 public class PostDto {
     private UUID id;
 
-    // ids reference to the parent Community/User
-    // the server always re-derives the real relationships from communityId/userId
-    // using the repositories, not trusting what the client sent
-    // that's what keeps the Service classes' checks useful
-    @NotNull(message = "Community id is required")
-    private UUID communityId;
-
-    @NotNull(message = "User id is required")
-    private Long userId;
-
-    // fields for display, populated on responses only, ignored on requests if blank
-    // so the console has something readable to print without a second lookup
-    // if a client sends a create/update PostDto without these,
-    // the server ignores them and derives the real values from communityId/userId
-    private String subreddit;
-    private String author;
-
     @NotBlank(message = "Title is required")
+    @Size(min = 3, message = "Title must have at least 3 characters")
+    @Size(max = 300, message = "Title is too long")
     private String title;
 
     @NotBlank(message = "Content is required")
+    @Size(max = 10000, message = "Content is too long")
     private String content;
+
+    private String imageUrl;
+
+    // fields for display, populated on responses only, ignored on requests if blank
+    // so the console has something readable to print without a second lookup
+    private String author;
+
+    @NotNull(message = "Subreddit name is required")
+    private String subreddit;
 
     private long upvotes;
     private long downvotes;
     private long score;
 
+    private long commentCount;
+
     private String userVote;
 
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

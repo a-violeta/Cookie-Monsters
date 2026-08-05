@@ -41,20 +41,19 @@ public class PostHttpClient implements PostUseCases {
         }
     }
 
-    @Override
-    public Post addPost(UUID communityId, long userId, String title, String content) {
+    public Post addPost(String title, String content, String subreddit, String username) {
         validatePost(title, content);
         String url = clientConfig.getBaseUrl() + "/posts";
 
         PostDto request = new PostDto();
-        request.setCommunityId(communityId);
-        request.setUserId(userId);
+        request.setSubreddit(subreddit);
+        request.setAuthor(username);
         request.setTitle(title);
         request.setContent(content);
 
         try {
             PostDto response = restTemplate.postForObject(url, request, PostDto.class);
-            log.info("Post created via HTTP in community {}", communityId);
+            log.info("Post created via HTTP in community {}", subreddit);
             return toPost(response);
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             log.error("Failed to create post via HTTP", e);
@@ -90,7 +89,7 @@ public class PostHttpClient implements PostUseCases {
     }
 
     @Override
-    public void editPost(UUID postId, String newContent) {
+    public Post editPost(UUID postId, String newContent) {
         String url = clientConfig.getBaseUrl() + "/posts/" + postId;
         PostDto request = new PostDto();
         request.setContent(newContent);
@@ -100,6 +99,8 @@ public class PostHttpClient implements PostUseCases {
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             throw new RuntimeException("Failed to edit post: " + e.getResponseBodyAsString(), e);
         }
+
+        return toPost(request);
     }
 
     @Override
@@ -126,6 +127,18 @@ public class PostHttpClient implements PostUseCases {
         }
     }
 
+    public List<Post> listPostsBySubreddit(String subreddit) {
+        String url = clientConfig.getBaseUrl() + "/posts?subreddit=" + subreddit;
+        try {
+            ResponseEntity<List<PostDto>> response = restTemplate.exchange(url, HttpMethod.GET, null,
+                    new ParameterizedTypeReference<>() {
+                    });
+            return response.getBody() != null ? response.getBody().stream().map(this::toPost).toList() : null;
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            throw new RuntimeException("Failed to list posts: " + e.getResponseBodyAsString(), e);
+        }
+    }
+
     @Override
     public void deletePost(UUID postId) {
         String url = clientConfig.getBaseUrl() + "/posts/" + postId;
@@ -141,11 +154,9 @@ public class PostHttpClient implements PostUseCases {
         if (dto == null) return null;
 
         Community subreddit = new Community();
-        subreddit.setId(dto.getCommunityId());
         subreddit.setName(dto.getSubreddit());
 
         User author = new User();
-        author.setId(dto.getUserId());
         author.setUsername(dto.getAuthor());
 
         Post post = new Post();
@@ -157,8 +168,12 @@ public class PostHttpClient implements PostUseCases {
         post.setUpvotes(dto.getUpvotes());
         post.setDownvotes(dto.getDownvotes());
         post.setScore(dto.getScore());
+
+        post.setCommentCount(dto.getCommentCount());
+
         post.setUserVote(dto.getUserVote());
         post.setCreatedAt(dto.getCreatedAt());
+        post.setUpdatedAt(dto.getUpdatedAt());
 
         return post;
     }

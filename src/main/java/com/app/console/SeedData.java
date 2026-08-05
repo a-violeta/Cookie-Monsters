@@ -77,23 +77,23 @@ public class SeedData {
     }
 
     private void seedPosts() {
-        catPost1 = postUseCases.addPost(catLovers.getId(), ion.getId(), "First post about cats", "Cats are awesome");
+        catPost1 = postUseCases.addPost("First post about cats", "Cats are awesome", "the_cat_lovers", ion.getUsername());
 
         //attachImage(catPost1, "134110683555465878.jpg");
 
-        catPost2 = postUseCases.addPost(catLovers.getId(), anca.getId(), "My cat knocked over my plant again", "Third time this week. I've given up on plants.");
+        catPost2 = postUseCases.addPost("My cat knocked over my plant again", "Third time this week. I've given up on plants.", "the_cat_lovers", anca.getUsername());
 
-        catPost3 = postUseCases.addPost(catLovers.getId(), petru.getId(), "Cat vs guitar", "She sits on the strings every single time I practice.");
+        catPost3 = postUseCases.addPost("Cat vs guitar", "She sits on the strings every single time I practice.", "the_cat_lovers", petru.getUsername());
 
-        gamePost1 = postUseCases.addPost(gamers.getId(), cristina.getId(), "New PB on my speedrun!", "Shaved off 40 seconds, finally under 2 hours.");
+        gamePost1 = postUseCases.addPost("New PB on my speedrun!", "Shaved off 40 seconds, finally under 2 hours.", "gamers_united", cristina.getUsername());
 
-        gamePost2 = postUseCases.addPost(gamers.getId(), radu.getId(), "What are you all playing this weekend?", "Looking for co-op recommendations.");
+        gamePost2 = postUseCases.addPost("What are you all playing this weekend?", "Looking for co-op recommendations.", "gamers_united", radu.getUsername());
 
-        bookPost1 = postUseCases.addPost(bookClub.getId(), elena.getId(), "This month's pick: Project Hail Mary", "Starting Monday, discussion thread up next week.");
+        bookPost1 = postUseCases.addPost("This month's pick: Project Hail Mary", "Starting Monday, discussion thread up next week.", "monthly_book_blub", elena.getUsername());
 
-        foodPost1 = postUseCases.addPost(foodies.getId(), radu.getId(), "Made carbonara from scratch", "No cream, I promise. Recipe in comments if anyone wants it.");
+        foodPost1 = postUseCases.addPost("Made carbonara from scratch", "No cream, I promise. Recipe in comments if anyone wants it.", "foodies", radu.getUsername());
 
-        foodPost2 = postUseCases.addPost(foodies.getId(), mihai.getId(), "Best coffee spots near the office?", "Need something stronger than what the office machine makes.");
+        foodPost2 = postUseCases.addPost("Best coffee spots near the office?", "Need something stronger than what the office machine makes.", "foodies", mihai.getUsername());
     }
 
     /*private void attachImage(Post post, String fileName) {

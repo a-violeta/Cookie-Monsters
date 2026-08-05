@@ -38,16 +38,16 @@ public class PostService implements PostUseCases {
     }
 
     @Transactional
-    public Post addPost(UUID communityId, long userId, String title, String content) {
+    public Post addPost(String title, String content, String subredditName, String username) {
         validatePost(title, content);
 
-        Community subreddit = communityRepository.findById(communityId)
-                .orElseThrow(() -> new IllegalArgumentException("Community with id " + communityId + " not found"));
+        Community subreddit = communityRepository.findByName(subredditName)
+                .orElseThrow(() -> new IllegalArgumentException("Subreddit " + subredditName + " not found"));
 
-        User author = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User with id " + userId + " not found"));
+        User author = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("User " + username + " not found"));
 
-        if (subreddit.findUserById(userId) == null) {
+        if (subreddit.findUserById(author.getId()) == null) {
             throw new IllegalArgumentException("You are not a member of this community");
         }
 
@@ -58,10 +58,14 @@ public class PostService implements PostUseCases {
         post.setTitle(title);
         post.setContent(content);
         post.setCreatedAt(LocalDateTime.now());
+        post.setUpdatedAt(LocalDateTime.now());
         post.setCommentList(new ArrayList<>());
 
         post.setUpvotes(1);
         post.setScore(1);
+
+        post.setCommentCount(post.getCommentList().size());
+
         post.setUserVote("up");
 
         postRepository.save(post);
@@ -86,11 +90,24 @@ public class PostService implements PostUseCases {
 
     @Transactional(readOnly = true)
     public List<Post> listPosts() {
-        return postRepository.findAll();
+        List<Post> posts = postRepository.findAll();
+        User currentUser = userService.getLoggedInUser();
+
+        if (currentUser == null) {
+            return posts;
+        }
+
+        for (Post post : posts) {
+            Vote vote = voteRepository.findByPostAndAuthor(post, currentUser).orElse(null);
+            if (vote != null && vote.getUserVote() != null) {
+                post.setUserVote(vote.getUserVote().toString().toLowerCase());
+            }
+        }
+        return posts;
     }
 
     @Transactional
-    public void editPost(UUID postId, String newContent) {
+    public Post editPost(UUID postId, String newContent) {
         Post post = findPostById(postId);
 
         if (!Objects.equals(post.getAuthor(), userService.getLoggedInUser())) {
@@ -99,7 +116,9 @@ public class PostService implements PostUseCases {
 
         validatePost(post.getTitle(), newContent);
         post.setContent(newContent);
+        post.setUpdatedAt(LocalDateTime.now());
         postRepository.save(post);
+        return post;
     }
 
     public void deletePost(UUID postId) {
@@ -122,13 +141,20 @@ public class PostService implements PostUseCases {
             vote = new Vote();
             vote.setPost(post);
             vote.setAuthor(currentUser);
-        } else {
-            if (vote.getUserVote() == VoteType.UP) {
-                post.setUpvotes(post.getUpvotes() - 1);
-            }
-            if (vote.getUserVote() == VoteType.DOWN) {
-                post.setDownvotes(post.getDownvotes() - 1);
-            }
+        }
+
+        VoteType currentVote = vote.getUserVote();
+
+        // toggle logic: if voteType in request is the same as current vote, user intention is to cancel the vote
+        if (("up".equals(voteType) && currentVote == VoteType.UP) ||
+                ("down".equals(voteType) && currentVote == VoteType.DOWN)) {
+            voteType = "none";
+        }
+
+        if (currentVote == VoteType.UP) {
+            post.setUpvotes(post.getUpvotes() - 1);
+        } else if (currentVote == VoteType.DOWN) {
+            post.setDownvotes(post.getDownvotes() - 1);
         }
 
         switch (voteType) {
@@ -152,8 +178,22 @@ public class PostService implements PostUseCases {
             post.setUserVote(null);
         }
 
+        post.setUpdatedAt(LocalDateTime.now());
+
         voteRepository.save(vote);
         postRepository.save(post);
         return post;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Post> listPostsBySubreddit(String subredditName) {
+        List<Post> posts = new ArrayList<>();
+        for(Post post: postRepository.findAll()) {
+            if (Objects.equals(post.getSubreddit().getName(), subredditName)) {
+                posts.add(post);
+            }
+        }
+        
+        return posts;
     }
 }
