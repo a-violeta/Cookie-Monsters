@@ -3,7 +3,7 @@ package com.app.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpMethod; // Make sure this is imported
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -25,22 +25,16 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // Disable CSRF because we are using JWT (stateless)
                 .csrf(AbstractHttpConfigurer::disable)
-
-                // Set session management to stateless
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
-                // Set permissions on endpoints
+                // ---> PASTE IT HERE <---
                 .authorizeHttpRequests(auth -> auth
-                        // Allow public access to all /auth endpoints (register, login)
                         .requestMatchers("/auth/**").permitAll()
-                        // Allow public account registration via /api/users
-                        .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
-                        // Any other request must be authenticated with a JWT
+                        .requestMatchers(HttpMethod.POST, "/api/users", "/api/users/login").permitAll()
+                        .requestMatchers("/subreddits/**").permitAll() // Allows seeding communities
+                        .requestMatchers(HttpMethod.POST, "/posts").permitAll() // Allows seeding posts
                         .anyRequest().authenticated()
                 )
-                // Add our custom JWT filter BEFORE the standard Spring Security password filter
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
