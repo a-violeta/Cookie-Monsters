@@ -15,9 +15,11 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface PostMapper {
 
-    @Mapping(target = "communityId", source = "community.id")
-    @Mapping(target = "communityName", source = "community.name")
-    @Mapping(target = "userId", source = "user.id")
-    @Mapping(target = "username", source = "user.username")
+    // The source must match the field names in the Post entity ('subreddit' and 'author')
+    // The target must match the field names in the PostDto
+    @Mapping(target = "communityId", source = "subreddit.id")
+    @Mapping(target = "subreddit", source = "subreddit.name")
+    @Mapping(target = "userId", source = "author.id")
+    @Mapping(target = "author", source = "author.username")
     PostDto toDto(Post post);
 }

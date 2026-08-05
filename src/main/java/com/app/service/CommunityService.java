@@ -1,6 +1,7 @@
 package com.app.service;
 
 import com.app.model.Community;
+import com.app.model.Post;
 import com.app.model.User;
 import com.app.repository.CommunityRepository;
 import com.app.repository.UserRepository;
@@ -11,9 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Objects;
-
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -28,30 +29,25 @@ public class CommunityService implements CommunityUseCases {
         if (communityName == null || communityName.isBlank()) {
             throw new IllegalArgumentException("Community name is required");
         }
-
         if (!communityName.matches("^[a-zA-Z0-9_]+$")) {
             throw new IllegalArgumentException("Community name must contain only letters, numbers, and '_'");
         }
-
         if (communityName.length() < 3) {
             throw new IllegalArgumentException("Community name must have at least 3 characters");
         }
-
         if (communityName.length() > 50) {
             throw new IllegalArgumentException("Community name is too long");
         }
-
         if (description == null || description.isBlank()) {
             throw new IllegalArgumentException("Community description is required");
         }
-
         if (description.length() > 500) {
             throw new IllegalArgumentException("Description is too long");
         }
     }
 
     @Transactional(readOnly = true)
-    public Community findCommunityById(long communityId) {
+    public Community findCommunityById(UUID communityId) {
         return communityRepository.findById(communityId)
                 .orElseThrow(() ->
                         new IllegalArgumentException(
@@ -59,10 +55,9 @@ public class CommunityService implements CommunityUseCases {
                         ));
     }
 
-    // could be improved to search for 1 word and return all communities with that word in their name
     public Community findCommunityByName(String name) {
         for (Community c : communityRepository.findAll()) {
-            if (Objects.equals(c.getCommunityName().toLowerCase(), name.toLowerCase())) {
+            if (Objects.equals(c.getName().toLowerCase(), name.toLowerCase())) {
                 return c;
             }
         }
@@ -70,45 +65,42 @@ public class CommunityService implements CommunityUseCases {
     }
 
     @Transactional
-    public void editCommunity(long communityId, String description) {
-        Community community = findCommunityById(communityId);
+    public void editCommunity(String name, String displayName, String description) {
+        Community community = findCommunityByName(name);
 
         if (!community.getCommunityUsers().contains(userService.getLoggedInUser())) {
             throw new IllegalArgumentException("You are not a member of this community");
         }
 
-        validateCommunity(community.getCommunityName(), description);
+        validateCommunity(community.getName(), description);
 
-        // just a user from that community should be able to edit
         if (!community.getCommunityUsers().contains(userService.getLoggedInUser())) {
             throw new IllegalStateException("User is not in community!");
         }
 
+        community.setDisplayName(displayName);
         community.setDescription(description);
         communityRepository.save(community);
     }
 
     @Transactional
-    public void deleteCommunity(long communityId) {
-        Community community = findCommunityById(communityId);
+    public void deleteCommunity(String name) {
+        Community community = findCommunityByName(name);
 
         if (!community.getCommunityUsers().contains(userService.getLoggedInUser())) {
             throw new IllegalArgumentException("You are not a member of this community");
         }
 
         communityRepository.delete(community);
-
     }
 
     @Transactional(readOnly = true)
     public List<Community> listCommunities() {
-
         return communityRepository.findAll();
     }
 
     @Transactional
-    public void joinCommunity(Long communityId, Long userId) {
-        // right now, join means immediate approval into the community
+    public void joinCommunity(UUID communityId, Long userId) {
         Community community = findCommunityById(communityId);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User with id " + userId + " not found"));
@@ -122,12 +114,9 @@ public class CommunityService implements CommunityUseCases {
     }
 
     @Transactional
-    public void exitCommunity(Long communityId, Long userId) {
-        // exiting doesn't need approval either
-        // if the community has only one user then tell user to delete the community instead
+    public void exitCommunity(UUID communityId, Long userId) {
         Community community = findCommunityById(communityId);
 
-        // check that the person is part of the community
         if (community.findUserById(userId) == null) {
             throw new IllegalArgumentException("User is not part of the community");
         }
@@ -136,10 +125,7 @@ public class CommunityService implements CommunityUseCases {
             throw new IllegalStateException("You are the last member. You cannot exit the community.");
         }
 
-        // exit means removing person from community s communityUsers list
-
         Iterator<User> it = community.getCommunityUsers().iterator();
-        // removing from list by using iterator
         while (it.hasNext()) {
             User u = it.next();
             if (Objects.equals(u.getId(), userId)) {
@@ -152,28 +138,18 @@ public class CommunityService implements CommunityUseCases {
     }
 
     @Transactional
-    public Community addCommunity(Community community) {
+    public Community createCommunity(String name, String displayName, String description, String iconUrl) {
+        validateCommunity(name, description);
 
-        if (communityRepository.existsByCommunityName(community.getCommunityName())) {
-            throw new IllegalArgumentException("Community name is already taken");
-        }
-
-        community.setId(null);
-        return communityRepository.save(community);
-    }
-
-    @Transactional
-    public Community createCommunity(String communityName, String description) {
-        validateCommunity(communityName, description);
-
-        if (communityRepository.existsByCommunityName(communityName)) {
+        if (communityRepository.existsByName(name)) {
             throw new IllegalArgumentException("Community name is already taken");
         }
         Community community = new Community();
-        community.setCommunityName(communityName);
+        community.setName(name);
+        community.setDisplayName(displayName);
         community.setDescription(description);
+        community.setIconUrl(iconUrl);
 
-        // also, take the active user and add him to the community members
         User currentUser = userService.getLoggedInUser();
 
         if (currentUser == null) {
@@ -190,5 +166,11 @@ public class CommunityService implements CommunityUseCases {
     @Override
     public List<Community> listCommunitiesByUserId(Long userId) {
         return communityRepository.findAllByCommunityUsers_Id(userId);
+    }
+
+    @Override
+    public List<Post> listCommunityPosts(String name) {
+        Community community = findCommunityByName(name);
+        return community.getCommunityPosts();
     }
 }

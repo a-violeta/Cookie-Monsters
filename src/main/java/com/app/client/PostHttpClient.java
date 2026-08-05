@@ -47,7 +47,7 @@ public class PostHttpClient implements PostUseCases {
         request.setCommunityId(communityId);
         request.setUserId(userId);
         request.setTitle(title);
-        request.setText(text);
+        request.setContent(text);
 
         try {
             PostDto response = restTemplate.postForObject(url, request, PostDto.class);
@@ -60,7 +60,7 @@ public class PostHttpClient implements PostUseCases {
     }
 
     @Override
-    public Post findPostById(long postId) {
+    public Post findPostById(UUID postId) {
         String url = clientConfig.getBaseUrl() + "/api/posts/" + postId;
         try {
             PostDto response = restTemplate.getForObject(url, PostDto.class);
@@ -97,10 +97,10 @@ public class PostHttpClient implements PostUseCases {
     }
 
     @Override
-    public void editPost(long postId, String newText) {
+    public void editPost(UUID postId, String newText) {
         String url = clientConfig.getBaseUrl() + "/api/posts/" + postId;
         PostDto request = new PostDto();
-        request.setText(newText);
+        request.setContent(newText);
         try {
             restTemplate.put(url, request);
         } catch (HttpClientErrorException | HttpServerErrorException e) {
@@ -109,7 +109,7 @@ public class PostHttpClient implements PostUseCases {
     }
 
     @Override
-    public void deletePost(long postId) {
+    public void deletePost(UUID postId) {
         String url = clientConfig.getBaseUrl() + "/api/posts/" + postId;
         try {
             restTemplate.delete(url);
@@ -118,24 +118,23 @@ public class PostHttpClient implements PostUseCases {
         }
     }
 
-    // builds a Post for displaying, along with a Community and a User
     private Post toPost(PostDto dto) {
         if (dto == null) return null;
 
         Community community = new Community();
         community.setId(dto.getCommunityId());
-        community.setName(dto.getCommunityName());
+        community.setName(dto.getSubreddit());
 
         User user = new User();
         user.setId(dto.getUserId());
-        user.setUsername(dto.getUsername());
+        user.setUsername(dto.getAuthor());
 
         Post post = new Post();
         post.setId(dto.getId());
-        post.setCommunity(community);
-        post.setUser(user);
+        post.setSubreddit(community);
+        post.setAuthor(user);
         post.setTitle(dto.getTitle());
-        post.setText(dto.getText());
+        post.setContent(dto.getContent());
         post.setCreatedAt(dto.getCreatedAt());
         return post;
     }

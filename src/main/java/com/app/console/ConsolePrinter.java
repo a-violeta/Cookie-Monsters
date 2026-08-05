@@ -9,7 +9,6 @@ import java.time.format.DateTimeFormatter;
 
 public class ConsolePrinter {
 
-    // ANSI color codes
     private static final String RESET = "\u001B[0m";
     private static final String BOLD = "\u001B[1m";
     private static final String CYAN = "\u001B[36m";
@@ -34,7 +33,6 @@ public class ConsolePrinter {
     }
 
     public void printBanner() {
-
         System.out.println();
         System.out.println(BOLD + YELLOW + "                 .-\"\"\"-." + RESET);
         System.out.println(BOLD + YELLOW + "               / . " + BROWN + ".o." + YELLOW + "  \\" + RESET);
@@ -57,7 +55,6 @@ public class ConsolePrinter {
     }
 
     public void printGoodbye() {
-
         System.out.println();
         System.out.println(YELLOW + "   🍪  " + RESET + BOLD + GREEN + "See you soon, cookie monster!" + RESET + YELLOW + "  🍪" + RESET);
         System.out.println(GRAY + "        \"We will be back... for more cookies.\"" + RESET);
@@ -80,7 +77,6 @@ public class ConsolePrinter {
     }
 
     public void printHelp() {
-
         String[] lines = {
                 "create-community <name> <description>   — Create a new community",
                 "list-communities                        — List all communities",
@@ -107,7 +103,6 @@ public class ConsolePrinter {
         for (String line : lines) {
             width = Math.max(width, line.length() + 4);
         }
-        // for a border that fits all the text
 
         System.out.println();
         System.out.println(CYAN + "┌" + "─".repeat(width) + "┐" + RESET);
@@ -137,19 +132,21 @@ public class ConsolePrinter {
 
     public void displayPost(Post post) {
         System.out.println("\n" + CYAN + "┌──────────────────────────────────────────────" + RESET);
-        System.out.println(CYAN + "│ " + RESET + "📌 " + BOLD + post.getCommunity().getCommunityName() + RESET
+        // Fixed method calls to reflect current Post fields
+        System.out.println(CYAN + "│ " + RESET + "📌 " + BOLD + post.getSubreddit().getName() + RESET
                 + GRAY + "  •  Post #" + post.getId() + RESET);
         System.out.println(CYAN + "│ " + RESET + BOLD + YELLOW + post.getTitle() + RESET);
         System.out.println(CYAN + "│" + RESET);
-        System.out.println(CYAN + "│ " + RESET + post.getText());
+        System.out.println(CYAN + "│ " + RESET + post.getContent());
         System.out.println(CYAN + "│" + RESET);
-        System.out.println(CYAN + "│ " + RESET + "👤 " + GRAY + "author: " + post.getUser().getUsername() + RESET);
+        System.out.println(CYAN + "│ " + RESET + "👤 " + GRAY + "author: " + post.getAuthor().getUsername() + RESET);
         System.out.println(CYAN + "└──────────────────────────────────────────────" + RESET + "\n");
     }
 
     public void displayCommunity(Community community) {
         System.out.println("\n" + PURPLE + "┌──────────────────────────────────────────────" + RESET);
-        System.out.println(PURPLE + "│ " + RESET + "🌐 " + BOLD + community.getCommunityName() + RESET);
+        // Fixed method calls to reflect current Community fields
+        System.out.println(PURPLE + "│ " + RESET + "🌐 " + BOLD + community.getName() + RESET);
         System.out.println(PURPLE + "│" + RESET);
         System.out.println(PURPLE + "│ " + RESET + GRAY + community.getDescription() + RESET);
         System.out.println(PURPLE + "└──────────────────────────────────────────────" + RESET + "\n");
@@ -175,7 +172,7 @@ public class ConsolePrinter {
     }
 
     public void printCommunityListItem(int index, Community community) {
-        System.out.println(CYAN + " " + index + ". " + RESET + "🌐 " + community.getCommunityName());
+        System.out.println(CYAN + " " + index + ". " + RESET + "🌐 " + community.getName());
     }
 
     public void printPostListItem(int index, Post post) {
@@ -185,11 +182,9 @@ public class ConsolePrinter {
     public void printCommentListItem(int index, Comment comment) {
         int maxLength = 40;
         String text = comment.getText();
-        // the preview is the first 40 characters of the post followed by '...'
         String preview = text.length() > maxLength
                 ? text.substring(0, maxLength) + "..."
                 : text;
-
         System.out.println(CYAN + " " + index + ". " + RESET + "💬 " + preview);
     }
 }

@@ -22,33 +22,31 @@ public class PostController {
 
     @PostMapping("/api/posts")
     public ResponseEntity<PostDto> createPost(@Valid @RequestBody PostDto dto) {
-        // dto.communityId/userId are plain ids
-        // postService does the real lookup and membership check, never trusted directly from the client
-        Post created = postService.addPost(dto.getCommunityId(), dto.getUserId(), dto.getTitle(), dto.getText());
+        // Changed dto.getText() to dto.getContent()
+        Post created = postService.addPost(dto.getCommunityId(), dto.getUserId(), dto.getTitle(), dto.getContent());
         return ResponseEntity.status(HttpStatus.CREATED).body(postMapper.toDto(created));
     }
 
     @GetMapping("/api/posts/{postId}")
-    public ResponseEntity<PostDto> getPost(@PathVariable long postId) {
+    public ResponseEntity<PostDto> getPost(@PathVariable UUID postId) {
         return ResponseEntity.ok(postMapper.toDto(postService.findPostById(postId)));
     }
 
     @PutMapping("/api/posts/{postId}")
-    public ResponseEntity<Void> editPost(@PathVariable long postId, @RequestBody PostDto dto) {
-        // authorship check is in PostUseCases
-        postService.editPost(postId, dto.getText());
+    public ResponseEntity<Void> editPost(@PathVariable UUID postId, @RequestBody PostDto dto) {
+        // Changed dto.getText() to dto.getContent()
+        postService.editPost(postId, dto.getContent());
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/api/posts/{postId}")
-    public ResponseEntity<Void> deletePost(@PathVariable long postId) {
+    public ResponseEntity<Void> deletePost(@PathVariable UUID postId) {
         postService.deletePost(postId);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/api/communities/{communityId}/posts")
     public ResponseEntity<List<PostDto>> listPostsForCommunity(@PathVariable UUID communityId) {
-        // the one nested route, listPosts(communityId), is scoped this way
         return ResponseEntity.ok(postService.listPosts(communityId).stream().map(postMapper::toDto).toList());
     }
 

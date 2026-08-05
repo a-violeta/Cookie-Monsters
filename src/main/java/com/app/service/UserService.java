@@ -3,30 +3,20 @@ package com.app.service;
 import com.app.model.User;
 import com.app.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@ConditionalOnProperty(name = "app.http.client.enabled", havingValue = "false", matchIfMissing = true)
 public class UserService implements UserUseCases {
 
     private final UserRepository userRepository;
-
-    //user status
-    private User loggedInUser = null;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
-    public User createUser(String username, String email, String password, String description) {
-        if (username == null || username.isBlank()) {
-            throw new IllegalArgumentException("Username is required.");
-        }
-        if (email == null || email.isBlank() || !email.contains("@")) {
-            throw new IllegalArgumentException("A valid email is required.");
-        }
-        if (password == null || password.isBlank()) {
-            throw new IllegalArgumentException("Password is required.");
-        }
+    @Transactional
+    public User createUser(String username, String email, String password) {
         if (userRepository.existsByUsername(username)) {
             throw new IllegalArgumentException("Username is already taken.");
         }
@@ -34,31 +24,49 @@ public class UserService implements UserUseCases {
             throw new IllegalArgumentException("Email is already taken.");
         }
 
-        User newUser = new User(username, email, password, description);
+        User newUser = new User();
+        newUser.setUsername(username);
+        newUser.setEmail(email);
+
+        // Always hash the password before saving it to the database
+        newUser.setPassword(passwordEncoder.encode(password));
+
         return userRepository.save(newUser);
     }
 
     @Override
-    public User login(String identifier, String password) {
-        // search for the user sending the same 'identifier' for both username and email
-        User user = userRepository.findByUsernameOrEmail(identifier, identifier)
-                .orElseThrow(() -> new IllegalArgumentException("Incorrect username/email or password."));
+    @Transactional(readOnly = true)
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+    }
 
-        if (!user.getPassword().equals(password)) {
-            throw new IllegalArgumentException("Incorrect username/email or password.");
+    @Override
+    @Transactional
+    public User updateProfile(String username, String displayName, String avatarUrl) {
+        User user = findByUsername(username);
+
+        if (displayName != null) {
+            user.setDisplayName(displayName);
+        }
+        if (avatarUrl != null) {
+            user.setAvatarUrl(avatarUrl);
         }
 
-        this.loggedInUser = user;
-        return user;
+        return userRepository.save(user);
     }
 
     @Override
-    public void logout() {
-        this.loggedInUser = null;
-    }
+    @Transactional
+    public void changePassword(String username, String currentPassword, String newPassword) {
+        User user = findByUsername(username);
 
-    @Override
-    public User getLoggedInUser() {
-        return this.loggedInUser;
+        // Verify the old password matches the hash in the database
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new IllegalArgumentException("Incorrect current password");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
     }
 }
