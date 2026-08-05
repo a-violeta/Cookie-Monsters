@@ -37,6 +37,8 @@ public class Community {
 
     // Fixed mappedBy to match the exact field name 'subreddit' from the Post entity
     @OneToMany(mappedBy = "subreddit", cascade = CascadeType.ALL)
+    // cascade: whatever operation happens to a Community, propagate that same operation to all the Posts in its posts list automatically
+    // consequence: deleting a Community also deletes all their Posts
     private List<Post> communityPosts;
 
     public Community() {
@@ -61,9 +63,10 @@ public class Community {
 
     // Changed long to UUID to match Post ID type
     public Post findPostById(UUID postId) {
+        // if there are any posts at all, we search
         if (this.getCommunityPosts() != null && !this.getCommunityPosts().isEmpty()) {
             for (Post p : this.getCommunityPosts()) {
-                if (p.getId().equals(postId)) {
+                if (p.getId().equals(postId)) { // Proper object comparison for UUID
                     return p;
                 }
             }
@@ -73,9 +76,10 @@ public class Community {
 
     // Changed parameter to Long object wrapper to use .equals() safely
     public User findUserById(Long userId) {
+        // if there are any users at all, we search
         if (this.getCommunityUsers() != null && !this.getCommunityUsers().isEmpty()) {
             for (User u : this.getCommunityUsers()) {
-                if (u.getId().equals(userId)) {
+                if (u.getId().equals(userId)) { // Proper object comparison
                     return u;
                 }
             }

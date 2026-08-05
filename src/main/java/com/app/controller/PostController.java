@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -20,38 +21,46 @@ public class PostController {
     private final PostUseCases postService;
     private final PostMapper postMapper;
 
-    @PostMapping("/api/posts")
+    @PostMapping("/posts")
     public ResponseEntity<PostDto> createPost(@Valid @RequestBody PostDto dto) {
-        // Changed dto.getText() to dto.getContent()
+        // dto.communityId/userId are plain ids
+        // postService does the real lookup and membership check, never trusted directly from the client
         Post created = postService.addPost(dto.getCommunityId(), dto.getUserId(), dto.getTitle(), dto.getContent());
         return ResponseEntity.status(HttpStatus.CREATED).body(postMapper.toDto(created));
     }
 
-    @GetMapping("/api/posts/{postId}")
+    @GetMapping("/posts/{postId}")
     public ResponseEntity<PostDto> getPost(@PathVariable UUID postId) {
         return ResponseEntity.ok(postMapper.toDto(postService.findPostById(postId)));
     }
 
-    @PutMapping("/api/posts/{postId}")
+    @PutMapping("/posts/{postId}")
     public ResponseEntity<Void> editPost(@PathVariable UUID postId, @RequestBody PostDto dto) {
-        // Changed dto.getText() to dto.getContent()
+        // authorship check is in PostUseCases
         postService.editPost(postId, dto.getContent());
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/api/posts/{postId}")
+    @DeleteMapping("/posts/{postId}")
     public ResponseEntity<Void> deletePost(@PathVariable UUID postId) {
         postService.deletePost(postId);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/api/communities/{communityId}/posts")
+    @GetMapping("/subreddits/{communityId}/posts")
     public ResponseEntity<List<PostDto>> listPostsForCommunity(@PathVariable UUID communityId) {
         return ResponseEntity.ok(postService.listPosts(communityId).stream().map(postMapper::toDto).toList());
     }
 
-    @GetMapping("/api/posts")
-    public ResponseEntity<List<PostDto>> listAllPosts() {
+    @GetMapping("/posts")
+    public ResponseEntity<List<PostDto>> listAllPosts(@RequestParam(required = false) String subreddit) {
         return ResponseEntity.ok(postService.listPosts().stream().map(postMapper::toDto).toList());
+    }
+
+    @PutMapping("/posts/{id}/vote")
+    public ResponseEntity<PostDto> votePost(@PathVariable UUID id, @RequestBody Map<String, String> requestBody) {
+        String voteType = requestBody.get("voteType");
+        Post updated = postService.votePost(id, voteType);
+        return ResponseEntity.ok(postMapper.toDto(updated));
     }
 }

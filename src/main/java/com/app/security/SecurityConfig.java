@@ -3,6 +3,7 @@ package com.app.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -34,6 +35,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Allow public access to all /auth endpoints (register, login)
                         .requestMatchers("/auth/**").permitAll()
+                        // Allow public account registration via /api/users
+                        .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
                         // Any other request must be authenticated with a JWT
                         .anyRequest().authenticated()
                 )
@@ -43,13 +46,11 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // BCrypt is the industry standard for safely hashing passwords
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // We expose this bean so we can use it in our AuthController for the login process
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();

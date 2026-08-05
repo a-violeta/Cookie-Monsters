@@ -9,14 +9,17 @@ import java.util.List;
 
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+// @ToString(exclude = {"password", "communities", "posts", "comments"})
 @Entity
-@Table(name = "app_users")
+@Table(name = "app_users") // user is a reserved name in postgres
 public class User {
 
+    // no id generator
+    // let database make it for no errors in future
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
-    private Long id;
+    private Long id; // JPA needs to be null before using
 
     private String username;
     private String email;
@@ -33,11 +36,14 @@ public class User {
     private List<Community> communities;
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
+    // cascade: whatever operation happens to a User, propagate that same operation to all the Posts in its posts list automatically
+    // consequence: deleting a User also deletes all their Posts
     private List<Post> posts;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Comment> comments;
 
+    // constructors
     public User() {
         this.createdAt = LocalDateTime.now();
     }
@@ -57,6 +63,7 @@ public class User {
                 ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
                 ", displayName='" + displayName + '\'' +
+                ", description='" + description + '\'' +
                 ", createdAt=" + createdAt +
                 '}';
     }

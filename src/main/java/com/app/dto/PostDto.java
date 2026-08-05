@@ -40,5 +40,11 @@ public class PostDto {
     @NotBlank(message = "Content is required")
     private String content;
 
+    private long upvotes;
+    private long downvotes;
+    private long score;
+
+    private String userVote;
+
     private LocalDateTime createdAt;
 }
