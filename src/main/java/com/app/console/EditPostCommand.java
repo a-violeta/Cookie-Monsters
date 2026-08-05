@@ -18,13 +18,8 @@ public class EditPostCommand extends Command {
 
     @Override
     public void execute(String[] args) {
-        if (args.length < 1) {
-            consolePrinter.printError("Missing Arguments");
-            consolePrinter.printExplanation("edit-post 'New Text' ");
-            return;
-        } else if (args.length > 1) {
+        if (args.length >= 1) {
             consolePrinter.printError("Too Many Arguments");
-            consolePrinter.printExplanation("edit-post 'New Text' ");
             return;
         }
 
@@ -54,7 +49,10 @@ public class EditPostCommand extends Command {
 
             UUID postId = posts.get(chosenIndex-1).getId();
 
-            String newText = args[0];
+            consolePrinter.printPrompt("Type new post body");
+
+            // read with console
+            String newText = consoleReader.readLine();
 
             postUseCases.editPost(postId, newText);
             consolePrinter.printSuccess("Post successfully edited!");

@@ -1,3 +1,6 @@
+server:
+  port: 8080
+
 spring:
   datasource:
     url: jdbc:h2:mem:mydb;DB_CLOSE_DELAY=-1
@@ -14,7 +17,3 @@ spring:
     console:
       enabled: true
       path: /h2-console
-server:
-  port: 8080
-
-# here are the DB and the port now
