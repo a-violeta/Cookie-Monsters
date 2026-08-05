@@ -24,15 +24,10 @@ public class AddPostCommand extends Command {
 
     @Override
     public void execute(String[] args) {
-        // Arguments Validations
-        if (args.length < 2) {
-            consolePrinter.printError("Missing Arguments");
-            consolePrinter.printExplanation("add-post 'Title' 'Text' ");
-            return;
-        } else if (args.length > 2) {
+
+        if (args.length >= 1) {
 
             consolePrinter.printError("Too Many Arguments");
-            consolePrinter.printExplanation("add-post 'Title' 'Text' ");
             return;
         }
 
@@ -65,8 +60,15 @@ public class AddPostCommand extends Command {
 
             String username = userUseCases.getLoggedInUser().getUsername();
 
-            String title = args[0];
-            String text = args[1];
+            consolePrinter.printPrompt("Type post title");
+
+            // read with console
+            String title = consoleReader.readLine();
+
+            consolePrinter.printPrompt("Type post body");
+
+            // read with console
+            String text = consoleReader.readLine();
 
             Post newPost = postUseCases.addPost(title, text, subredditName, username);
             consolePrinter.printSuccess("Post successfully added!");

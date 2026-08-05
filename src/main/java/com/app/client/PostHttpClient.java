@@ -61,7 +61,7 @@ public class PostHttpClient implements PostUseCases {
                     new ParameterizedTypeReference<>() {
                     }
             );
-            
+
             log.info("Post created via HTTP in community {}", subreddit);
             if (response.getBody() != null) {
                 return toPost(response.getBody().getData());
@@ -116,7 +116,6 @@ public class PostHttpClient implements PostUseCases {
         PostDto request = new PostDto();
         request.setTitle(newTitle);
         request.setContent(newContent);
-
         try {
             ResponseEntity<ApiResponse<PostDto>> response = restTemplate.exchange(
                     url,
@@ -137,7 +136,6 @@ public class PostHttpClient implements PostUseCases {
     @Override
     public Post votePost(UUID postId, String voteType) {
         String url = clientConfig.getBaseUrl() + "/posts/" + postId + "/vote";
-
         Map<String, String> requestBody = Map.of("voteType", voteType);
 
         try {
@@ -150,7 +148,6 @@ public class PostHttpClient implements PostUseCases {
                     requestEntity,
                     PostDto.class
             );
-
             return toPost(response.getBody());
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             log.error("Failed to vote post via HTTP", e);

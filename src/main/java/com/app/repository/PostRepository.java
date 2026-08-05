@@ -1,7 +1,6 @@
 package com.app.repository;
 
 import com.app.model.Post;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

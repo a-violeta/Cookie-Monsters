@@ -12,11 +12,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-// the same way UserService has loggedInUser, so does this class
-// but it s purely for cache, just so we don't cross the network just for this
-// both are kept in sync by calling the server first then updating after the server confirms
-
-// should delete method toDto implemented here and use the toDto from mapper instead
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -50,6 +46,11 @@ public class UserHttpClient implements UserUseCases {
     }
 
     @Override
+    public User createUser(String username, String email, String password) {
+        return null;
+    }
+
+    @Override
     public User login(String username, String password) {
         String url = clientConfig.getBaseUrl() + "/api/users/login";
         LoginRequest request = new LoginRequest();
@@ -57,11 +58,9 @@ public class UserHttpClient implements UserUseCases {
         request.setPassword(password);
 
         try {
-            // set UserService's loggedInUser
-            // that s the copy PostService/CommentService actually check to know who is logged in
             UserDto response = restTemplate.postForObject(url, request, UserDto.class);
             User user = toUser(response);
-            this.loggedInUser = user; // keep our cache in sync
+            this.loggedInUser = user;
             log.info("Logged in via HTTP: {}", username);
             return user;
         } catch (HttpClientErrorException | HttpServerErrorException e) {
@@ -75,8 +74,6 @@ public class UserHttpClient implements UserUseCases {
         try {
             restTemplate.postForLocation(url, null);
         } catch (HttpClientErrorException | HttpServerErrorException e) {
-            // even if the network call fails, clear local state anyway
-            // the console shouldn't act "logged in" if it can't reach the server
             log.warn("Server logout call failed, clearing local state anyway", e);
         } finally {
             this.loggedInUser = null;
@@ -85,9 +82,54 @@ public class UserHttpClient implements UserUseCases {
 
     @Override
     public User getLoggedInUser() {
-        // no network call, answers from the cache
-        // this can differ from the truth if the server restarts mid-session
         return this.loggedInUser;
+    }
+
+    // FIX: Added findByUsername (Required by AuthController)
+    @Override
+    public User findByUsername(String username) {
+        String url = clientConfig.getBaseUrl() + "/api/users/" + username;
+        try {
+            UserDto response = restTemplate.getForObject(url, UserDto.class);
+            return toUser(response);
+        } catch (HttpClientErrorException.NotFound e) {
+            throw new IllegalArgumentException("User with username " + username + " not found");
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            throw new IllegalArgumentException(extractMessage(e));
+        }
+    }
+
+    // FIX: Added updateProfile (Required by AuthController)
+    @Override
+    public User updateProfile(String username, String displayName, String avatarUrl) {
+        String url = clientConfig.getBaseUrl() + "/api/users/" + username + "/profile";
+        Map<String, String> request = Map.of(
+                "displayName", displayName != null ? displayName : "",
+                "avatarUrl", avatarUrl != null ? avatarUrl : ""
+        );
+
+        try {
+            restTemplate.put(url, request);
+            return findByUsername(username);
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            throw new IllegalArgumentException(extractMessage(e));
+        }
+    }
+
+    // FIX: Added changePassword (Required by AuthController)
+    @Override
+    public void changePassword(String username, String currentPassword, String newPassword) {
+        String url = clientConfig.getBaseUrl() + "/api/users/" + username + "/password";
+        Map<String, String> request = Map.of(
+                "currentPassword", currentPassword,
+                "newPassword", newPassword
+        );
+
+        try {
+            restTemplate.put(url, request);
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            throw new IllegalArgumentException(extractMessage(e));
+        }
     }
 
     private User toUser(UserDto dto) {

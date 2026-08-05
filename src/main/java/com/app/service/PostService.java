@@ -2,10 +2,10 @@ package com.app.service;
 
 import com.app.model.*;
 import com.app.repository.CommunityRepository;
+import com.app.repository.PostRepository;
 import com.app.repository.UserRepository;
 import com.app.repository.VoteRepository;
 import lombok.RequiredArgsConstructor;
-import com.app.repository.PostRepository;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,6 +61,7 @@ public class PostService implements PostUseCases {
         post.setUpdatedAt(LocalDateTime.now());
         post.setCommentList(new ArrayList<>());
 
+        // Voting initialization from the main branch
         post.setUpvotes(1);
         post.setScore(1);
 
@@ -104,6 +105,20 @@ public class PostService implements PostUseCases {
     }
 
     @Transactional(readOnly = true)
+    public List<Post> listPosts(UUID communityId) {
+        Community subreddit = communityRepository.findById(communityId)
+                .orElseThrow(() -> new IllegalArgumentException("Community with id " + communityId + " not found"));
+
+        List<Post> posts = new ArrayList<>();
+        for (Post post : postRepository.findAll()) {
+            if (Objects.equals(post.getSubreddit(), subreddit)) {
+                posts.add(post);
+            }
+        }
+        return posts;
+    }
+
+    @Transactional(readOnly = true)
     public List<Post> listPosts() {
         List<Post> posts = postRepository.findAll();
         User currentUser = userService.getLoggedInUser();
@@ -137,6 +152,7 @@ public class PostService implements PostUseCases {
         return post;
     }
 
+    @Transactional
     public void deletePost(UUID postId) {
         Post post = findPostById(postId);
 

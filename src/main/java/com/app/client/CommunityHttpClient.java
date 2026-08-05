@@ -19,9 +19,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.UUID;
 
 @Service
@@ -33,14 +31,8 @@ public class CommunityHttpClient implements CommunityUseCases {
     private final RestTemplate restTemplate;
     private final HttpClientConfig clientConfig;
 
-    // validateCommunity is copied here because it s just logic, no DB access
-    // round-tripping the network just to do a check would be wasteful
-    // and the two copies are kept in sync since neither needs the DB
-    // UserService.createUser's validation DOES need the DB to check username uniqueness
-    // and so createUser is never duplicated
     @Override
     public void validateCommunity(String communityName, String displayName, String description) {
-        // pure validation, no I/O, mirrors CommunityService, safe to duplicate
         if (communityName == null || communityName.isBlank() || displayName == null || displayName.isBlank()) {
             throw new IllegalArgumentException("Community name is required");
         }
@@ -78,7 +70,6 @@ public class CommunityHttpClient implements CommunityUseCases {
                     new ParameterizedTypeReference<ApiResponse<CommunityDto>>() {});
 
             log.info("Community created via HTTP: {}", name);
-
             return toCommunity(response.getBody().getData());
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             throw new IllegalArgumentException(extractMessage(e));
@@ -174,17 +165,19 @@ public class CommunityHttpClient implements CommunityUseCases {
 
     @Override
     public List<Community> listCommunitiesByUserId(Long userId) {
-        CommunityDto[] dtos = restTemplate.getForObject(
-                clientConfig.getBaseUrl() + "/api/users/" + userId + "/communities",
-                CommunityDto[].class
-        );
-        return Arrays.stream(dtos)
-                .map(this::toCommunity)
-                .collect(Collectors.toList());
+        String url = clientConfig.getBaseUrl() + "/api/users/" + userId + "/communities";
+        try {
+            ResponseEntity<ApiResponse<List<CommunityDto>>> response = restTemplate.exchange(
+                    url, HttpMethod.GET, null,
+                    new ParameterizedTypeReference<ApiResponse<List<CommunityDto>>>() {});
+            return response.getBody().getData().stream().map(this::toCommunity).toList();
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            throw new IllegalArgumentException(extractMessage(e));
+        }
     }
 
     @Override
-    public List<Post> listCommunityPosts(String name){
+    public List<Post> listCommunityPosts(String name) {
         String url = clientConfig.getBaseUrl() + "/subreddits/" + name + "/posts";
         try {
             ResponseEntity<ApiResponse<List<PostDto>>> response = restTemplate.exchange(
@@ -224,7 +217,6 @@ public class CommunityHttpClient implements CommunityUseCases {
         community.setDescription(dto.getDescription());
         community.setCreatedAt(dto.getCreatedAt());
         community.setIconUrl(dto.getIconUrl());
-        // communityUsers/communityPosts intentionally left null, console has no datasource to hydrate them
         return community;
     }
 

@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.UUID;
 
 public interface PostUseCases {
-    void validatePost(String title, String text);
-    Post addPost(String title, String content, String subreddit, String username);
+    void validatePost(String title, String content);
+    Post addPost(UUID communityId, long userId, String title, String content);
     void deletePost(UUID postId);
     List<Post> listPosts();
     Post findPostById(UUID postId);
