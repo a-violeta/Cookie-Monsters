@@ -31,8 +31,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/health", "/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/users", "/api/users/login").permitAll()
-                        .requestMatchers("/subreddits/**").permitAll() // Allows seeding communities
-                        .requestMatchers(HttpMethod.POST, "/posts").permitAll() // Allows seeding posts
+                        .requestMatchers(HttpMethod.GET, "/subreddits/**").permitAll() // Allows seeding communities
+                        .requestMatchers(HttpMethod.GET, "/posts").permitAll() // Allows seeding posts
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

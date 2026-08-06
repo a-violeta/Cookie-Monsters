@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/health")
+//@RequestMapping("/")
 public class HealthController {
 
-    @GetMapping("/")
+    @GetMapping("/health")
     public ApiResponse<Map<String, String>> healthcheck() {
         return ApiResponse.ok(Map.of(
                 "status", "UP",
