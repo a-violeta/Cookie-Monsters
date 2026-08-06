@@ -54,6 +54,9 @@ public class CommentService implements CommentUseCases {
         newComment.setPost(post);
         newComment.setCreatedAt(LocalDateTime.now());
 
+        post.setCommentCount(post.getCommentCount() + 1);
+        postRepository.save(post);
+
         return commentRepository.save(newComment);
     }
 
@@ -102,6 +105,11 @@ public class CommentService implements CommentUseCases {
         if (!Objects.equals(comment.getUser().getId(), userUseCases.getLoggedInUser().getId())) {
             throw new IllegalStateException("This comment was not created by You ");
         }
+
+        Post post = comment.getPost();
+        post.setCommentCount(post.getCommentCount() - 1);
+        postRepository.save(post);
+
         commentRepository.deleteById(commentId);
     }
 }
