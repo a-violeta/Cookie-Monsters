@@ -2,16 +2,19 @@ package com.app.console;
 
 import com.app.model.Post;
 import com.app.service.PostUseCases;
+import com.app.service.UserUseCases;
 
 import java.util.List;
 
 public class PostsFeedCommand extends Command {
 
     private final PostUseCases postUseCases;
+    private final UserUseCases userUseCases;
 
-    public PostsFeedCommand(ConsolePrinter printer, PostUseCases postUseCases) {
+    public PostsFeedCommand(ConsolePrinter printer, PostUseCases postUseCases, UserUseCases userUseCases) {
         super(printer);
         this.postUseCases = postUseCases;
+        this.userUseCases = userUseCases;
     }
 
     @Override
@@ -23,7 +26,7 @@ public class PostsFeedCommand extends Command {
             return;
         }
 
-        List<Post> posts = postUseCases.listPosts();
+        List<Post> posts = postUseCases.listPosts(userUseCases.getLoggedInUser().getUsername());
 
         if (posts.isEmpty()) {
             consolePrinter.printError("No posts found!");

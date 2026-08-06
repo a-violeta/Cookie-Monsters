@@ -8,6 +8,7 @@ import com.app.response.ApiResponse;
 import com.app.service.PostUseCases;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,42 +24,42 @@ public class PostController {
     private final PostMapper postMapper;
 
     @GetMapping
-    public ApiResponse<List<PostDto>> listAllPosts(@RequestParam(required = false) String subreddit) {
+    public ApiResponse<List<PostDto>> listAllPosts(@RequestParam(required = false) String subreddit, Authentication authentication) {
         if (subreddit == null) {
-            return ApiResponse.ok(postService.listPosts().stream().map(postMapper::toDto).toList());
+            return ApiResponse.ok(postService.listPosts(authentication.getName()).stream().map(postMapper::toDto).toList());
         }
 
-        return ApiResponse.ok(postService.listPostsBySubreddit(subreddit).stream().map(postMapper::toDto).toList());
+        return ApiResponse.ok(postService.listPostsBySubreddit(subreddit, authentication.getName()).stream().map(postMapper::toDto).toList());
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<PostDto> getPost(@PathVariable UUID id) {
-        return ApiResponse.ok(postMapper.toDto(postService.findPostById(id)));
+    public ApiResponse<PostDto> getPost(@PathVariable UUID id,  Authentication authentication) {
+        return ApiResponse.ok(postMapper.toDto(postService.findPostById(id, authentication.getName())));
     }
 
     @PostMapping
-    public ApiResponse<PostDto> createPost(@Valid @RequestBody PostDto dto) {
-        Post created = postService.addPost(dto.getSubreddit(), dto.getAuthor(), dto.getSubreddit(), dto.getAuthor());
+    public ApiResponse<PostDto> createPost(@Valid @RequestBody PostDto dto, Authentication authentication) {
+        Post created = postService.addPost(dto.getTitle(), dto.getContent(), dto.getSubreddit(), authentication.getName());
         return ApiResponse.ok(postMapper.toDto(created));
     }
 
     @PutMapping("/{id}")
-    public ApiResponse<PostDto> editPost(@PathVariable UUID id, @RequestBody PostUpdateRequest dto) {
+    public ApiResponse<PostDto> editPost(@PathVariable UUID id, @Valid @RequestBody PostUpdateRequest dto, Authentication authentication) {
         // authorship check is in PostUseCases
-        Post updated = postService.editPost(id, dto.getTitle(), dto.getContent());
+        Post updated = postService.editPost(id, dto.getTitle(), dto.getContent(), authentication.getName());
         return ApiResponse.ok(postMapper.toDto(updated));
     }
 
     @DeleteMapping("/{id}")
-    public ApiResponse<Void> deletePost(@PathVariable UUID id) {
-        postService.deletePost(id);
+    public ApiResponse<Void> deletePost(@PathVariable UUID id, Authentication authentication) {
+        postService.deletePost(id, authentication.getName());
         return ApiResponse.message("The post was deleted successfully");
     }
 
     @PutMapping("/{id}/vote")
-    public ApiResponse<PostDto> votePost(@PathVariable UUID id, @RequestBody Map<String, String> requestBody) {
+    public ApiResponse<PostDto> votePost(@PathVariable UUID id, @RequestBody Map<String, String> requestBody, Authentication authentication) {
         String voteType = requestBody.get("voteType");
-        Post updated = postService.votePost(id, voteType);
+        Post updated = postService.votePost(id, voteType, authentication.getName());
         return ApiResponse.ok(postMapper.toDto(updated));
     }
 }

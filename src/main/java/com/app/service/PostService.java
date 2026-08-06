@@ -24,7 +24,6 @@ public class PostService implements PostUseCases {
     private final PostRepository postRepository;
     private final CommunityRepository communityRepository;
     private final UserRepository userRepository;
-    private final UserService userService;
     private final VoteRepository voteRepository;
 
     public void validatePost(String title, String content) {
@@ -38,23 +37,21 @@ public class PostService implements PostUseCases {
     }
 
     @Transactional
-    public Post addPost(String title, String content, String subredditName, String username) {
-        validatePost(title, content);
-
+    public Post addPost(String title, String content, String subredditName, String requesterUsername) {
         Community subreddit = communityRepository.findByName(subredditName)
                 .orElseThrow(() -> new IllegalArgumentException("Subreddit " + subredditName + " not found"));
 
-        User author = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("User " + username + " not found"));
+        User requester = userRepository.findByUsername(requesterUsername)
+                .orElseThrow(() -> new IllegalArgumentException("User " + requesterUsername + " not found"));
 
-        if (subreddit.findUserById(author.getId()) == null) {
+        if (subreddit.findUserById(requester.getId()) == null) {
             throw new IllegalArgumentException("You are not a member of this community");
         }
 
         Post post = new Post();
 
         post.setSubreddit(subreddit);
-        post.setAuthor(author);
+        post.setAuthor(requester);
         post.setTitle(title);
         post.setContent(content);
         post.setCreatedAt(LocalDateTime.now());
@@ -72,7 +69,7 @@ public class PostService implements PostUseCases {
         postRepository.save(post);
 
         Vote vote = new Vote();
-        vote.setAuthor(author);
+        vote.setAuthor(requester);
         vote.setPost(post);
         vote.setUserVote(VoteType.UP);
         voteRepository.save(vote);
@@ -93,14 +90,17 @@ public class PostService implements PostUseCases {
     }
 
     @Transactional(readOnly = true)
-    public Post findPostById(UUID postId) {
+    public Post findPostById(UUID postId, String requesterUsername) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() ->
                         new IllegalArgumentException(
                                 "Post with id " + postId + " not found"
                         ));
 
-        populateUserVoteStatus(post, userService.getLoggedInUser());
+        User requester = userRepository.findByUsername(requesterUsername)
+                .orElseThrow(() -> new IllegalArgumentException("User " + requesterUsername + " not found"));
+
+        populateUserVoteStatus(post, requester);
         return post;
     }
 
@@ -119,23 +119,27 @@ public class PostService implements PostUseCases {
     }
 
     @Transactional(readOnly = true)
-    public List<Post> listPosts() {
+    public List<Post> listPosts(String requesterUsername) {
         List<Post> posts = postRepository.findAll();
-        User currentUser = userService.getLoggedInUser();
+        User requester = userRepository.findByUsername(requesterUsername)
+                .orElseThrow(() -> new IllegalArgumentException("User " + requesterUsername + " not found"));
 
-        posts.forEach(post -> populateUserVoteStatus(post, currentUser));
+        posts.forEach(post -> populateUserVoteStatus(post, requester));
         return posts;
     }
 
     @Transactional
-    public Post editPost(UUID postId, String newTitle, String newContent) {
+    public Post editPost(UUID postId, String newTitle, String newContent, String requesterUsername) {
         if (newTitle == null && newContent == null) {
             throw new IllegalArgumentException("At least one field must be provided to update the post");
         }
 
-        Post post = findPostById(postId);
+        Post post = findPostById(postId, requesterUsername);
 
-        if (!Objects.equals(post.getAuthor(), userService.getLoggedInUser())) {
+        User requester = userRepository.findByUsername(requesterUsername)
+                .orElseThrow(() -> new IllegalArgumentException("User " + requesterUsername + " not found"));
+
+        if (!Objects.equals(post.getAuthor(), requester)) {
             throw new IllegalArgumentException("You are not the author of this post");
         }
 
@@ -153,10 +157,13 @@ public class PostService implements PostUseCases {
     }
 
     @Transactional
-    public void deletePost(UUID postId) {
-        Post post = findPostById(postId);
+    public void deletePost(UUID postId, String requesterUsername) {
+        Post post = findPostById(postId, requesterUsername);
 
-        if (!Objects.equals(post.getAuthor(), userService.getLoggedInUser())) {
+        User requester = userRepository.findByUsername(requesterUsername)
+                .orElseThrow(() -> new IllegalArgumentException("User " + requesterUsername + " not found"));
+
+        if (!Objects.equals(post.getAuthor(), requester)) {
             throw new IllegalArgumentException("You are not the author of this post");
         }
 
@@ -164,15 +171,18 @@ public class PostService implements PostUseCases {
     }
 
     @Transactional
-    public Post votePost(UUID postId, String voteType) {
-        Post post = findPostById(postId);
-        User currentUser = userService.getLoggedInUser();
-        Vote vote = voteRepository.findByPostAndAuthor(post, currentUser).orElse(null);
+    public Post votePost(UUID postId, String voteType, String requesterUsername) {
+        Post post = findPostById(postId, requesterUsername);
+
+        User requester = userRepository.findByUsername(requesterUsername)
+                .orElseThrow(() -> new IllegalArgumentException("User " + requesterUsername + " not found"));
+
+        Vote vote = voteRepository.findByPostAndAuthor(post, requester).orElse(null);
 
         if (vote == null) {
             vote = new Vote();
             vote.setPost(post);
-            vote.setAuthor(currentUser);
+            vote.setAuthor(requester);
         }
 
         VoteType currentVote = vote.getUserVote();
@@ -218,11 +228,12 @@ public class PostService implements PostUseCases {
     }
 
     @Transactional(readOnly = true)
-    public List<Post> listPostsBySubreddit(String subredditName) {
+    public List<Post> listPostsBySubreddit(String subredditName, String requesterUsername) {
         List<Post> posts = postRepository.findBySubredditName(subredditName);
-        User currentUser = userService.getLoggedInUser();
+        User requester = userRepository.findByUsername(requesterUsername)
+                .orElseThrow(() -> new IllegalArgumentException("User " + requesterUsername + " not found"));
 
-        posts.forEach(post -> populateUserVoteStatus(post, currentUser));
+        posts.forEach(post -> populateUserVoteStatus(post, requester));
 
         return posts;
     }
