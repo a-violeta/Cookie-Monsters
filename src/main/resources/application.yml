@@ -6,7 +6,8 @@ app:
   http:
     client:
       enabled: false
-      #base-url: http://localhost:8081
+      #base-url: http://107.21.167.30:8081
+      #base-url: http://localhost:8080
       connection-timeout: 5000
       read-timeout: 10000
 
