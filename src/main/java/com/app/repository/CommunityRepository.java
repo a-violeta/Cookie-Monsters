@@ -8,6 +8,7 @@ import java.util.UUID;
 
 public interface CommunityRepository {
     Optional<Community> findById(UUID id);
+    Optional<Community> findByName(String name);
     Community save(Community community);
     void delete(Community community);
     List<Community> findAll();

@@ -7,7 +7,6 @@ import com.app.service.PostUseCases;
 import com.app.service.UserUseCases;
 
 import java.util.List;
-import java.util.UUID;
 
 public class AddPostCommand extends Command {
     private final PostUseCases postUseCases;
@@ -57,9 +56,9 @@ public class AddPostCommand extends Command {
                 throw new IllegalArgumentException("Index out of bounds!");
             }
 
-            UUID communityId = communities.get(chosenIndex-1).getId();
+            String subredditName = communities.get(chosenIndex-1).getName();
 
-            long userId = userUseCases.getLoggedInUser().getId();
+            String username = userUseCases.getLoggedInUser().getUsername();
 
             consolePrinter.printPrompt("Type post title");
 
@@ -71,7 +70,7 @@ public class AddPostCommand extends Command {
             // read with console
             String text = consoleReader.readLine();
 
-            Post newPost = postUseCases.addPost(communityId, userId, title, text);
+            Post newPost = postUseCases.addPost(title, text, subredditName, username);
             consolePrinter.printSuccess("Post successfully added!");
             consolePrinter.displayPost(newPost);
         } catch (Exception e){
