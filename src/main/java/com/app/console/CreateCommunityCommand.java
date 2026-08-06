@@ -2,16 +2,19 @@ package com.app.console;
 
 import com.app.model.Community;
 import com.app.service.CommunityUseCases;
+import com.app.service.UserUseCases;
 
 public class CreateCommunityCommand extends Command {
 
     private final CommunityUseCases communityUseCases;
     private final ConsoleReader consoleReader;
+    private final UserUseCases userUseCases;
 
-    public CreateCommunityCommand(ConsolePrinter consolePrinter, CommunityUseCases communityUseCases, ConsoleReader consoleReader) {
+    public CreateCommunityCommand(ConsolePrinter consolePrinter, CommunityUseCases communityUseCases, ConsoleReader consoleReader, UserUseCases userUseCases) {
         super(consolePrinter);
         this.communityUseCases=communityUseCases;
         this.consoleReader = consoleReader;
+        this.userUseCases = userUseCases;
     }
 
     @Override
@@ -42,7 +45,7 @@ public class CreateCommunityCommand extends Command {
         // read with console
         String iconUrl = consoleReader.readLine();
 
-        Community newCommunity = communityUseCases.createCommunity(name, displayName, description, iconUrl);
+        Community newCommunity = communityUseCases.createCommunity(name, displayName, description, iconUrl, userUseCases.getLoggedInUser().getUsername());
 
         consolePrinter.printSuccess("Community successfully created!");
         consolePrinter.displayCommunity(newCommunity);
