@@ -33,6 +33,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/users", "/api/users/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/subreddits/**").permitAll() // Allows seeding communities
                         .requestMatchers(HttpMethod.GET, "/posts").permitAll() // Allows seeding posts
+                        .requestMatchers(HttpMethod.GET, "/comments").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

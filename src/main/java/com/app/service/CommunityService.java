@@ -77,14 +77,17 @@ public class CommunityService implements CommunityUseCases {
 
     @Override
     @Transactional
-    public void editCommunity(String name, String displayName, String iconUrl, String description) {
+    public void editCommunity(String name, String displayName, String iconUrl, String description, String requesterUsername) {
         if (displayName == null && description == null && iconUrl == null) {
             throw new IllegalArgumentException("At least one field must be provided to update the community");
         }
 
         Community community = findCommunityByName(name);
 
-        if (!community.getCommunityUsers().contains(userService.getLoggedInUser())) {
+        User requester = userRepository.findByUsername(requesterUsername)
+                .orElseThrow(() -> new IllegalStateException("Authenticated user not found"));
+
+        if (!community.getCommunityUsers().contains(requester)) {
             throw new IllegalArgumentException("You are not a member of this community");
         }
 
@@ -103,10 +106,13 @@ public class CommunityService implements CommunityUseCases {
 
     @Override
     @Transactional
-    public void deleteCommunity(String name) {
+    public void deleteCommunity(String name, String requesterUsername) {
         Community community = findCommunityByName(name);
 
-        if (!community.getCommunityUsers().contains(userService.getLoggedInUser())) {
+        User requester = userRepository.findByUsername(requesterUsername)
+                .orElseThrow(() -> new IllegalStateException("Authenticated user not found"));
+
+        if (!community.getCommunityUsers().contains(requester)) {
             throw new IllegalArgumentException("You are not a member of this community");
         }
 
@@ -176,23 +182,21 @@ public class CommunityService implements CommunityUseCases {
 
     @Override
     @Transactional
-    public Community createCommunity(String communityName, String displayName, String description, String iconUrl) {
+    public Community createCommunity(String communityName, String displayName, String description, String iconUrl, String creatorUsername) {
         validateCommunity(communityName, displayName, description);
 
         if (communityRepository.existsByName(communityName)) {
             throw new IllegalArgumentException("Community name is already taken");
         }
+
+        User currentUser = userRepository.findByUsername(creatorUsername)
+                .orElseThrow(() -> new IllegalStateException("Authenticated user not found"));
+
         Community community = new Community();
         community.setName(communityName);
         community.setDisplayName(displayName);
         community.setDescription(description);
         community.setIconUrl(iconUrl);
-
-        User currentUser = userService.getLoggedInUser();
-
-        if (currentUser == null) {
-            throw new IllegalStateException("You must be logged in to create a community");
-        }
 
         List<User> communityMembers = new ArrayList<>();
         communityMembers.add(currentUser);
