@@ -27,14 +27,21 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                // ---> PASTE IT HERE <---
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/users", "/api/users/login").permitAll()
-                        .requestMatchers("/subreddits/**").permitAll() // Allows seeding communities
-                        .requestMatchers(HttpMethod.POST, "/posts").permitAll() // Allows seeding posts
-                        .anyRequest().authenticated()
+                        // the console app (UserHttpClient/PostHttpClient/CommentHttpClient/CommunityHttpClient) never obtains or sends a JWT - its "login"
+                        // only sets an in-memory field server-side. So every endpoint the console touches must
+                        // be permitAll here, or it will always 403 regardless of "login" state.
+//                        .requestMatchers("/api/users/**").permitAll()
+//                        .requestMatchers("/subreddits/**").permitAll()
+//                        .requestMatchers("/posts/**").permitAll()
+//                        .requestMatchers("/comments/**").permitAll()
+                                .requestMatchers("/h2-console/**").permitAll() // keep database console accessible
+                                .anyRequest().authenticated()
+
                 )
+                // required to allow H2 console frames to render properly
+                .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -49,4 +56,5 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
+
 }

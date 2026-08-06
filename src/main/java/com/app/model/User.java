@@ -26,7 +26,7 @@ public class User {
     private String password;
     private String description;
 
-    // New fields mapped from the API specification
+    // new fields mapped from the API specification
     private String displayName;
     private String avatarUrl;
 

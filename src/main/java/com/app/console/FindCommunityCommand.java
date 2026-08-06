@@ -6,27 +6,28 @@ import com.app.service.CommunityUseCases;
 public class FindCommunityCommand extends Command {
 
     private final CommunityUseCases communityUseCases;
+    private final ConsoleReader consoleReader;
 
-    public FindCommunityCommand(ConsolePrinter consolePrinter, CommunityUseCases communityUseCases) {
+    public FindCommunityCommand(ConsolePrinter consolePrinter, CommunityUseCases communityUseCases, ConsoleReader consoleReader) {
         super(consolePrinter);
         this.communityUseCases=communityUseCases;
+        this.consoleReader = consoleReader;
     }
 
     @Override
     public void execute(String[] args) {
 
-        if (args.length < 1) {
-            consolePrinter.printError("Missing Arguments");
-            consolePrinter.printExplanation("find-community 'Community Name' ");
-            return;
-        } else if (args.length > 1) {
+        if (args.length >= 1) {
             consolePrinter.printError("Too Many Arguments");
-            consolePrinter.printExplanation("find-community 'Community Name' ");
             return;
         }
 
         try {
-            String communityName = args[0];
+            consolePrinter.printPrompt("Type community name");
+
+            // read with console
+            String communityName = consoleReader.readLine();
+
             Community community = communityUseCases.findCommunityByName(communityName);
             consolePrinter.displayCommunity(community);
         } catch (Exception e) {

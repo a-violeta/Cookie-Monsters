@@ -19,14 +19,8 @@ public class EditCommunityCommand extends Command {
     @Override
     public void execute(String[] args) {
 
-        if (args.length < 3) {
-            // obviously here the arguments are all mandatory but through HTTP they are optional
-            consolePrinter.printError("Missing Arguments");
-            consolePrinter.printExplanation("edit-community 'New Display Name' 'New icon URL' 'New Description' ");
-            return;
-        } else if (args.length > 3) {
+        if (args.length >= 1) {
             consolePrinter.printError("Too Many Arguments");
-            consolePrinter.printExplanation("edit-community 'New Display Name' 'New icon URL' 'New Description' ");
             return;
         }
 
@@ -55,9 +49,21 @@ public class EditCommunityCommand extends Command {
             }
 
             String communityName = communities.get(chosenIndex-1).getName();
-            String newDisplayName = args[0];
-            String newIconUrl = args[1];
-            String newDescription = args[2];
+
+            consolePrinter.printPrompt("Type new community display name");
+
+            // read with console
+            String newDisplayName = consoleReader.readLine();
+
+            consolePrinter.printPrompt("Type new community icon URL");
+
+            // read with console
+            String newIconUrl = consoleReader.readLine();
+
+            consolePrinter.printPrompt("Type new community description");
+
+            // read with console
+            String newDescription = consoleReader.readLine();
 
             communityUseCases.editCommunity(communityName, newDisplayName, newIconUrl, newDescription);
 

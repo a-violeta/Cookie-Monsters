@@ -7,7 +7,6 @@ import com.app.service.PostUseCases;
 import com.app.service.UserUseCases;
 
 import java.util.List;
-import java.util.UUID;
 
 public class AddPostCommand extends Command {
     private final PostUseCases postUseCases;
@@ -25,15 +24,10 @@ public class AddPostCommand extends Command {
 
     @Override
     public void execute(String[] args) {
-        // Arguments Validations
-        if (args.length < 2) {
-            consolePrinter.printError("Missing Arguments");
-            consolePrinter.printExplanation("add-post 'Title' 'Text' ");
-            return;
-        } else if (args.length > 2) {
+
+        if (args.length >= 1) {
 
             consolePrinter.printError("Too Many Arguments");
-            consolePrinter.printExplanation("add-post 'Title' 'Text' ");
             return;
         }
 
@@ -62,14 +56,21 @@ public class AddPostCommand extends Command {
                 throw new IllegalArgumentException("Index out of bounds!");
             }
 
-            UUID communityId = communities.get(chosenIndex-1).getId();
+            String subredditName = communities.get(chosenIndex-1).getName();
 
-            long userId = userUseCases.getLoggedInUser().getId();
+            String username = userUseCases.getLoggedInUser().getUsername();
 
-            String title = args[0];
-            String text = args[1];
+            consolePrinter.printPrompt("Type post title");
 
-            Post newPost = postUseCases.addPost(communityId, userId, title, text);
+            // read with console
+            String title = consoleReader.readLine();
+
+            consolePrinter.printPrompt("Type post body");
+
+            // read with console
+            String text = consoleReader.readLine();
+
+            Post newPost = postUseCases.addPost(title, text, subredditName, username);
             consolePrinter.printSuccess("Post successfully added!");
             consolePrinter.displayPost(newPost);
         } catch (Exception e){

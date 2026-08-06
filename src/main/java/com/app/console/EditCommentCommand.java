@@ -7,7 +7,6 @@ import com.app.service.CommentUseCases;
 import com.app.service.CommunityUseCases;
 import com.app.service.PostUseCases;
 import com.app.service.UserUseCases;
-import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
 
 import java.util.List;
 import java.util.UUID;
@@ -32,13 +31,8 @@ public class EditCommentCommand extends Command{
     @Override
     public void execute(String[] args) {
 
-        if (args.length < 1) {
-            consolePrinter.printError("Missing Arguments");
-            consolePrinter.printExplanation("edit-comment  'Text'");
-            return;
-        } else if (args.length > 1) {
+        if (args.length >= 1) {
             consolePrinter.printError("Too Many Arguments");
-            consolePrinter.printExplanation("edit-comment 'Text'");
             return;
         }
 
@@ -123,7 +117,10 @@ public class EditCommentCommand extends Command{
 
             Long commentId = comments.get(chosenIndex-1).getId();
 
-            String newText = args[0];
+            consolePrinter.printPrompt("Type comment");
+
+            // read with console
+            String newText = consoleReader.readLine();
 
             commentUseCases.editComment(commentId, newText);
             consolePrinter.printSuccess("Comment successfully edited!");

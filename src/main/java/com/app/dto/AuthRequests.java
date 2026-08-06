@@ -26,8 +26,10 @@ public class AuthRequests {
 
     @Data
     public static class LoginRequest {
+        // field renamed from "username" to "identifier" for consistency with com.app.dto.LoginRequest (used by /api/users/login). Still only matches by
+        // username server-side (see CustomUserDetailsService) - email login for this JWT flow is not implemented.
         @NotBlank
-        private String username;
+        private String username;//EDIT: rename identifier to username cuz API use just username
 
         @NotBlank
         private String password;

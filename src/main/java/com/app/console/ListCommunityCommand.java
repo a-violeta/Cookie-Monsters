@@ -17,7 +17,7 @@ public class ListCommunityCommand extends Command{
     @Override
     public void execute(String[] args) {
 
-        // Arguments Validations
+        // arg validation
         if (args.length > 0) {
 
             consolePrinter.printError("Too Many Arguments");

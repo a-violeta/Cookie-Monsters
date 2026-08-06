@@ -11,12 +11,10 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    // In a real production app, this should be a long random string loaded from application.yml
-    // It must be at least 256 bits (32 characters) for the HS256 algorithm
     private final String SECRET_STRING = "CookieMonstersSuperSecretKeyMustBeVeryLong2026";
     private final SecretKey key = Keys.hmacShaKeyFor(SECRET_STRING.getBytes());
 
-    // Token validity: 24 hours
+    // token validity: 24 hours idk i think it should change
     private final long EXPIRATION_TIME = 86400000L;
 
     public String generateToken(String username) {
