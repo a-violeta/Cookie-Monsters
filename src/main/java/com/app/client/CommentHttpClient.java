@@ -71,7 +71,7 @@ public class CommentHttpClient implements CommentUseCases {
     public void editComment(UUID commentId, String newText) {
         String url = clientConfig.getBaseUrl() + "/api/comments/" + commentId;
         CommentDto request = new CommentDto();
-        request.setText(newText);
+        request.setContent(newText);
         try {
             restTemplate.put(url, request);
         } catch (HttpClientErrorException | HttpServerErrorException e) {
@@ -94,8 +94,9 @@ public class CommentHttpClient implements CommentUseCases {
         String url = clientConfig.getBaseUrl() + "/api/comments";
         try {
             ResponseEntity<List<CommentDto>> response = restTemplate.exchange(
-                    url, HttpMethod.GET, null, new ParameterizedTypeReference<List<CommentDto>>() {});
-            return response.getBody().stream().map(this::toComment).toList();
+                    url, HttpMethod.GET, null, new ParameterizedTypeReference<>() {
+                    });
+            return response.getBody() != null ? response.getBody().stream().map(this::toComment).toList() : null;
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             throw new IllegalArgumentException(extractMessage(e));
         }
@@ -106,8 +107,9 @@ public class CommentHttpClient implements CommentUseCases {
         String url = clientConfig.getBaseUrl() + "/api/comments/post/" + postId;
         try {
             ResponseEntity<List<CommentDto>> response = restTemplate.exchange(
-                    url, HttpMethod.GET, null, new ParameterizedTypeReference<List<CommentDto>>() {});
-            return response.getBody().stream().map(this::toComment).toList();
+                    url, HttpMethod.GET, null, new ParameterizedTypeReference<>() {
+                    });
+            return response.getBody() != null ? response.getBody().stream().map(this::toComment).toList() : null;
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             throw new IllegalArgumentException(extractMessage(e));
         }
@@ -127,7 +129,7 @@ public class CommentHttpClient implements CommentUseCases {
 
         Comment comment = new Comment();
         comment.setId(dto.getId());
-        comment.setContent(dto.getText());
+        comment.setContent(dto.getContent());
         comment.setUser(user);
         comment.setPost(post);
         comment.setCreatedAt(dto.getCreatedAt());

@@ -1,23 +1,31 @@
 package com.app.console;
 
 import com.app.model.Comment;
+import com.app.model.Community;
 import com.app.model.Post;
 import com.app.service.CommentUseCases;
+import com.app.service.CommunityUseCases;
 import com.app.service.PostUseCases;
+import com.app.service.UserUseCases;
 
 import java.util.List;
+import java.util.UUID;
 
-public class ListCommentCommand extends Command{
+public class ListCommentCommand extends Command {
 
     private final CommentUseCases commentUseCases;
-    private final PostUseCases postUseCases;
     private final ConsoleReader consoleReader;
+    private final CommunityUseCases communityUseCases;
+    private final UserUseCases userUseCases;
+    private final PostUseCases postUseCases;
 
-    ListCommentCommand(ConsolePrinter consolePrinter,CommentUseCases commentUseCases, PostUseCases postUseCases, ConsoleReader consoleReader) {
+    ListCommentCommand(ConsolePrinter consolePrinter, CommentUseCases commentUseCases, ConsoleReader consoleReader, CommunityUseCases communityUseCases, UserUseCases userUseCases, PostUseCases postUseCases) {
         super(consolePrinter);
         this.commentUseCases = commentUseCases;
-        this.postUseCases = postUseCases;
         this.consoleReader = consoleReader;
+        this.communityUseCases = communityUseCases;
+        this.userUseCases = userUseCases;
+        this.postUseCases = postUseCases;
     }
 
     @Override
@@ -29,31 +37,60 @@ public class ListCommentCommand extends Command{
         }
 
         try {
-            List<Post> posts = postUseCases.listPosts();
+            Long loggedInUserId = userUseCases.getLoggedInUser().getId();
+            List<Community> communities = communityUseCases.listCommunitiesByUserId(loggedInUserId);
 
-            for (int i = 0; i < posts.size(); i++) {
-                consolePrinter.printPostListItem(i+1, posts.get(i));
+            if (communities.isEmpty()) {
+                consolePrinter.printError("No communities found for your user!");
+                return;
             }
 
-            consolePrinter.printPrompt("Choose a post by typing its index");
+            for (int i = 0; i < communities.size(); i++) {
+                consolePrinter.printCommunityListItem(i + 1, communities.get(i));
+            }
 
-            // read with console
-            // and check the number chosen for validity
-            String input = consoleReader.readLine();
+            consolePrinter.printPrompt("Choose a community by typing its index");
+            String communityInput = consoleReader.readLine();
 
-            int chosenIndex;
+            int communityChosenIndex;
             try {
-                chosenIndex = Integer.parseInt(input);
+                communityChosenIndex = Integer.parseInt(communityInput);
             } catch (NumberFormatException e) {
-                throw new IllegalArgumentException("'" + input + "' is not a valid number!");
+                throw new IllegalArgumentException("'" + communityInput + "' is not a valid number!");
             }
 
-            if (chosenIndex < 1 || chosenIndex > posts.size()) {
+            if (communityChosenIndex < 1 || communityChosenIndex > communities.size()) {
                 throw new IllegalArgumentException("Index out of bounds!");
             }
 
-            Post post = posts.get(chosenIndex-1);
-            Long postId = post.getId();
+            Community community = communities.get(communityChosenIndex - 1);
+            List<Post> posts = postUseCases.listPosts(community.getId());
+
+            if (posts.isEmpty()) {
+                consolePrinter.printError("No posts found in this community!");
+                return;
+            }
+
+            for (int i = 0; i < posts.size(); i++) {
+                consolePrinter.printPostListItem(i + 1, posts.get(i));
+            }
+
+            consolePrinter.printPrompt("Choose a post by typing its index");
+            String postInput = consoleReader.readLine();
+
+            int postChosenIndex;
+            try {
+                postChosenIndex = Integer.parseInt(postInput);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("'" + postInput + "' is not a valid number!");
+            }
+
+            if (postChosenIndex < 1 || postChosenIndex > posts.size()) {
+                throw new IllegalArgumentException("Index out of bounds!");
+            }
+
+            Post post = posts.get(postChosenIndex - 1);
+            UUID postId = post.getId();
             List<Comment> comments = commentUseCases.listCommentByPostId(postId);
 
             consolePrinter.displayPost(post);
@@ -64,9 +101,8 @@ public class ListCommentCommand extends Command{
             for (Comment comment : comments) {
                 consolePrinter.displayComment(comment);
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             consolePrinter.printError(e.getMessage());
         }
-
     }
 }

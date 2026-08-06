@@ -28,19 +28,18 @@ public class InputParser {
         this.userUseCases = userUseCases;
         this.postUseCases = postUseCases;
 
-        commandMap.put("create-community", new CreateCommunityCommand(printer, communityUseCases));
+        commandMap.put("create-community", new CreateCommunityCommand(printer, communityUseCases, reader));
         commandMap.put("list-communities", new ListCommunityCommand(printer, communityUseCases));
         commandMap.put("logout", new LogoutCommand(printer, userUseCases));
         commandMap.put("exit", new ExitCommand(printer));
-        commandMap.put("0", new ExitCommand(printer));
-        commandMap.put("delete-community", new DeleteCommunityCommand(printer, communityUseCases));
+        commandMap.put("delete-community", new DeleteCommunityCommand(printer, communityUseCases, reader));
         commandMap.put("edit-community", new EditCommunityCommand(printer, communityUseCases, reader));
         commandMap.put("exit-community", new ExitCommunityCommand(printer, communityUseCases, userUseCases, reader));
-        commandMap.put("find-community", new FindCommunityCommand(printer, communityUseCases));
+        commandMap.put("find-community", new FindCommunityCommand(printer, communityUseCases, reader));
         commandMap.put("join-community", new JoinCommunityCommand(printer, communityUseCases, userUseCases, reader));
-        commandMap.put("edit-comment", new EditCommentCommand(printer, commentUseCases, reader));
-        commandMap.put("delete-comment", new DeleteCommentCommand(printer, commentUseCases, reader));
-        commandMap.put("add-comment", new CreateCommentCommand(printer, commentUseCases, postUseCases, reader, userUseCases));
+        commandMap.put("edit-comment", new EditCommentCommand(printer, commentUseCases, reader, postUseCases, userUseCases, communityUseCases));
+        commandMap.put("delete-comment", new DeleteCommentCommand(printer, commentUseCases, reader, communityUseCases, userUseCases));
+        commandMap.put("add-comment", new CreateCommentCommand(printer, commentUseCases, communityUseCases, reader, userUseCases));
         commandMap.put("help", new HelpCommand(printer));
         commandMap.put("h", new HelpCommand(printer));
         commandMap.put("add-post", new AddPostCommand(printer, postUseCases, userUseCases, communityUseCases, reader));
@@ -48,7 +47,27 @@ public class InputParser {
         commandMap.put("list-posts", new ListPostsCommand(printer, postUseCases, communityUseCases, reader));
         commandMap.put("delete-post", new DeletePostCommand(printer, postUseCases, reader));
         commandMap.put("edit-post", new EditPostCommand(printer, postUseCases, reader));
-        commandMap.put("list-comments", new ListCommentCommand(printer,commentUseCases, postUseCases, reader));
+        commandMap.put("list-comments", new ListCommentCommand(printer,commentUseCases, reader, communityUseCases, userUseCases, postUseCases));
+
+        commandMap.put("0", new ExitCommand(printer));
+        commandMap.put("1", new ListCommunityCommand(printer, communityUseCases));
+        commandMap.put("2", new FindCommunityCommand(printer, communityUseCases, reader));
+        commandMap.put("3", new CreateCommunityCommand(printer, communityUseCases, reader));
+        commandMap.put("4", new JoinCommunityCommand(printer, communityUseCases, userUseCases, reader));
+        commandMap.put("5", new ExitCommunityCommand(printer, communityUseCases, userUseCases, reader));
+        commandMap.put("6", new EditCommunityCommand(printer, communityUseCases, reader));
+        commandMap.put("7", new DeleteCommunityCommand(printer, communityUseCases, reader));
+        commandMap.put("8", new PostsFeedCommand(printer, postUseCases));
+        commandMap.put("9", new ListPostsCommand(printer, postUseCases, communityUseCases, reader));
+        commandMap.put("10", new AddPostCommand(printer, postUseCases, userUseCases, communityUseCases, reader));
+        commandMap.put("11", new EditPostCommand(printer, postUseCases, reader));
+        commandMap.put("12", new DeletePostCommand(printer, postUseCases, reader));
+        commandMap.put("13", new ListCommentCommand(printer,commentUseCases, reader, communityUseCases, userUseCases, postUseCases));
+        commandMap.put("14", new CreateCommentCommand(printer, commentUseCases, communityUseCases, reader, userUseCases));
+        commandMap.put("15", new EditCommentCommand(printer, commentUseCases, reader, postUseCases, userUseCases, communityUseCases));
+        commandMap.put("16", new DeleteCommentCommand(printer, commentUseCases, reader, communityUseCases, userUseCases));
+        commandMap.put("17", new HelpCommand(printer));
+        commandMap.put("18", new LogoutCommand(printer, userUseCases));
 
         // Add Commands Classes to the map of commands
     }
@@ -80,6 +99,7 @@ public class InputParser {
         // after logout call userUserCase.logout, the loggerInUser=null and exit while
         while(userUseCases.getLoggedInUser() != null) {
             try {
+                printer.printHomeMenu(); // print the menu before taking input, before any command
                 reader.cliPrompt();
                 String input = reader.readLine();
                 String[] parts = tokenizeInput(input);

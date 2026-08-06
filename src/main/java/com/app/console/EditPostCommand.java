@@ -4,6 +4,7 @@ import com.app.model.Post;
 import com.app.service.PostUseCases;
 
 import java.util.List;
+import java.util.UUID;
 
 public class EditPostCommand extends Command {
     private final PostUseCases postUseCases;
@@ -17,13 +18,8 @@ public class EditPostCommand extends Command {
 
     @Override
     public void execute(String[] args) {
-        if (args.length < 1) {
-            consolePrinter.printError("Missing Arguments");
-            consolePrinter.printExplanation("edit-post 'New Text' ");
-            return;
-        } else if (args.length > 1) {
+        if (args.length >= 1) {
             consolePrinter.printError("Too Many Arguments");
-            consolePrinter.printExplanation("edit-post 'New Text' ");
             return;
         }
 
@@ -51,11 +47,14 @@ public class EditPostCommand extends Command {
                 throw new IllegalArgumentException("Index out of bounds!");
             }
 
-            Long postId = posts.get(chosenIndex-1).getId();
+            UUID postId = posts.get(chosenIndex-1).getId();
 
-            String newText = args[0];
+            consolePrinter.printPrompt("Type new post body");
 
-            postUseCases.editPost(postId, newText);
+            // read with console
+            String newText = consoleReader.readLine();
+
+            postUseCases.editPost(postId, null, newText);
             consolePrinter.printSuccess("Post successfully edited!");
 
             List<Post> postsAfterChange = postUseCases.listPosts();

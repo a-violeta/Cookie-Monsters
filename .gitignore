@@ -9,6 +9,7 @@ out/
 # Java
 *.class
 *.log
+*.gz
 
 # Operating system files
 .DS_Store

@@ -1,58 +1,64 @@
 package com.app.controller;
 
 import com.app.dto.PostDto;
+import com.app.dto.PostUpdateRequest;
 import com.app.mapper.PostMapper;
 import com.app.model.Post;
+import com.app.response.ApiResponse;
 import com.app.service.PostUseCases;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @RestController
+@RequestMapping("/posts")
 @RequiredArgsConstructor
 public class PostController {
 
     private final PostUseCases postService;
     private final PostMapper postMapper;
 
-    @PostMapping("/api/posts")
-    public ResponseEntity<PostDto> createPost(@Valid @RequestBody PostDto dto) {
-        // dto.communityId/userId are plain ids
-        // postService does the real lookup and membership check, never trusted directly from the client
-        Post created = postService.addPost(dto.getCommunityId(), dto.getUserId(), dto.getTitle(), dto.getText());
-        return ResponseEntity.status(HttpStatus.CREATED).body(postMapper.toDto(created));
+    @GetMapping
+    public ApiResponse<List<PostDto>> listAllPosts(@RequestParam(required = false) String subreddit) {
+        if (subreddit == null) {
+            return ApiResponse.ok(postService.listPosts().stream().map(postMapper::toDto).toList());
+        }
+
+        return ApiResponse.ok(postService.listPostsBySubreddit(subreddit).stream().map(postMapper::toDto).toList());
     }
 
-    @GetMapping("/api/posts/{postId}")
-    public ResponseEntity<PostDto> getPost(@PathVariable long postId) {
-        return ResponseEntity.ok(postMapper.toDto(postService.findPostById(postId)));
+    @GetMapping("/{id}")
+    public ApiResponse<PostDto> getPost(@PathVariable UUID id) {
+        return ApiResponse.ok(postMapper.toDto(postService.findPostById(id)));
     }
 
-    @PutMapping("/api/posts/{postId}")
-    public ResponseEntity<Void> editPost(@PathVariable long postId, @RequestBody PostDto dto) {
+    @PostMapping
+    public ApiResponse<PostDto> createPost(@Valid @RequestBody PostDto dto) {
+        Post created = postService.addPost(dto.getSubreddit(), dto.getAuthor(), dto.getSubreddit(), dto.getAuthor());
+        return ApiResponse.ok(postMapper.toDto(created));
+    }
+
+    @PutMapping("/{id}")
+    public ApiResponse<PostDto> editPost(@PathVariable UUID id, @RequestBody PostUpdateRequest dto) {
         // authorship check is in PostUseCases
-        postService.editPost(postId, dto.getText());
-        return ResponseEntity.noContent().build();
+        Post updated = postService.editPost(id, dto.getTitle(), dto.getContent());
+        return ApiResponse.ok(postMapper.toDto(updated));
     }
 
-    @DeleteMapping("/api/posts/{postId}")
-    public ResponseEntity<Void> deletePost(@PathVariable long postId) {
-        postService.deletePost(postId);
-        return ResponseEntity.noContent().build();
+    @DeleteMapping("/{id}")
+    public ApiResponse<Void> deletePost(@PathVariable UUID id) {
+        postService.deletePost(id);
+        return ApiResponse.message("The post was deleted successfully");
     }
 
-    @GetMapping("/api/communities/{communityId}/posts")
-    public ResponseEntity<List<PostDto>> listPostsForCommunity(@PathVariable long communityId) {
-        // the one nested route, listPosts(communityId), is scoped this way
-        return ResponseEntity.ok(postService.listPosts(communityId).stream().map(postMapper::toDto).toList());
-    }
-
-    @GetMapping("/api/posts")
-    public ResponseEntity<List<PostDto>> listAllPosts() {
-        return ResponseEntity.ok(postService.listPosts().stream().map(postMapper::toDto).toList());
+    @PutMapping("/{id}/vote")
+    public ApiResponse<PostDto> votePost(@PathVariable UUID id, @RequestBody Map<String, String> requestBody) {
+        String voteType = requestBody.get("voteType");
+        Post updated = postService.votePost(id, voteType);
+        return ApiResponse.ok(postMapper.toDto(updated));
     }
 }

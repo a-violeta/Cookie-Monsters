@@ -6,30 +6,43 @@ import com.app.service.CommunityUseCases;
 public class CreateCommunityCommand extends Command {
 
     private final CommunityUseCases communityUseCases;
+    private final ConsoleReader consoleReader;
 
-    public CreateCommunityCommand(ConsolePrinter consolePrinter, CommunityUseCases communityUseCases) {
+    public CreateCommunityCommand(ConsolePrinter consolePrinter, CommunityUseCases communityUseCases, ConsoleReader consoleReader) {
         super(consolePrinter);
         this.communityUseCases=communityUseCases;
+        this.consoleReader = consoleReader;
     }
 
     @Override
     public void execute(String[] args) {
 
-        // Arguments Validations
-        if (args.length < 2) {
-
-            consolePrinter.printError("Missing Arguments");
-            consolePrinter.printExplanation("create-community 'Community Name' 'Description'");
-            return;
-
-        } else if (args.length > 2) {
-
+        if (args.length >= 1) {
             consolePrinter.printError("Too Many Arguments");
-            consolePrinter.printExplanation("create-community 'Community Name' 'Description'");
             return;
         }
 
-        Community newCommunity = communityUseCases.createCommunity(args[0], args[1]);
+        consolePrinter.printPrompt("Type community name");
+
+        // read with console
+        String name = consoleReader.readLine();
+
+        consolePrinter.printPrompt("Type community display name");
+
+        // read with console
+        String displayName = consoleReader.readLine();
+
+        consolePrinter.printPrompt("Type community description");
+
+        // read with console
+        String description = consoleReader.readLine();
+
+        consolePrinter.printPrompt("Type community icon URL");
+
+        // read with console
+        String iconUrl = consoleReader.readLine();
+
+        Community newCommunity = communityUseCases.createCommunity(name, displayName, description, iconUrl);
 
         consolePrinter.printSuccess("Community successfully created!");
         consolePrinter.displayCommunity(newCommunity);

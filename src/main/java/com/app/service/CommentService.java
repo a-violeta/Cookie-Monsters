@@ -21,7 +21,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "app.http.client.enabled", havingValue = "false", matchIfMissing = true)
-public class CommentService implements CommentUseCases{
+public class CommentService implements CommentUseCases {
 
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
@@ -35,8 +35,8 @@ public class CommentService implements CommentUseCases{
     }
 
     @Transactional
-    public Comment addComment(String content, long userId, UUID postId) {
-        validateComment(content);
+    public Comment addComment(String text, long userId, UUID postId) {
+        validateComment(text);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User with id " + userId + " not found"));
@@ -44,15 +44,18 @@ public class CommentService implements CommentUseCases{
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("Post with id " + postId + " not found"));
 
-        if (post.getCommunity().findUserById(userId) == null) {
+        if (post.getSubreddit().findUserById(userId) == null) {
             throw new IllegalArgumentException("User is not a member of the community this post belongs to");
         }
 
         Comment newComment = new Comment();
-        newComment.setContent(content);
+        newComment.setContent(text);
         newComment.setUser(user);
         newComment.setPost(post);
         newComment.setCreatedAt(LocalDateTime.now());
+
+        post.setCommentCount(post.getCommentCount() + 1);
+        postRepository.save(post);
 
         return commentRepository.save(newComment);
     }
@@ -102,6 +105,11 @@ public class CommentService implements CommentUseCases{
         if (!Objects.equals(comment.getUser().getId(), userUseCases.getLoggedInUser().getId())) {
             throw new IllegalStateException("This comment was not created by You ");
         }
+
+        Post post = comment.getPost();
+        post.setCommentCount(post.getCommentCount() - 1);
+        postRepository.save(post);
+
         commentRepository.deleteById(commentId);
     }
 }

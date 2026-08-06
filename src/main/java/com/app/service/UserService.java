@@ -4,7 +4,9 @@ import com.app.model.User;
 import com.app.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -12,40 +14,43 @@ import org.springframework.stereotype.Service;
 public class UserService implements UserUseCases {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    //user status
+    // Local session cache for non-HTTP (database/CLI) mode
     private User loggedInUser = null;
 
     @Override
+    @Transactional
     public User createUser(String username, String email, String password, String description) {
-        if (username == null || username.isBlank()) {
-            throw new IllegalArgumentException("Username is required.");
-        }
-        if (email == null || email.isBlank() || !email.contains("@")) {
-            throw new IllegalArgumentException("A valid email is required.");
-        }
-        if (password == null || password.isBlank()) {
-            throw new IllegalArgumentException("Password is required.");
-        }
         if (userRepository.existsByUsername(username)) {
-            throw new IllegalArgumentException("Username is already taken.");
+            throw new IllegalArgumentException("Username is already taken");
         }
         if (userRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException("Email is already taken.");
+            throw new IllegalArgumentException("Email is already taken");
         }
+        User user = new User(
+                username,
+                email,
+                passwordEncoder.encode(password),
+                description
+        );
+        return userRepository.save(user);
+    }
 
-        User newUser = new User(username, email, password, description);
-        return userRepository.save(newUser);
+    @Override
+    @Transactional
+    public User createUser(String username, String email, String password) {
+        return createUser(username, email, password, "New user");
     }
 
     @Override
     public User login(String identifier, String password) {
-        // search for the user sending the same 'identifier' for both username and email
-        User user = userRepository.findByUsernameOrEmail(identifier, identifier)
-                .orElseThrow(() -> new IllegalArgumentException("Incorrect username/email or password."));
+        User user = userRepository.findByUsername(identifier)
+                .or(() -> userRepository.findByEmail(identifier))
+                .orElseThrow(() -> new IllegalArgumentException("Invalid username/email or password"));
 
         if (!user.getPassword().equals(password)) {
-            throw new IllegalArgumentException("Incorrect username/email or password.");
+            throw new IllegalArgumentException("Invalid username/email or password");
         }
 
         this.loggedInUser = user;
@@ -60,5 +65,36 @@ public class UserService implements UserUseCases {
     @Override
     public User getLoggedInUser() {
         return this.loggedInUser;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("User with username " + username + " not found"));
+    }
+
+    @Override
+    @Transactional
+    public User updateProfile(String username, String displayName, String avatarUrl) {
+        User user = findByUsername(username);
+        if (displayName != null) {
+            user.setDisplayName(displayName);
+        }
+        if (avatarUrl != null) {
+            user.setAvatarUrl(avatarUrl);
+        }
+        return userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void changePassword(String username, String currentPassword, String newPassword) {
+        User user = findByUsername(username);
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new IllegalArgumentException("Current password is incorrect");
+        }
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
     }
 }

@@ -1,12 +1,11 @@
 package com.app.service;
 
-import com.app.model.Community;
-import com.app.model.Post;
-import com.app.model.User;
+import com.app.model.*;
 import com.app.repository.CommunityRepository;
-import com.app.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
 import com.app.repository.PostRepository;
+import com.app.repository.UserRepository;
+import com.app.repository.VoteRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,70 +14,104 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "app.http.client.enabled", havingValue = "false", matchIfMissing = true)
-public class PostService implements PostUseCases{
+public class PostService implements PostUseCases {
 
     private final PostRepository postRepository;
     private final CommunityRepository communityRepository;
     private final UserRepository userRepository;
     private final UserService userService;
+    private final VoteRepository voteRepository;
 
-    public void validatePost(String title, String text) {
+    public void validatePost(String title, String content) {
         if (title == null || title.isBlank()) {
             throw new IllegalArgumentException("Title is required");
         }
 
-        if (text == null || text.isBlank()) {
-            throw new IllegalArgumentException("Text is required");
+        if (content == null || content.isBlank()) {
+            throw new IllegalArgumentException("Content is required");
         }
     }
 
     @Transactional
-    public Post addPost(long communityId, long userId, String title, String text) {
-        validatePost(title, text);
+    public Post addPost(String title, String content, String subredditName, String username) {
+        validatePost(title, content);
 
-        Community community = communityRepository.findById(communityId)
-                .orElseThrow(() -> new IllegalArgumentException("Community with id " + communityId + " not found"));
+        Community subreddit = communityRepository.findByName(subredditName)
+                .orElseThrow(() -> new IllegalArgumentException("Subreddit " + subredditName + " not found"));
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User with id " + userId + " not found"));
+        User author = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("User " + username + " not found"));
 
-        if (community.findUserById(userId) == null) {
-            throw new IllegalArgumentException("User is not a member of this community");
+        if (subreddit.findUserById(author.getId()) == null) {
+            throw new IllegalArgumentException("You are not a member of this community");
         }
 
         Post post = new Post();
 
-        post.setCommunity(community);
-        post.setUser(user);
+        post.setSubreddit(subreddit);
+        post.setAuthor(author);
         post.setTitle(title);
-        post.setText(text);
+        post.setContent(content);
         post.setCreatedAt(LocalDateTime.now());
+        post.setUpdatedAt(LocalDateTime.now());
         post.setCommentList(new ArrayList<>());
 
-        return postRepository.save(post);
+        // Voting initialization from the main branch
+        post.setUpvotes(1);
+        post.setScore(1);
+
+        post.setCommentCount(post.getCommentList().size());
+
+        post.setUserVote("up");
+
+        postRepository.save(post);
+
+        Vote vote = new Vote();
+        vote.setAuthor(author);
+        vote.setPost(post);
+        vote.setUserVote(VoteType.UP);
+        voteRepository.save(vote);
+
+        return post;
+    }
+
+    private void populateUserVoteStatus(Post post, User currentUser) {
+        if (currentUser == null) {
+            return;
+        }
+
+        voteRepository.findByPostAndAuthor(post, currentUser).ifPresent(vote -> {
+            if (vote.getUserVote() != null) {
+                post.setUserVote(vote.getUserVote().toString().toLowerCase());
+            }
+        });
     }
 
     @Transactional(readOnly = true)
-    public Post findPostById(long postId) {
-        return postRepository.findById(postId)
+    public Post findPostById(UUID postId) {
+        Post post = postRepository.findById(postId)
                 .orElseThrow(() ->
                         new IllegalArgumentException(
                                 "Post with id " + postId + " not found"
                         ));
+
+        populateUserVoteStatus(post, userService.getLoggedInUser());
+        return post;
     }
 
-    @Transactional
-    public List<Post> listPosts(long communityId) {
-        Community community = communityRepository.findById(communityId)
+    @Transactional(readOnly = true)
+    public List<Post> listPosts(UUID communityId) {
+        Community subreddit = communityRepository.findById(communityId)
                 .orElseThrow(() -> new IllegalArgumentException("Community with id " + communityId + " not found"));
 
         List<Post> posts = new ArrayList<>();
         for (Post post : postRepository.findAll()) {
-            if (Objects.equals(post.getCommunity(), community)) {
+            if (Objects.equals(post.getSubreddit(), subreddit)) {
                 posts.add(post);
             }
         }
@@ -87,29 +120,110 @@ public class PostService implements PostUseCases{
 
     @Transactional(readOnly = true)
     public List<Post> listPosts() {
-        return postRepository.findAll();
+        List<Post> posts = postRepository.findAll();
+        User currentUser = userService.getLoggedInUser();
+
+        posts.forEach(post -> populateUserVoteStatus(post, currentUser));
+        return posts;
     }
 
     @Transactional
-    public void editPost(long postId, String newText) {
+    public Post editPost(UUID postId, String newTitle, String newContent) {
+        if (newTitle == null && newContent == null) {
+            throw new IllegalArgumentException("At least one field must be provided to update the post");
+        }
+
         Post post = findPostById(postId);
 
-        if (!Objects.equals(post.getUser(), userService.getLoggedInUser())) {
+        if (!Objects.equals(post.getAuthor(), userService.getLoggedInUser())) {
             throw new IllegalArgumentException("You are not the author of this post");
         }
 
-        validatePost(post.getTitle(), newText);
-        post.setText(newText);
+        if (newTitle != null) {
+            post.setTitle(newTitle);
+        }
+
+        if (newContent != null) {
+            post.setContent(newContent);
+        }
+
+        post.setUpdatedAt(LocalDateTime.now());
         postRepository.save(post);
+        return post;
     }
 
-    public void deletePost(long postId) {
+    @Transactional
+    public void deletePost(UUID postId) {
         Post post = findPostById(postId);
 
-        if (!Objects.equals(post.getUser(), userService.getLoggedInUser())) {
+        if (!Objects.equals(post.getAuthor(), userService.getLoggedInUser())) {
             throw new IllegalArgumentException("You are not the author of this post");
         }
 
         postRepository.delete(post);
+    }
+
+    @Transactional
+    public Post votePost(UUID postId, String voteType) {
+        Post post = findPostById(postId);
+        User currentUser = userService.getLoggedInUser();
+        Vote vote = voteRepository.findByPostAndAuthor(post, currentUser).orElse(null);
+
+        if (vote == null) {
+            vote = new Vote();
+            vote.setPost(post);
+            vote.setAuthor(currentUser);
+        }
+
+        VoteType currentVote = vote.getUserVote();
+
+        // toggle logic: if voteType in request is the same as current vote, user intention is to cancel the vote
+        if (("up".equals(voteType) && currentVote == VoteType.UP) ||
+                ("down".equals(voteType) && currentVote == VoteType.DOWN)) {
+            voteType = "none";
+        }
+
+        if (currentVote == VoteType.UP) {
+            post.setUpvotes(post.getUpvotes() - 1);
+        } else if (currentVote == VoteType.DOWN) {
+            post.setDownvotes(post.getDownvotes() - 1);
+        }
+
+        switch (voteType) {
+            case "up" -> {
+                post.setUpvotes(post.getUpvotes() + 1);
+                vote.setUserVote(VoteType.UP);
+            }
+            case "down" -> {
+                post.setDownvotes(post.getDownvotes() + 1);
+                vote.setUserVote(VoteType.DOWN);
+            }
+            case "none" -> vote.setUserVote(null);
+            case null, default -> throw new IllegalArgumentException("Invalid vote.");
+        }
+
+        post.setScore(post.getUpvotes() - post.getDownvotes());
+
+        if (vote.getUserVote() != null) {
+            post.setUserVote(vote.getUserVote().toString().toLowerCase());
+        } else {
+            post.setUserVote(null);
+        }
+
+        post.setUpdatedAt(LocalDateTime.now());
+
+        voteRepository.save(vote);
+        postRepository.save(post);
+        return post;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Post> listPostsBySubreddit(String subredditName) {
+        List<Post> posts = postRepository.findBySubredditName(subredditName);
+        User currentUser = userService.getLoggedInUser();
+
+        posts.forEach(post -> populateUserVoteStatus(post, currentUser));
+
+        return posts;
     }
 }
