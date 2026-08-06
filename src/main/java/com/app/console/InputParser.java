@@ -28,12 +28,12 @@ public class InputParser {
         this.userUseCases = userUseCases;
         this.postUseCases = postUseCases;
 
-        commandMap.put("create-community", new CreateCommunityCommand(printer, communityUseCases, reader));
+        commandMap.put("create-community", new CreateCommunityCommand(printer, communityUseCases, reader, userUseCases));
         commandMap.put("list-communities", new ListCommunityCommand(printer, communityUseCases));
         commandMap.put("logout", new LogoutCommand(printer, userUseCases));
         commandMap.put("exit", new ExitCommand(printer));
-        commandMap.put("delete-community", new DeleteCommunityCommand(printer, communityUseCases, reader));
-        commandMap.put("edit-community", new EditCommunityCommand(printer, communityUseCases, reader));
+        commandMap.put("delete-community", new DeleteCommunityCommand(printer, communityUseCases, reader, userUseCases));
+        commandMap.put("edit-community", new EditCommunityCommand(printer, communityUseCases, reader, userUseCases));
         commandMap.put("exit-community", new ExitCommunityCommand(printer, communityUseCases, userUseCases, reader));
         commandMap.put("find-community", new FindCommunityCommand(printer, communityUseCases, reader));
         commandMap.put("join-community", new JoinCommunityCommand(printer, communityUseCases, userUseCases, reader));
@@ -52,11 +52,11 @@ public class InputParser {
         commandMap.put("0", new ExitCommand(printer));
         commandMap.put("1", new ListCommunityCommand(printer, communityUseCases));
         commandMap.put("2", new FindCommunityCommand(printer, communityUseCases, reader));
-        commandMap.put("3", new CreateCommunityCommand(printer, communityUseCases, reader));
+        commandMap.put("3", new CreateCommunityCommand(printer, communityUseCases, reader, userUseCases));
         commandMap.put("4", new JoinCommunityCommand(printer, communityUseCases, userUseCases, reader));
         commandMap.put("5", new ExitCommunityCommand(printer, communityUseCases, userUseCases, reader));
-        commandMap.put("6", new EditCommunityCommand(printer, communityUseCases, reader));
-        commandMap.put("7", new DeleteCommunityCommand(printer, communityUseCases, reader));
+        commandMap.put("6", new EditCommunityCommand(printer, communityUseCases, reader, userUseCases));
+        commandMap.put("7", new DeleteCommunityCommand(printer, communityUseCases, reader, userUseCases));
         commandMap.put("8", new PostsFeedCommand(printer, postUseCases));
         commandMap.put("9", new ListPostsCommand(printer, postUseCases, communityUseCases, reader));
         commandMap.put("10", new AddPostCommand(printer, postUseCases, userUseCases, communityUseCases, reader));
@@ -69,26 +69,28 @@ public class InputParser {
         commandMap.put("17", new HelpCommand(printer));
         commandMap.put("18", new LogoutCommand(printer, userUseCases));
 
-        // add commands classes to  map of commands
+        // Add Commands Classes to the map of commands
     }
 
     private String[] tokenizeInput(String input) {
         List<String> tokens = new ArrayList<>();
 
-        // searching for quotations marks and words without sapce
+        // 1. Searching for Quotations marks
+        // 2. Searching for every word without Spaces
         Pattern pattern = Pattern.compile("\"([^\"]*)\"|(\\S+)");
         Matcher matcher = pattern.matcher(input);
 
         while (matcher.find()) {
             if (matcher.group(1) != null) {
-                // quotations marks
+                // Found Quotations Marks
                 tokens.add(matcher.group(1));
             } else {
-                // plain word
+                // Found a plain word
                 tokens.add(matcher.group(2));
             }
         }
 
+        // Convert List to Array to work with the command interface
         return tokens.toArray(new String[0]);
     }
 

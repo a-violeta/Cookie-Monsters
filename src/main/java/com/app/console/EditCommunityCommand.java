@@ -2,6 +2,7 @@ package com.app.console;
 
 import com.app.model.Community;
 import com.app.service.CommunityUseCases;
+import com.app.service.UserUseCases;
 
 import java.util.List;
 
@@ -9,11 +10,13 @@ public class EditCommunityCommand extends Command {
 
     private final CommunityUseCases communityUseCases;
     private final ConsoleReader consoleReader;
+    private final UserUseCases userUseCases;
 
-    public EditCommunityCommand(ConsolePrinter consolePrinter, CommunityUseCases communityUseCases, ConsoleReader consoleReader) {
+    public EditCommunityCommand(ConsolePrinter consolePrinter, CommunityUseCases communityUseCases, ConsoleReader consoleReader, UserUseCases userUseCases) {
         super(consolePrinter);
         this.communityUseCases=communityUseCases;
         this.consoleReader = consoleReader;
+        this.userUseCases = userUseCases;
     }
 
     @Override
@@ -65,7 +68,7 @@ public class EditCommunityCommand extends Command {
             // read with console
             String newDescription = consoleReader.readLine();
 
-            communityUseCases.editCommunity(communityName, newDisplayName, newIconUrl, newDescription);
+            communityUseCases.editCommunity(communityName, newDisplayName, newIconUrl, newDescription, userUseCases.getLoggedInUser().getUsername());
 
             consolePrinter.printSuccess("Community successfully updated!");
 

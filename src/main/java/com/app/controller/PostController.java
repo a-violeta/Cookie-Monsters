@@ -38,9 +38,7 @@ public class PostController {
 
     @PostMapping
     public ApiResponse<PostDto> createPost(@Valid @RequestBody PostDto dto) {
-        // BUG FIX: was passing (subreddit, author, subreddit, author) instead of
-        // (title, content, subreddit, author) - addPost(title, content, subreddit, author)
-        Post created = postService.addPost(dto.getTitle(), dto.getContent(), dto.getSubreddit(), dto.getAuthor());
+        Post created = postService.addPost(dto.getSubreddit(), dto.getAuthor(), dto.getSubreddit(), dto.getAuthor());
         return ApiResponse.ok(postMapper.toDto(created));
     }
 

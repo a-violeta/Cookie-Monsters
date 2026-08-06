@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 import java.util.UUID;
@@ -26,8 +27,12 @@ public class CommunityController {
     private final PostMapper postMapper;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<CommunityDto>> createCommunity(@Valid @RequestBody CommunityDto dto) {
-        Community created = communityService.createCommunity(dto.getName(), dto.getDisplayName(), dto.getDescription(), dto.getIconUrl());
+    public ResponseEntity<ApiResponse<CommunityDto>> createCommunity(
+            @Valid @RequestBody CommunityDto dto,
+            Authentication authentication) {
+        Community created = communityService.createCommunity(
+                dto.getName(), dto.getDisplayName(), dto.getDescription(), dto.getIconUrl(),
+                authentication.getName()); // the authenticated username from the validated JWT
         return ResponseEntity.ok(ApiResponse.ok(communityMapper.toDto(created)));
     }
 
@@ -61,21 +66,18 @@ public class CommunityController {
     }
 
     @PutMapping("/{name}")
-    public ResponseEntity<ApiResponse<Void>> editCommunity(@PathVariable String name, @Valid @RequestBody CommunityUpdateRequest dto) {
-        communityService.editCommunity(name, dto.getDisplayName(), dto.getIconUrl(), dto.getDescription());
+    public ResponseEntity<ApiResponse<Void>> editCommunity(
+            @PathVariable String name,
+            @Valid @RequestBody CommunityUpdateRequest dto,
+            Authentication authentication) {
+        communityService.editCommunity(name, dto.getDisplayName(), dto.getIconUrl(), dto.getDescription(), authentication.getName());
         return ResponseEntity.ok(ApiResponse.message("Community updated successfully"));
     }
 
     @DeleteMapping("/{name}")
-    public ResponseEntity<ApiResponse<Void>> deleteCommunity(@PathVariable String name) {
-        communityService.deleteCommunity(name);
+    public ResponseEntity<ApiResponse<Void>> deleteCommunity(@PathVariable String name, Authentication authentication) {
+        communityService.deleteCommunity(name, authentication.getName());
         return ResponseEntity.ok(ApiResponse.message("Community deleted successfully"));
-    }
-
-    @PostMapping("/{communityId}/members/{userId}")
-    public ResponseEntity<ApiResponse<Void>> joinCommunity(@PathVariable UUID communityId, @PathVariable Long userId) {
-        communityService.joinCommunity(communityId, userId);
-        return ResponseEntity.ok(ApiResponse.message("Joined community successfully"));
     }
 
     @DeleteMapping("/{communityId}/members/{userId}")

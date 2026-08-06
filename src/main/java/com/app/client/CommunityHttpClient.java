@@ -54,7 +54,7 @@ public class CommunityHttpClient implements CommunityUseCases {
     }
 
     @Override
-    public Community createCommunity(String name, String displayName, String description, String iconUrl) {
+    public Community createCommunity(String name, String displayName, String description, String iconUrl, String creatorUserName) {
         validateCommunity(name, displayName, description);
         String url = clientConfig.getBaseUrl() + "/subreddits";
 
@@ -63,6 +63,8 @@ public class CommunityHttpClient implements CommunityUseCases {
         request.setDisplayName(displayName);
         request.setDescription(description);
         request.setIconUrl(iconUrl);
+        // creatorUserName intentionally not set
+        // the server determines the creator from the JWT
 
         try {
             ResponseEntity<ApiResponse<CommunityDto>> response = restTemplate.exchange(
@@ -77,7 +79,7 @@ public class CommunityHttpClient implements CommunityUseCases {
     }
 
     @Override
-    public void deleteCommunity(String name) {
+    public void deleteCommunity(String name, String requesterUsername) {
         String url = clientConfig.getBaseUrl() + "/subreddits/" + name;
         try {
             restTemplate.delete(url);
@@ -130,7 +132,7 @@ public class CommunityHttpClient implements CommunityUseCases {
     }
 
     @Override
-    public void editCommunity(String name, String displayName, String iconUrl, String description) {
+    public void editCommunity(String name, String displayName, String iconUrl, String description, String requesterUsername) {
         String url = clientConfig.getBaseUrl() + "/subreddits/" + name;
         CommunityDto request = new CommunityDto();
         request.setDescription(description);
