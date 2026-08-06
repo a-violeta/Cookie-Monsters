@@ -7,12 +7,12 @@ import java.util.UUID;
 
 public interface PostUseCases {
     void validatePost(String title, String content);
-    Post addPost(String title, String content, String subreddit, String author);
-    void deletePost(UUID postId);
+    Post addPost(String title, String content, String subreddit, String requesterUsername);
+    void deletePost(UUID postId, String requesterUsername);
     List<Post> listPosts(UUID communityId);
-    List<Post> listPosts();
-    Post findPostById(UUID postId);
-    Post editPost(UUID postId, String newTitle, String newContent);
-    Post votePost(UUID postId, String voteType);
-    List<Post> listPostsBySubreddit(String subreddit);
+    List<Post> listPosts(String requesterUsername);
+    Post findPostById(UUID postId, String requesterUsername);
+    Post editPost(UUID postId, String newTitle, String newContent, String requesterUsername);
+    Post votePost(UUID postId, String voteType,  String requesterUsername);
+    List<Post> listPostsBySubreddit(String subreddit, String requesterUsername);
 }
