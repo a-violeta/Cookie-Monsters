@@ -27,12 +27,11 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                // ---> PASTE IT HERE <---
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/health", "/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/users", "/api/users/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/subreddits/**").permitAll() // Allows seeding communities
-                        .requestMatchers(HttpMethod.GET, "/posts").permitAll() // Allows seeding posts
+                        .requestMatchers(HttpMethod.GET, "/posts/**").permitAll() // Allows seeding posts
                         .requestMatchers(HttpMethod.GET, "/comments").permitAll()
                         .anyRequest().authenticated()
                 )
