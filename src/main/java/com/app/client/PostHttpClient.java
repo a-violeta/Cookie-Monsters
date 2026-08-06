@@ -43,13 +43,11 @@ public class PostHttpClient implements PostUseCases {
         }
     }
 
-    public Post addPost(String title, String content, String subreddit, String username) {
-        validatePost(title, content);
+    public Post addPost(String title, String content, String subreddit, String requesterUsername) {
         String url = clientConfig.getBaseUrl() + "/posts";
 
         PostDto request = new PostDto();
         request.setSubreddit(subreddit);
-        request.setAuthor(username);
         request.setTitle(title);
         request.setContent(content);
 
@@ -74,7 +72,7 @@ public class PostHttpClient implements PostUseCases {
     }
 
     @Override
-    public Post findPostById(UUID postId) {
+    public Post findPostById(UUID postId, String requesterUsername) {
         String url = clientConfig.getBaseUrl() + "/posts/" + postId;
 
         try {
@@ -107,7 +105,7 @@ public class PostHttpClient implements PostUseCases {
     }
 
     @Override
-    public List<Post> listPosts() {
+    public List<Post> listPosts(String requesterUsername) {
         String url = clientConfig.getBaseUrl() + "/posts";
         try {
             ResponseEntity<ApiResponse<List<PostDto>>> response = restTemplate.exchange(
@@ -124,7 +122,7 @@ public class PostHttpClient implements PostUseCases {
     }
 
     @Override
-    public Post editPost(UUID postId, String newTitle, String newContent) {
+    public Post editPost(UUID postId, String newTitle, String newContent, String requesterUsername) {
         String url = clientConfig.getBaseUrl() + "/posts/" + postId;
         PostDto request = new PostDto();
         request.setTitle(newTitle);
@@ -147,7 +145,7 @@ public class PostHttpClient implements PostUseCases {
     }
 
     @Override
-    public Post votePost(UUID postId, String voteType) {
+    public Post votePost(UUID postId, String voteType, String requesterUsername) {
         String url = clientConfig.getBaseUrl() + "/posts/" + postId + "/vote";
         Map<String, String> requestBody = Map.of("voteType", voteType);
 
@@ -168,7 +166,7 @@ public class PostHttpClient implements PostUseCases {
         }
     }
 
-    public List<Post> listPostsBySubreddit(String subreddit) {
+    public List<Post> listPostsBySubreddit(String subreddit, String requesterUsername) {
         String url = clientConfig.getBaseUrl() + "/posts?subreddit=" + subreddit;
         try {
             ResponseEntity<ApiResponse<List<PostDto>>> response = restTemplate.exchange(
@@ -185,7 +183,7 @@ public class PostHttpClient implements PostUseCases {
     }
 
     @Override
-    public void deletePost(UUID postId) {
+    public void deletePost(UUID postId, String requesterUsername) {
         String url = clientConfig.getBaseUrl() + "/posts/" + postId;
         try {
             restTemplate.delete(url);
