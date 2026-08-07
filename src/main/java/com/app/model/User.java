@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
 @Data
@@ -30,7 +30,7 @@ public class User {
     private String displayName;
     private String avatarUrl;
 
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     @ManyToMany(mappedBy = "communityUsers")
     private List<Community> communities;
@@ -45,7 +45,7 @@ public class User {
 
     // constructors
     public User() {
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = Instant.now();
     }
 
     public User(String username, String email, String password, String description) {
@@ -53,7 +53,7 @@ public class User {
         this.email = email;
         this.password = password;
         this.description = description;
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = Instant.now();
     }
 
     @Override

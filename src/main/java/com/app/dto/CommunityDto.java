@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 @Data
@@ -23,5 +23,5 @@ public class CommunityDto {
     private Integer memberCount;
     private Integer postCount;
     private String iconUrl;
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 }

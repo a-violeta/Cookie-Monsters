@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Data
 public class UserDto {
@@ -27,5 +27,5 @@ public class UserDto {
     @NotBlank(message = "Description is required")
     private String description;
 
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 }
