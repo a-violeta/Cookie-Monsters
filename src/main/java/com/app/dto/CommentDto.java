@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 // why id instead of the whole object? check out explanation in PostDto
@@ -29,5 +29,5 @@ public class CommentDto {
 
     private String username; // convenience display field, response-only
 
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 }

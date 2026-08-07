@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.EqualsAndHashCode;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
@@ -28,13 +28,13 @@ public class Comment {
     @JoinColumn(name = "post_id")
     private Post post;
 
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     public Comment(){
         this.text = "";
         this.user = null;
         this.post = null;
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = Instant.now();
         // lombok annotation @NoArgsConstructor would make createdAt = null
         // I think it s better to use current time though
     }
@@ -43,6 +43,6 @@ public class Comment {
         this.text = text;
         this.user = user;
         this.post = post;
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = Instant.now();
     }
 }

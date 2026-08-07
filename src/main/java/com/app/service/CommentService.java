@@ -11,7 +11,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -52,7 +52,7 @@ public class CommentService implements CommentUseCases {
         newComment.setText(text);
         newComment.setUser(user);
         newComment.setPost(post);
-        newComment.setCreatedAt(LocalDateTime.now());
+        newComment.setCreatedAt(Instant.now());
 
         post.setCommentCount(post.getCommentCount() + 1);
         postRepository.save(post);

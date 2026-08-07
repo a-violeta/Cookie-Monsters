@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,8 +31,8 @@ public class Post {
 
     private String title;
     private String content;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Instant createdAt;
+    private Instant updatedAt;
 
     private long upvotes;
     private long downvotes;
@@ -61,7 +61,7 @@ public class Post {
         this.title = "";
         this.content = "";
         this.commentList = null;
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = Instant.now();
         this.media = null;
     }
 
@@ -71,7 +71,7 @@ public class Post {
         this.title = title;
         this.content = content;
         this.commentList = commentList;
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = Instant.now();
         this.media = media;
     }
 }
