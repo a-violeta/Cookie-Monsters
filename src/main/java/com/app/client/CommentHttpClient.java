@@ -122,8 +122,7 @@ public class CommentHttpClient implements CommentUseCases {
         if (dto == null) return null;
 
         User user = new User();
-        user.setId(dto.getUserId());
-        user.setUsername(dto.getUsername());
+        user.setUsername(dto.getAuthor());
 
         Post post = new Post();
         post.setId(dto.getPostId());
@@ -131,7 +130,7 @@ public class CommentHttpClient implements CommentUseCases {
         Comment comment = new Comment();
         comment.setId(dto.getId());
         comment.setContent(dto.getContent());
-        comment.setUser(user);
+        comment.setAuthor(user);
         comment.setPost(post);
         comment.setCreatedAt(dto.getCreatedAt());
         return comment;

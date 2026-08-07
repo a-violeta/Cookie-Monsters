@@ -198,7 +198,7 @@ public class ConsolePrinter {
         System.out.println("\n" + GRAY + "┌──────────────────────────────────────────────" + RESET);
         System.out.println(GRAY + "│ " + RESET + "💬 " + comment.getContent());
         System.out.println(GRAY + "│" + RESET);
-        System.out.println(GRAY + "│ " + RESET + "👤 " + GRAY + "author: " + comment.getUser().getUsername() + RESET);
+        System.out.println(GRAY + "│ " + RESET + "👤 " + GRAY + "author: " + comment.getAuthor() + RESET);
         System.out.println(GRAY + "└──────────────────────────────────────────────" + RESET + "\n");
     }
 
