@@ -190,7 +190,7 @@ public class ConsolePrinter {
         System.out.println(BLUE + "│" + RESET);
         System.out.println(BLUE + "│ " + RESET + user.getDescription());
         System.out.println(BLUE + "│" + RESET);
-        System.out.println(BLUE + "│ " + RESET + GRAY + "joined: " + user.getCreatedAt().format(DateTimeFormatter.ofPattern("MMM d, yyyy")) + RESET);
+        System.out.println(BLUE + "│ " + RESET + GRAY + "joined: " + user.getCreatedAt() + RESET);
         System.out.println(BLUE + "└──────────────────────────────────────────────" + RESET + "\n");
     }
 

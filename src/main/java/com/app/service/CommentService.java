@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -60,8 +61,8 @@ public class CommentService implements CommentUseCases {
         newComment.setContent(text);
         newComment.setAuthor(author);
         newComment.setPost(post);
-        newComment.setUpdatedAt(LocalDateTime.now());
-        newComment.setCreatedAt(LocalDateTime.now());
+        newComment.setUpdatedAt(Instant.now());
+        newComment.setCreatedAt(Instant.now());
 
         // Check for not null parentId
         if (parentId != null) {
@@ -130,7 +131,7 @@ public class CommentService implements CommentUseCases {
 
         validateComment(newText);
         comment.setContent(newText);
-        comment.setUpdatedAt(LocalDateTime.now());
+        comment.setUpdatedAt(Instant.now());
         commentRepository.save(comment);
         return comment;
     }
@@ -205,7 +206,7 @@ public class CommentService implements CommentUseCases {
             comment.setUserVote(null);
         }
 
-        comment.setUpdatedAt(LocalDateTime.now());
+        comment.setUpdatedAt(Instant.now());
 
         voteRepository.save(vote);
         commentRepository.save(comment);

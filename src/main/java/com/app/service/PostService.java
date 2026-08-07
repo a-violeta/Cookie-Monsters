@@ -10,7 +10,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -59,8 +59,8 @@ public class PostService implements PostUseCases {
         post.setAuthor(requester);
         post.setTitle(title);
         post.setContent(content);
-        post.setCreatedAt(LocalDateTime.now());
-        post.setUpdatedAt(LocalDateTime.now());
+        post.setCreatedAt(Instant.now());
+        post.setUpdatedAt(Instant.now());
         post.setCommentList(new ArrayList<>());
 
         // Voting initialization from the main branch
@@ -156,7 +156,7 @@ public class PostService implements PostUseCases {
             post.setContent(newContent);
         }
 
-        post.setUpdatedAt(LocalDateTime.now());
+        post.setUpdatedAt(Instant.now());
         postRepository.save(post);
         return post;
     }
@@ -224,8 +224,6 @@ public class PostService implements PostUseCases {
         } else {
             post.setUserVote(null);
         }
-
-        post.setUpdatedAt(LocalDateTime.now());
 
         voteRepository.save(vote);
         postRepository.save(post);

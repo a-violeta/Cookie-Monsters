@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,7 +24,7 @@ public class Community {
     private String name;
     private String displayName;
     private String description;
-    private LocalDateTime createdAt;
+    private Instant createdAt;
     private String iconUrl;
 
     @ManyToMany
@@ -45,7 +45,7 @@ public class Community {
         this.name = "";
         this.displayName = "";
         this.description = "";
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = Instant.now();
         this.iconUrl = null;
         this.communityUsers = null;
         this.communityPosts = null;
@@ -55,7 +55,7 @@ public class Community {
         this.name = communityName;
         this.displayName = displayName;
         this.description = description;
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = Instant.now();
         this.iconUrl = iconUrl;
         this.communityUsers = communityUsers;
         this.communityPosts = communityPosts;
