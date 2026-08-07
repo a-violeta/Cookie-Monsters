@@ -1,0 +1,55 @@
+name: Deploy Backend to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'corretto'
+          java-version: '21'
+
+      - name: 1. Compile the project
+        run: |
+          mvn clean package -DskipTests
+          mv target/*.jar target/app.jar
+          cp Dockerfile target/
+
+      - name: 2. Transfer the .jar and Dockerfile to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_PEM_KEY }}
+          source: "target/app.jar,target/Dockerfile"
+          target: "/home/ubuntu/app"
+          strip_components: 1
+
+      - name: 3. SSH into EC2, Rebuild and Run Docker
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_PEM_KEY }}
+          script: |
+            cd /home/ubuntu/app
+            
+            # Stop any container already running
+            sudo docker stop rb || true
+            sudo docker rm rb || true
+            
+            # Rebuild the docker image
+            sudo docker build -t server .
+            
+            # Run the backend with the new image 
+            sudo docker run --name rb -d -p 8080:8080 server

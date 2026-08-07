@@ -47,29 +47,29 @@ public class SeedData {
 
     private void seedCommunities() {
         userUseCases.login("Ion", "ion123");
-        catLovers = communityUseCases.createCommunity("the_cat_lovers", "The cat lovers", "we really love cats", null);
+        catLovers = communityUseCases.createCommunity("the_cat_lovers", "The cat lovers", "we really love cats", null, ion.getUsername());
         communityUseCases.joinCommunity(catLovers.getId(), anca.getId());
         communityUseCases.joinCommunity(catLovers.getId(), petru.getId());
         userUseCases.logout();
 
         userUseCases.login("Anca", "anca123");
-        ancaCommunity = communityUseCases.createCommunity("anca_community", "Anca s community", "Anca is here", null);
+        ancaCommunity = communityUseCases.createCommunity("anca_community", "Anca s community", "Anca is here", null, anca.getUsername());
         userUseCases.logout();
 
         userUseCases.login("Cristina", "cristina123");
-        gamers = communityUseCases.createCommunity("gamers_united", "Gamers United", "for anyone who games, casually or not", null);
+        gamers = communityUseCases.createCommunity("gamers_united", "Gamers United", "for anyone who games, casually or not", null, cristina.getUsername());
         communityUseCases.joinCommunity(gamers.getId(), radu.getId());
         communityUseCases.joinCommunity(gamers.getId(), mihai.getId());
         userUseCases.logout();
 
         userUseCases.login("Elena", "elena123");
-        bookClub = communityUseCases.createCommunity("monthly_book_blub", "Monthly Book Club", "one book a month, no exceptions", null);
+        bookClub = communityUseCases.createCommunity("monthly_book_blub", "Monthly Book Club", "one book a month, no exceptions", null, elena.getUsername());
         communityUseCases.joinCommunity(bookClub.getId(), adela.getId());
         communityUseCases.joinCommunity(bookClub.getId(), anca.getId());
         userUseCases.logout();
 
         userUseCases.login("Radu", "radu123");
-        foodies = communityUseCases.createCommunity("foodies", "Foodies", "share recipes, rate restaurants, argue about pineapple on pizza", null);
+        foodies = communityUseCases.createCommunity("foodies", "Foodies", "share recipes, rate restaurants, argue about pineapple on pizza", null, radu.getUsername());
         communityUseCases.joinCommunity(foodies.getId(), petru.getId());
         communityUseCases.joinCommunity(foodies.getId(), mihai.getId());
         communityUseCases.joinCommunity(foodies.getId(), cristina.getId());
