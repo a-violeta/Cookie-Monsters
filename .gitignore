@@ -19,3 +19,4 @@ Thumbs.db
 
 # Environment files
 .env
+/logs/cookie-monsters.log.2026-07-30.0.gz

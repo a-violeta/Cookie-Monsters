@@ -3,6 +3,7 @@ package com.app.console;
 import com.app.model.Comment;
 import com.app.model.Community;
 import com.app.model.Post;
+import com.app.model.User;
 import com.app.service.CommentUseCases;
 import com.app.service.CommunityUseCases;
 import com.app.service.UserUseCases;
@@ -34,8 +35,11 @@ public class CreateCommentCommand extends Command {
         }
 
         try {
-            Long loggedInUserId = userUseCases.getLoggedInUser().getId();
-            List<Community> communities = communityUseCases.listCommunitiesByUserId(loggedInUserId);
+            User requester = userUseCases.getLoggedInUser();
+
+            String username = requester.getUsername();
+
+            List<Community> communities = communityUseCases.listCommunitiesByUserId(requester.getId());
             // we needed a new method to do this
 
             for (int i = 0; i < communities.size(); i++) {
@@ -88,13 +92,14 @@ public class CreateCommentCommand extends Command {
 
             Post post = posts.get(postChosenIndex-1);
             UUID postId = post.getId();
+            UUID parentId = null;
 
             consolePrinter.printPrompt("Type comment");
 
             // read with console
             String text = consoleReader.readLine();
 
-            Comment newComment = commentUseCases.addComment(text, loggedInUserId, postId);
+            Comment newComment = commentUseCases.addComment(text, postId, parentId, username);
             consolePrinter.printSuccess("Comment successfully created!");
             consolePrinter.displayComment(newComment);
         } catch (Exception e) {
