@@ -1,18 +1,16 @@
 package com.app.service;
 
-import com.app.model.Comment;
-import com.app.model.Post;
-import com.app.model.User;
+import com.app.model.*;
 import com.app.repository.CommentRepository;
 import com.app.repository.PostRepository;
 import com.app.repository.UserRepository;
+import com.app.repository.VoteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -27,11 +25,24 @@ public class CommentService implements CommentUseCases {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final UserUseCases userUseCases;
+    private final VoteRepository voteRepository;
 
     public void validateComment(String text) {
         if (text == null || text.isBlank()) {
             throw new IllegalArgumentException("Comment text is required");
         }
+    }
+
+    private void populateUserVoteStatus(Comment comment, User currentUser) {
+        if (currentUser == null) {
+            return;
+        }
+
+        voteRepository.findByCommentAndAuthor(comment, currentUser).ifPresent(vote -> {
+            if (vote.getUserVote() != null) {
+                comment.setUserVote(vote.getUserVote().toString().toLowerCase());
+            }
+        });
     }
 
     @Transactional
@@ -49,11 +60,12 @@ public class CommentService implements CommentUseCases {
         newComment.setContent(text);
         newComment.setAuthor(author);
         newComment.setPost(post);
+        newComment.setUpdatedAt(LocalDateTime.now());
         newComment.setCreatedAt(LocalDateTime.now());
 
         // Check for not null parentId
         if (parentId != null) {
-            Comment parent = findCommentById(parentId);
+            Comment parent = findCommentById(parentId, creatorUsername);
 
             // Check that the comment with the parentId as the same postId as the reply
             if (!parent.getPost().getId().equals(postId)) {
@@ -72,9 +84,15 @@ public class CommentService implements CommentUseCases {
     }
 
     @Transactional(readOnly = true)
-    public Comment findCommentById(UUID commentId) {
-        return commentRepository.findById(commentId)
+    public Comment findCommentById(UUID commentId, String requesterUsername) {
+
+        User requester = userRepository.findByUsername(requesterUsername)
+                .orElseThrow(() -> new IllegalStateException("Authenticated user not found"));
+
+        Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("Comment with id " + commentId + " not found"));
+        populateUserVoteStatus(comment, requester);
+        return comment;
     }
 
     @Transactional(readOnly = true)
@@ -83,38 +101,50 @@ public class CommentService implements CommentUseCases {
     }
 
     @Transactional
-    public List<Comment> listCommentByPostId(UUID postId) {
+    public List<Comment> listCommentByPostId(UUID postId, String requesterUsername) {
+
+        User requester = userRepository.findByUsername(requesterUsername)
+                .orElseThrow(() -> new IllegalStateException("Authenticated user not found"));
+
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("Post with id " + postId + " not found"));
 
-        List<Comment> comments = new ArrayList<>();
-        for (Comment comment : commentRepository.findAll()) {
-            if (Objects.equals(comment.getPost(), post)) {
-                comments.add(comment);
-            }
-        }
+        List<Comment> comments = commentRepository.findAllByPost(post);
+
+        comments.forEach(comment -> populateUserVoteStatus(comment, requester));
+
         return comments;
     }
 
     @Transactional
-    public void editComment(UUID commentId, String newText) {
-        Comment comment = findCommentById(commentId);
+    public Comment editComment(UUID commentId, String newText, String requesterUsername) {
 
-        if (!Objects.equals(comment.getAuthor().getId(), userUseCases.getLoggedInUser().getId())) {
-            throw new IllegalStateException("This comment was not created by You ");
+        Comment comment = findCommentById(commentId, requesterUsername );
+
+        User author = userRepository.findByUsername(requesterUsername)
+                .orElseThrow(() -> new IllegalStateException("Authenticated user not found"));
+
+        if (!Objects.equals(comment.getAuthor().getId(), author.getId())) {
+            throw new IllegalStateException("This comment was not created by you");
         }
+
         validateComment(newText);
         comment.setContent(newText);
+        comment.setUpdatedAt(LocalDateTime.now());
         commentRepository.save(comment);
+        return comment;
     }
 
     @Transactional
-    public void removeComment(UUID commentId) {
+    public void removeComment(UUID commentId, String requesterUsername) {
         // try to find this comment
-        Comment comment = findCommentById(commentId);
+        Comment comment = findCommentById(commentId, requesterUsername );
 
-        if (!Objects.equals(comment.getAuthor().getId(), userUseCases.getLoggedInUser().getId())) {
-            throw new IllegalStateException("This comment was not created by You ");
+        User author = userRepository.findByUsername(requesterUsername)
+                .orElseThrow(() -> new IllegalStateException("Authenticated user not found"));
+
+        if (!Objects.equals(comment.getAuthor(), author)) {
+            throw new IllegalStateException("This comment was not created by you");
         }
 
         Post post = comment.getPost();
@@ -122,6 +152,64 @@ public class CommentService implements CommentUseCases {
         postRepository.save(post);
 
         commentRepository.deleteById(commentId);
+    }
+
+    @Transactional
+    public Comment votePost(UUID id, String voteType, String requesterUsername) {
+
+        Comment comment = findCommentById(id, requesterUsername);
+
+        User requester = userRepository.findByUsername(requesterUsername)
+                .orElseThrow(() -> new IllegalArgumentException("User " + requesterUsername + " not found"));
+
+        Vote vote = voteRepository.findByCommentAndAuthor(comment, requester).orElse(null);
+
+        if (vote == null) {
+            vote = new Vote();
+            vote.setComment(comment);
+            vote.setAuthor(requester);
+        }
+
+        VoteType currentVote = vote.getUserVote();
+
+        // toggle logic: if voteType in request is the same as current vote, user intention is to cancel the vote
+        if (("up".equals(voteType) && currentVote == VoteType.UP) ||
+                ("down".equals(voteType) && currentVote == VoteType.DOWN)) {
+            voteType = "none";
+        }
+
+        if (currentVote == VoteType.UP) {
+            comment.setUpvotes(comment.getUpvotes() - 1);
+        } else if (currentVote == VoteType.DOWN) {
+            comment.setDownvotes(comment.getDownvotes() - 1);
+        }
+
+        switch (voteType) {
+            case "up" -> {
+                comment.setUpvotes(comment.getUpvotes() + 1);
+                vote.setUserVote(VoteType.UP);
+            }
+            case "down" -> {
+                comment.setDownvotes(comment.getDownvotes() + 1);
+                vote.setUserVote(VoteType.DOWN);
+            }
+            case "none" -> vote.setUserVote(null);
+            case null, default -> throw new IllegalArgumentException("Invalid vote.");
+        }
+
+        comment.setScore(comment.getUpvotes() - comment.getDownvotes());
+
+        if (vote.getUserVote() != null) {
+            comment.setUserVote(vote.getUserVote().toString().toLowerCase());
+        } else {
+            comment.setUserVote(null);
+        }
+
+        comment.setUpdatedAt(LocalDateTime.now());
+
+        voteRepository.save(vote);
+        commentRepository.save(comment);
+        return comment;
     }
 }
 

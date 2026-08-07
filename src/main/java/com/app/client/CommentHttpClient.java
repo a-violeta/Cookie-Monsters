@@ -57,7 +57,7 @@ public class CommentHttpClient implements CommentUseCases {
     }
 
     @Override
-    public Comment findCommentById(UUID commentId) {
+    public Comment findCommentById(UUID commentId, String requesterUsername) {
         String url = clientConfig.getBaseUrl() + "/api/comments/" + commentId;
         try {
             return toComment(restTemplate.getForObject(url, CommentDto.class));
@@ -69,19 +69,29 @@ public class CommentHttpClient implements CommentUseCases {
     }
 
     @Override
-    public void editComment(UUID commentId, String newText) {
+    public Comment editComment(UUID commentId, String newText, String requesterUsername) {
+
         String url = clientConfig.getBaseUrl() + "/api/comments/" + commentId;
+
         CommentDto request = new CommentDto();
         request.setContent(newText);
+
         try {
-            restTemplate.put(url, request);
+            org.springframework.http.HttpEntity<CommentDto> requestEntity = new org.springframework.http.HttpEntity<>(request);
+            org.springframework.http.ResponseEntity<CommentDto> response = restTemplate.exchange(
+                    url,
+                    org.springframework.http.HttpMethod.PUT,
+                    requestEntity,
+                    CommentDto.class
+            );
+            return toComment(response.getBody());
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             throw new IllegalArgumentException(extractMessage(e));
         }
     }
 
     @Override
-    public void removeComment(UUID commentId) {
+    public void removeComment(UUID commentId, String requesterUsername) {
         String url = clientConfig.getBaseUrl() + "/api/comments/" + commentId;
         try {
             restTemplate.delete(url);
@@ -104,7 +114,7 @@ public class CommentHttpClient implements CommentUseCases {
     }
 
     @Override
-    public List<Comment> listCommentByPostId(UUID postId) {
+    public List<Comment> listCommentByPostId(UUID postId, String requesterUsername) {
         String url = clientConfig.getBaseUrl() + "/api/comments/post/" + postId;
         try {
             ResponseEntity<List<CommentDto>> response = restTemplate.exchange(

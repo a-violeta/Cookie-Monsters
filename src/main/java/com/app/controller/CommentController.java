@@ -8,6 +8,7 @@ import com.app.service.CommentUseCases;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,27 +22,27 @@ public class CommentController {
     private final CommentMapper commentMapper;
 
     @PostMapping("/posts/{postId}/comments")
-    public ResponseEntity<ApiResponse<CommentDto>> addComment(@PathVariable UUID postId, @Valid @RequestBody CommentDto dto) {
+    public ResponseEntity<ApiResponse<CommentDto>> addComment(@PathVariable UUID postId, @Valid @RequestBody CommentDto dto,  Authentication authentication) {
         // CommentUseCases re-derives Post/User from the ids
         // CommentUseCases checks the person is a member of the post's community
-        Comment created = commentService.addComment(dto.getContent(), postId, dto.getParentId(), dto.getAuthor());
+        Comment created = commentService.addComment(dto.getContent(), postId, dto.getParentId(), authentication.getName());
         return ResponseEntity.ok(ApiResponse.ok(commentMapper.toDto(created)));
     }
 
     @GetMapping("/comments/{id}")
-    public ResponseEntity<ApiResponse<CommentDto>> getComment(@PathVariable UUID id) {
-        return ResponseEntity.ok(ApiResponse.ok(commentMapper.toDto(commentService.findCommentById(id))));
+    public ResponseEntity<ApiResponse<CommentDto>> getComment(@PathVariable UUID id, Authentication authentication) {
+        return ResponseEntity.ok(ApiResponse.ok(commentMapper.toDto(commentService.findCommentById(id, authentication.getName()))));
     }
 
     @PutMapping("/comments/{id}")
-    public ResponseEntity<ApiResponse<Void>> editComment(@PathVariable UUID id, @RequestBody CommentDto dto) {
-        commentService.editComment(id, dto.getContent());
-        return ResponseEntity.ok(ApiResponse.message("Edited comment successfully"));
+    public ResponseEntity<ApiResponse<CommentDto>> editComment(@PathVariable UUID id, @Valid @RequestBody CommentDto dto, Authentication authentication) {
+        Comment updated = commentService.editComment(id, dto.getContent(), authentication.getName());
+        return ResponseEntity.ok(ApiResponse.ok(commentMapper.toDto(updated)));
     }
 
     @DeleteMapping("/comments/{id}")
-    public ResponseEntity<ApiResponse<Void>> removeComment(@PathVariable UUID id) {
-        commentService.removeComment(id);
+    public ResponseEntity<ApiResponse<Void>> removeComment(@PathVariable UUID id, Authentication authentication) {
+        commentService.removeComment(id, authentication.getName());
         return ResponseEntity.ok(ApiResponse.message("Comment deleted successfully"));
     }
 
@@ -51,7 +52,7 @@ public class CommentController {
     }*/
 
     @GetMapping("/posts/{id}/comments")
-    public ResponseEntity<ApiResponse<List<CommentDto>>> listCommentsByPost(@PathVariable UUID id) {
-        return ResponseEntity.ok(ApiResponse.ok(commentService.listCommentByPostId(id).stream().map(commentMapper::toDto).toList()));
+    public ResponseEntity<ApiResponse<List<CommentDto>>> listCommentsByPost(@PathVariable UUID id, Authentication authentication) {
+        return ResponseEntity.ok(ApiResponse.ok(commentService.listCommentByPostId(id, authentication.getName()).stream().map(commentMapper::toDto).toList()));
     }
 }

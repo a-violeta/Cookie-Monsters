@@ -40,7 +40,7 @@ public class User {
     // consequence: deleting a User also deletes all their Posts
     private List<Post> posts;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     private List<Comment> comments;
 
     // constructors

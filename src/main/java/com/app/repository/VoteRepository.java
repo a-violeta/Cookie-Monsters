@@ -1,5 +1,6 @@
 package com.app.repository;
 
+import com.app.model.Comment;
 import com.app.model.Post;
 import com.app.model.User;
 import com.app.model.Vote;
@@ -11,4 +12,5 @@ import java.util.Optional;
 public interface VoteRepository {
     Vote save(Vote vote);
     Optional<Vote> findByPostAndAuthor(Post post, User currentUser);
+    Optional<Vote> findByCommentAndAuthor(Comment comment, User currentUser);
 }

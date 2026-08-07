@@ -8,9 +8,9 @@ import java.util.UUID;
 public interface CommentUseCases {
     void validateComment(String text);
     Comment addComment(String text, UUID postId, UUID parentId, String creatorUsername);
-    Comment findCommentById(UUID commentId);
-    void editComment(UUID commentId, String newText);
-    void removeComment(UUID commentId);
+    Comment findCommentById(UUID commentId, String requesterUsername);
+    Comment editComment(UUID commentId, String newText, String requesterUsername);
+    void removeComment(UUID commentId, String requesterUsername);
     List<Comment> listComments();
-    List<Comment> listCommentByPostId(UUID postId);
+    List<Comment> listCommentByPostId(UUID postId, String requesterUsername);
 }
