@@ -44,9 +44,14 @@ public class PostService implements PostUseCases {
         User requester = userRepository.findByUsername(requesterUsername)
                 .orElseThrow(() -> new IllegalArgumentException("User " + requesterUsername + " not found"));
 
+        /*
+        allow posting if you are not a member of the community
+        because there is no option to join communities yet
+
         if (subreddit.findUserById(requester.getId()) == null) {
             throw new IllegalArgumentException("You are not a member of this community");
         }
+        */
 
         Post post = new Post();
 
