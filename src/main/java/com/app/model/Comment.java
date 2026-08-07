@@ -4,11 +4,12 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.EqualsAndHashCode;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@ToString(exclude = {"user", "post"})
+@ToString(exclude = {"author", "post"})
 @Entity
 @Table(name = "comments")
 public class Comment {
@@ -17,11 +18,15 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    private Comment parent;
+
     private String content;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private User author;
 
     @ManyToOne
     @JoinColumn(name = "post_id")
@@ -29,13 +34,23 @@ public class Comment {
 
     private LocalDateTime createdAt;
 
-    private LocalDateTime UpdatedAt;
+    private LocalDateTime updatedAt;
 
-    private LocalDateTime DeletedAt;
+    private long upvotes;
+
+    private long downvotes;
+
+    private long score;
+
+    @Transient
+    private String userVote;
+
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
+    private List<Comment> replies;
 
     public Comment(){
         this.content = "";
-        this.user = null;
+        this.author = null;
         this.post = null;
         this.createdAt = LocalDateTime.now();
         // lombok annotation @NoArgsConstructor would make createdAt = null
@@ -44,7 +59,7 @@ public class Comment {
 
     public Comment(String content, User user, Post post){
         this.content = content;
-        this.user = user;
+        this.author = user;
         this.post = post;
         this.createdAt = LocalDateTime.now();
     }

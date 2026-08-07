@@ -37,14 +37,15 @@ public class CommentHttpClient implements CommentUseCases {
     }
 
     @Override
-    public Comment addComment(String text, long userId, UUID postId) {
+    public Comment addComment(String text, UUID postId, UUID parentId, String username) {
         validateComment(text);
         String url = clientConfig.getBaseUrl() + "/api/comments";
 
         CommentDto request = new CommentDto();
         request.setContent(text);
-        request.setUserId(userId);
+        request.setAuthor(username);
         request.setPostId(postId);
+        request.setParentId(parentId);
 
         try {
             CommentDto response = restTemplate.postForObject(url, request, CommentDto.class);

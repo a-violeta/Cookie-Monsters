@@ -107,25 +107,25 @@ public class SeedData {
     }*/
 
     private void seedComments() {
-        commentUseCases.addComment("So true", anca.getId(), catPost1.getId());
-        commentUseCases.addComment("Yesss", petru.getId(), catPost1.getId());
+        commentUseCases.addComment("So true", catPost1.getId(), null,anca.getUsername());
+        commentUseCases.addComment("Yesss", catPost1.getId(), null, petru.getUsername());
 
-        commentUseCases.addComment("Classic cat behavior honestly", petru.getId(), catPost2.getId());
-        commentUseCases.addComment("Mine does the same, get a cactus instead", ion.getId(), catPost2.getId());
+        commentUseCases.addComment("Classic cat behavior honestly", catPost2.getId(), null, petru.getUsername());
+        commentUseCases.addComment("Mine does the same, get a cactus instead", catPost2.getId(), null, ion.getUsername());
 
-        commentUseCases.addComment("Lol get a cat-proof stand", anca.getId(), catPost3.getId());
+        commentUseCases.addComment("Lol get a cat-proof stand", catPost3.getId(), null, anca.getUsername());
 
-        commentUseCases.addComment("Nice! What route did you change?", radu.getId(), gamePost1.getId());
-        commentUseCases.addComment("That's insane, congrats", mihai.getId(), gamePost1.getId());
+        commentUseCases.addComment("Nice! What route did you change?", gamePost1.getId(), null, radu.getUsername());
+        commentUseCases.addComment("That's insane, congrats", gamePost1.getId(), null, mihai.getUsername());
 
-        commentUseCases.addComment("I'm down, what time?", cristina.getId(), gamePost2.getId());
+        commentUseCases.addComment("I'm down, what time?", gamePost2.getId(), null, cristina.getUsername());
 
-        commentUseCases.addComment("Loved that one, great pick", adela.getId(), bookPost1.getId());
-        commentUseCases.addComment("Ordering it today", anca.getId(), bookPost1.getId());
+        commentUseCases.addComment("Loved that one, great pick", bookPost1.getId(), null, adela.getUsername());
+        commentUseCases.addComment("Ordering it today", bookPost1.getId(), null, anca.getUsername());
 
-        commentUseCases.addComment("Yes please, share the recipe", mihai.getId(), foodPost1.getId());
-        commentUseCases.addComment("Looks so much better than mine", cristina.getId(), foodPost1.getId());
+        commentUseCases.addComment("Yes please, share the recipe", foodPost1.getId(), null, mihai.getUsername());
+        commentUseCases.addComment("Looks so much better than mine", foodPost1.getId(), null, cristina.getUsername());
 
-        commentUseCases.addComment("Try the place two blocks from the station", petru.getId(), foodPost2.getId());
+        commentUseCases.addComment("Try the place two blocks from the station", foodPost2.getId(), null, petru.getUsername());
     }
 }
