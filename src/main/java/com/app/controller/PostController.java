@@ -8,6 +8,7 @@ import com.app.response.ApiResponse;
 import com.app.service.PostUseCases;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,22 +25,35 @@ public class PostController {
     private final PostMapper postMapper;
 
     @GetMapping
-    public ApiResponse<List<PostDto>> listAllPosts(@RequestParam(required = false) String subreddit, Authentication authentication) {
+    public ResponseEntity<ApiResponse<List<PostDto>>> listAllPosts(@RequestParam(required = false) String subreddit,
+                                                                   Authentication authentication) {
         if (subreddit == null) {
-            return ApiResponse.ok(postService.listPosts(authentication.getName()).stream().map(postMapper::toDto).toList());
+            return ResponseEntity
+                    .ok(ApiResponse.ok(postService.listPosts(authentication.getName())
+                            .stream().map(postMapper::toDto).toList()));
         }
 
-        return ApiResponse.ok(postService.listPostsBySubreddit(subreddit, authentication.getName()).stream().map(postMapper::toDto).toList());
+        return ResponseEntity
+                .ok(ApiResponse.ok(postService.listPostsBySubreddit(subreddit, authentication.getName())
+                        .stream().map(postMapper::toDto).toList()));
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<PostDto> getPost(@PathVariable UUID id,  Authentication authentication) {
-        return ApiResponse.ok(postMapper.toDto(postService.findPostById(id, authentication.getName())));
+    public ResponseEntity<ApiResponse<PostDto>> getPost(@PathVariable UUID id, Authentication authentication) {
+        return ResponseEntity
+                .ok(ApiResponse.ok(postMapper.toDto(postService.findPostById(id, authentication.getName()))));
     }
 
-    @PostMapping
+    @PostMapping(consumes = {"multipart/form-data"})
     public ApiResponse<PostDto> createPost(@Valid @ModelAttribute PostDto dto, Authentication authentication) {
-        Post created = postService.addPost(dto.getTitle(), dto.getContent(), dto.getSubreddit(), authentication.getName());
+        Post created = postService.addPost(
+                dto.getTitle(),
+                dto.getContent(),
+                dto.getSubreddit(),
+                authentication.getName(),
+                dto.getImage(),
+                dto.getFilter()
+        );
         return ApiResponse.ok(postMapper.toDto(created));
     }
 

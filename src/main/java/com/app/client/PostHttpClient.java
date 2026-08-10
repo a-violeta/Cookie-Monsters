@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +44,8 @@ public class PostHttpClient implements PostUseCases {
         }
     }
 
-    public Post addPost(String title, String content, String subreddit, String requesterUsername) {
+    public Post addPost(String title, String content, String subreddit, String requesterUsername,
+                        MultipartFile image, Integer filter) {
         String url = clientConfig.getBaseUrl() + "/posts";
 
         PostDto request = new PostDto();

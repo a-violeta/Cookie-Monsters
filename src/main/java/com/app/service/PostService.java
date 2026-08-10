@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -37,7 +38,8 @@ public class PostService implements PostUseCases {
     }
 
     @Transactional
-    public Post addPost(String title, String content, String subredditName, String requesterUsername) {
+    public Post addPost(String title, String content, String subredditName, String requesterUsername,
+                        MultipartFile image, Integer filter) {
         Community subreddit = communityRepository.findByName(subredditName)
                 .orElseThrow(() -> new IllegalArgumentException("Subreddit " + subredditName + " not found"));
 
@@ -70,6 +72,17 @@ public class PostService implements PostUseCases {
         post.setCommentCount(post.getCommentList().size());
 
         post.setUserVote("up");
+
+        if (image != null && !image.isEmpty()) {
+            String originalFileName = image.getOriginalFilename();
+            String uniqueFileName = UUID.randomUUID() + "_" + originalFileName;
+
+            String simulatedPath = "https://localhost:8080/uploads/" + uniqueFileName;
+
+            Media media = new Media(simulatedPath, uniqueFileName, MediaType.IMAGE);
+
+            post.setMedia(media);
+        }
 
         postRepository.save(post);
 
@@ -126,6 +139,7 @@ public class PostService implements PostUseCases {
     @Transactional(readOnly = true)
     public List<Post> listPosts(String requesterUsername) {
         List<Post> posts = postRepository.findAll();
+
         User requester = userRepository.findByUsername(requesterUsername)
                 .orElseThrow(() -> new IllegalArgumentException("User " + requesterUsername + " not found"));
 
