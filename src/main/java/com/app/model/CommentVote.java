@@ -9,27 +9,23 @@ import java.util.UUID;
 
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@ToString(exclude = {"author", "post", "comment"})
+@ToString(exclude = {"author", "comment"})
 @Entity
-@Table(name = "votes")
-public class Vote {
+@Table(name = "comment_votes")
+public class CommentVote {
     @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-
-    @Enumerated(EnumType.STRING)
-    private VoteType userVote;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User author;
 
     @ManyToOne
-    @JoinColumn(name = "post_id")
-    private Post post;
-
-    @ManyToOne
     @JoinColumn(name = "comment_id")
     private Comment comment;
+
+    @Enumerated(EnumType.STRING)
+    private VoteType voteType;
 }

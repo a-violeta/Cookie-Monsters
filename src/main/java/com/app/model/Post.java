@@ -50,7 +50,7 @@ public class Post {
     private Media media;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-    private List<Vote> votes;
+    private List<PostVote> votes;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<Comment> commentList;
