@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@ToString(exclude = {"author", "post"})
+@ToString(exclude = {"author", "post","parent"})
 @Entity
 @Table(name = "comments")
 public class Comment {
@@ -22,6 +22,7 @@ public class Comment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
+    @EqualsAndHashCode.Exclude
     private Comment parent;
 
     private String content;
@@ -47,7 +48,7 @@ public class Comment {
     @Transient
     private String userVote;
 
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "parent")
     private List<Comment> replies;
 
     public Comment(){
