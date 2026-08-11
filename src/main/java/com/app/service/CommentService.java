@@ -4,7 +4,6 @@ import com.app.model.*;
 import com.app.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,11 +42,11 @@ public class CommentService implements CommentUseCases {
     }
 
     @Transactional
-    public Comment addComment(String text, UUID postId, UUID parentId, Authentication authentication) {
+    public Comment addComment(String text, UUID postId, UUID parentId, String requesterUsername) {
 
         validateComment(text);
 
-        User author = userRepository.findByUsername(authentication.getName())
+        User author = userRepository.findByUsername(requesterUsername)
                 .orElseThrow(() -> new IllegalStateException("Authenticated user not found"));
 
         Post post = postRepository.findById(postId)
@@ -62,7 +61,7 @@ public class CommentService implements CommentUseCases {
 
         // Check for not null parentId
         if (parentId != null) {
-            Comment parent = findCommentById(parentId, authentication);
+            Comment parent = findCommentById(parentId, requesterUsername);
 
             // Check that the comment with the parentId as the same postId as the reply
             if (!parent.getPost().getId().equals(postId)) {
@@ -72,24 +71,32 @@ public class CommentService implements CommentUseCases {
         }
 
         post.setCommentCount(post.getCommentCount() + 1);
+
         postRepository.save(post);
 
         newComment.setUpvotes(1);
         newComment.setScore(1);
+        newComment.setUserVote("up");
+
+        CommentVote commentVote = new CommentVote();
+        commentVote.setAuthor(author);
+        commentVote.setComment(newComment);
+        commentVote.setVoteType(VoteType.UP);
+        commentVoteRepository.save(commentVote);
 
         return commentRepository.save(newComment);
     }
 
     @Transactional(readOnly = true)
-    public Comment findCommentById(UUID commentId, Authentication authentication) {
+    public Comment findCommentById(UUID commentId, String requesterUsername) {
 
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("Comment with id " + commentId + " not found"));
 
         User requester = null;
 
-        if  (authentication != null) {
-            requester = userRepository.findByUsername(authentication.getName()).orElse(null);
+        if  (requesterUsername != null) {
+            requester = userRepository.findByUsername(requesterUsername).orElse(null);
         }
 
         final User finalRequester = requester;
@@ -102,7 +109,7 @@ public class CommentService implements CommentUseCases {
     }
 
     @Transactional
-    public List<Comment> listCommentByPostId(UUID postId, Authentication authentication) {
+    public List<Comment> listCommentByPostId(UUID postId, String requesterUsername) {
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("Post with id " + postId + " not found"));
@@ -111,8 +118,8 @@ public class CommentService implements CommentUseCases {
         User requester = null;
 
         // Check for the requesterUsername in the DB, if it does not exist assume it's a Non-Logged-in user
-        if (authentication != null) {
-            requester = userRepository.findByUsername(authentication.getName()).orElse(null);
+        if (requesterUsername != null) {
+            requester = userRepository.findByUsername(requesterUsername).orElse(null);
         }
 
         List<Comment> comments = commentRepository.findAllByPostAndParentIsNull(post);
@@ -131,12 +138,12 @@ public class CommentService implements CommentUseCases {
     }
 
     @Transactional
-    public Comment editComment(UUID commentId, String newText, Authentication authentication) {
+    public Comment editComment(UUID commentId, String newText, String requesterUsername) {
 
-        Comment comment = findCommentById(commentId, authentication );
+        Comment comment = findCommentById(commentId, requesterUsername );
 
-        User author = userRepository.findByUsername(authentication.getName())
-                .orElseThrow(() -> new IllegalArgumentException("User " + authentication + " user not found "));
+        User author = userRepository.findByUsername(requesterUsername)
+                .orElseThrow(() -> new IllegalArgumentException("User " + requesterUsername + " user not found "));
 
         if (!Objects.equals(comment.getAuthor(), author)) {
             throw new IllegalArgumentException("You are not the author of this post");
@@ -149,11 +156,11 @@ public class CommentService implements CommentUseCases {
     }
 
     @Transactional
-    public void removeComment(UUID commentId, Authentication authentication) {
+    public void removeComment(UUID commentId, String requesterUsername) {
         // try to find this comment
-        Comment comment = findCommentById(commentId, authentication);
+        Comment comment = findCommentById(commentId,requesterUsername);
 
-        User author = userRepository.findByUsername(authentication.getName())
+        User author = userRepository.findByUsername(requesterUsername)
                 .orElseThrow(() -> new IllegalStateException("Authenticated user not found"));
 
         if (!Objects.equals(comment.getAuthor(), author)) {
@@ -168,12 +175,12 @@ public class CommentService implements CommentUseCases {
     }
 
     @Transactional
-    public Comment voteComment(UUID id, String voteType, Authentication authentication) {
+    public Comment voteComment(UUID id, String voteType, String requesterUsername) {
 
-        Comment comment = findCommentById(id, authentication);
+        Comment comment = findCommentById(id,requesterUsername);
 
-        User requester = userRepository.findByUsername(authentication.getName())
-                .orElseThrow(() -> new IllegalArgumentException("User " + authentication + " not found"));
+        User requester = userRepository.findByUsername(requesterUsername)
+                .orElseThrow(() -> new IllegalArgumentException("User " + requesterUsername + " not found"));
 
         CommentVote commentVote = commentVoteRepository.findByCommentAndAuthor(comment, requester).orElse(null);
 

@@ -25,23 +25,29 @@ public class PostController {
     private final PostMapper postMapper;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<PostDto>>> listAllPosts(@RequestParam(required = false) String subreddit,
-                                                                   Authentication authentication) {
-        if (subreddit == null) {
-            return ResponseEntity
-                    .ok(ApiResponse.ok(postService.listPosts(authentication.getName())
-                            .stream().map(postMapper::toDto).toList()));
+    public ApiResponse<List<PostDto>> listAllPosts(@RequestParam(required = false) String subreddit, Authentication authentication) {
+
+        String username = null;
+        if (authentication != null) {
+            username = authentication.getName();
         }
 
-        return ResponseEntity
-                .ok(ApiResponse.ok(postService.listPostsBySubreddit(subreddit, authentication.getName())
-                        .stream().map(postMapper::toDto).toList()));
+        if (subreddit == null) {
+            return ApiResponse.ok(postService.listPosts(username).stream().map(postMapper::toDto).toList());
+        }
+
+        return ApiResponse.ok(postService.listPostsBySubreddit(subreddit, username).stream().map(postMapper::toDto).toList());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<PostDto>> getPost(@PathVariable UUID id, Authentication authentication) {
-        return ResponseEntity
-                .ok(ApiResponse.ok(postMapper.toDto(postService.findPostById(id, authentication.getName()))));
+    public ApiResponse<PostDto> getPost(@PathVariable UUID id,  Authentication authentication) {
+
+        String username = null;
+        if (authentication != null) {
+            username = authentication.getName();
+        }
+
+        return ApiResponse.ok(postMapper.toDto(postService.findPostById(id, username)));
     }
 
     @PostMapping(consumes = {"multipart/form-data"})

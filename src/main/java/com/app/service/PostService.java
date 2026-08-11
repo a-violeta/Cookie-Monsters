@@ -116,10 +116,15 @@ public class PostService implements PostUseCases {
                                 "Post with id " + postId + " not found"
                         ));
 
-        User requester = userRepository.findByUsername(requesterUsername)
-                .orElseThrow(() -> new IllegalArgumentException("User " + requesterUsername + " not found"));
+        User requester = null;
 
-        populateUserVoteStatus(post, requester);
+        if (requesterUsername != null) {
+            requester = userRepository.findByUsername(requesterUsername).orElse(null);
+        }
+
+        final User finalRequester = requester;
+
+        populateUserVoteStatus(post, finalRequester);
         return post;
     }
 
@@ -140,10 +145,15 @@ public class PostService implements PostUseCases {
     @Transactional(readOnly = true)
     public List<Post> listPosts(String requesterUsername) {
         List<Post> posts = postRepository.findAll();
-        User requester = userRepository.findByUsername(requesterUsername)
-                .orElseThrow(() -> new IllegalArgumentException("User " + requesterUsername + " not found"));
 
-        posts.forEach(post -> populateUserVoteStatus(post, requester));
+        User requester = null;
+
+        if (requesterUsername != null) {
+            requester = userRepository.findByUsername(requesterUsername).orElse(null);
+        }
+
+        final User finalRequester = requester;
+        posts.forEach(post -> populateUserVoteStatus(post, finalRequester));
         return posts;
     }
 
@@ -247,10 +257,16 @@ public class PostService implements PostUseCases {
     @Transactional(readOnly = true)
     public List<Post> listPostsBySubreddit(String subredditName, String requesterUsername) {
         List<Post> posts = postRepository.findBySubredditName(subredditName);
-        User requester = userRepository.findByUsername(requesterUsername)
-                .orElseThrow(() -> new IllegalArgumentException("User " + requesterUsername + " not found"));
 
-        posts.forEach(post -> populateUserVoteStatus(post, requester));
+        User requester = null;
+
+        if (requesterUsername != null) {
+            requester = userRepository.findByUsername(requesterUsername).orElse(null);
+        }
+
+        final User finalRequester = requester;
+
+        posts.forEach(post -> populateUserVoteStatus(post, finalRequester));
 
         return posts;
     }
