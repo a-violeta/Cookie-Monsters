@@ -25,16 +25,28 @@ public class PostController {
 
     @GetMapping
     public ApiResponse<List<PostDto>> listAllPosts(@RequestParam(required = false) String subreddit, Authentication authentication) {
-        if (subreddit == null) {
-            return ApiResponse.ok(postService.listPosts(authentication.getName()).stream().map(postMapper::toDto).toList());
+
+        String username = null;
+        if (authentication != null) {
+            username = authentication.getName();
         }
 
-        return ApiResponse.ok(postService.listPostsBySubreddit(subreddit, authentication.getName()).stream().map(postMapper::toDto).toList());
+        if (subreddit == null) {
+            return ApiResponse.ok(postService.listPosts(username).stream().map(postMapper::toDto).toList());
+        }
+
+        return ApiResponse.ok(postService.listPostsBySubreddit(subreddit, username).stream().map(postMapper::toDto).toList());
     }
 
     @GetMapping("/{id}")
     public ApiResponse<PostDto> getPost(@PathVariable UUID id,  Authentication authentication) {
-        return ApiResponse.ok(postMapper.toDto(postService.findPostById(id, authentication.getName())));
+
+        String username = null;
+        if (authentication != null) {
+            username = authentication.getName();
+        }
+
+        return ApiResponse.ok(postMapper.toDto(postService.findPostById(id, username)));
     }
 
     @PostMapping
