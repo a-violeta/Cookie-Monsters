@@ -8,6 +8,7 @@ import com.app.response.ApiResponse;
 import com.app.service.PostUseCases;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,9 +50,16 @@ public class PostController {
         return ApiResponse.ok(postMapper.toDto(postService.findPostById(id, username)));
     }
 
-    @PostMapping
+    @PostMapping(consumes = {"multipart/form-data"})
     public ApiResponse<PostDto> createPost(@Valid @ModelAttribute PostDto dto, Authentication authentication) {
-        Post created = postService.addPost(dto.getTitle(), dto.getContent(), dto.getSubreddit(), authentication.getName());
+        Post created = postService.addPost(
+                dto.getTitle(),
+                dto.getContent(),
+                dto.getSubreddit(),
+                authentication.getName(),
+                dto.getImage(),
+                dto.getFilter()
+        );
         return ApiResponse.ok(postMapper.toDto(created));
     }
 
