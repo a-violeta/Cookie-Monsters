@@ -92,7 +92,12 @@ public class CommentService implements CommentUseCases {
 
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("Comment with id " + commentId + " not found"));
+
+        comment.getReplies().size();
+
         populateUserVoteStatus(comment, requester);
+
+
         return comment;
     }
 
@@ -112,7 +117,14 @@ public class CommentService implements CommentUseCases {
 
         List<Comment> comments = commentRepository.findAllByPost(post);
 
-        comments.forEach(comment -> populateUserVoteStatus(comment, requester));
+        comments.forEach(comment -> {
+
+            populateUserVoteStatus(comment, requester);
+
+            comment.getReplies().size();
+        });
+
+
 
         return comments;
     }
@@ -123,13 +135,12 @@ public class CommentService implements CommentUseCases {
         Comment comment = findCommentById(commentId, requesterUsername );
 
         User author = userRepository.findByUsername(requesterUsername)
-                .orElseThrow(() -> new IllegalStateException("Authenticated user not found"));
+                .orElseThrow(() -> new IllegalArgumentException("User " + requesterUsername + " user not found "));
 
-        if (!Objects.equals(comment.getAuthor().getId(), author.getId())) {
-            throw new IllegalStateException("This comment was not created by you");
+        if (!Objects.equals(comment.getAuthor(), author)) {
+            throw new IllegalArgumentException("You are not the author of this post");
         }
 
-        validateComment(newText);
         comment.setContent(newText);
         comment.setUpdatedAt(Instant.now());
         commentRepository.save(comment);

@@ -1,6 +1,7 @@
 package com.app.mapper;
 
 import com.app.dto.CommentDto;
+import com.app.dto.CommentReplyDto;
 import com.app.model.Comment;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -12,9 +13,16 @@ import org.mapstruct.Mapping;
 // the Service methods take those fields and check DB to return an object, no DTO needed in this process
 
 @Mapper(componentModel = "spring")
+
+
 public interface CommentMapper {
     @Mapping(target = "author", source = "author.username")
     @Mapping(target = "postId", source = "post.id")
     @Mapping(target = "parentId", source = "parent.id")
     CommentDto toDto(Comment comment);
+
+    @Mapping(target = "author", source = "author.username")
+    @Mapping(target = "postId", source = "post.id")
+    @Mapping(target = "parentId", source = "parent.id")
+    CommentReplyDto toReplyDto(Comment comment);
 }

@@ -11,7 +11,7 @@ import java.util.UUID;
 // why id instead of the whole object? check out explanation in PostDto
 
 @Data
-public class CommentDto {
+public class CommentReplyDto {
 
     private UUID id;
 
@@ -31,6 +31,4 @@ public class CommentDto {
     private Instant createdAt;
 
     private Instant updatedAt;
-
-    private List<CommentReplyDto> replies;
 }
