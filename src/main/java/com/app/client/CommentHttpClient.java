@@ -11,6 +11,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -37,13 +38,13 @@ public class CommentHttpClient implements CommentUseCases {
     }
 
     @Override
-    public Comment addComment(String text, UUID postId, UUID parentId, String username) {
+    public Comment addComment(String text, UUID postId, UUID parentId, Authentication authentication) {
         validateComment(text);
         String url = clientConfig.getBaseUrl() + "/api/comments";
 
         CommentDto request = new CommentDto();
         request.setContent(text);
-        request.setAuthor(username);
+        request.setAuthor(authentication.getName());
         request.setPostId(postId);
         request.setParentId(parentId);
 
@@ -57,7 +58,7 @@ public class CommentHttpClient implements CommentUseCases {
     }
 
     @Override
-    public Comment findCommentById(UUID commentId, String requesterUsername) {
+    public Comment findCommentById(UUID commentId, Authentication authentication) {
         String url = clientConfig.getBaseUrl() + "/api/comments/" + commentId;
         try {
             return toComment(restTemplate.getForObject(url, CommentDto.class));
@@ -69,7 +70,7 @@ public class CommentHttpClient implements CommentUseCases {
     }
 
     @Override
-    public Comment editComment(UUID commentId, String newText, String requesterUsername) {
+    public Comment editComment(UUID commentId, String newText, Authentication authentication) {
 
         String url = clientConfig.getBaseUrl() + "/api/comments/" + commentId;
 
@@ -91,7 +92,7 @@ public class CommentHttpClient implements CommentUseCases {
     }
 
     @Override
-    public void removeComment(UUID commentId, String requesterUsername) {
+    public void removeComment(UUID commentId, Authentication authentication) {
         String url = clientConfig.getBaseUrl() + "/api/comments/" + commentId;
         try {
             restTemplate.delete(url);
@@ -101,8 +102,8 @@ public class CommentHttpClient implements CommentUseCases {
     }
 
     @Override
-    public List<Comment> listComments() {
-        String url = clientConfig.getBaseUrl() + "/api/comments";
+    public List<Comment> listCommentByPostId(UUID postId, Authentication authentication) {
+        String url = clientConfig.getBaseUrl() + "/api/comments/post/" + postId;
         try {
             ResponseEntity<List<CommentDto>> response = restTemplate.exchange(
                     url, HttpMethod.GET, null, new ParameterizedTypeReference<>() {
@@ -114,16 +115,8 @@ public class CommentHttpClient implements CommentUseCases {
     }
 
     @Override
-    public List<Comment> listCommentByPostId(UUID postId, String requesterUsername) {
-        String url = clientConfig.getBaseUrl() + "/api/comments/post/" + postId;
-        try {
-            ResponseEntity<List<CommentDto>> response = restTemplate.exchange(
-                    url, HttpMethod.GET, null, new ParameterizedTypeReference<>() {
-                    });
-            return response.getBody() != null ? response.getBody().stream().map(this::toComment).toList() : null;
-        } catch (HttpClientErrorException | HttpServerErrorException e) {
-            throw new IllegalArgumentException(extractMessage(e));
-        }
+    public Comment voteComment(UUID commentId, String voteType, Authentication authentication) {
+        return null;
     }
 
     // detached objects for console display

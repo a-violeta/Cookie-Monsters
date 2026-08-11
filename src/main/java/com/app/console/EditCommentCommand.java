@@ -92,7 +92,7 @@ public class EditCommentCommand extends Command{
             Post post = posts.get(postChosenIndex-1);
             UUID postId = post.getId();
 
-            List<Comment> comments = commentUseCases.listCommentByPostId(postId, userUseCases.getLoggedInUser().getUsername());
+            List<Comment> comments = commentUseCases.listCommentByPostId(postId, null);
 
             for (int i = 0; i < comments.size(); i++) {
                 consolePrinter.printCommentListItem(i+1, comments.get(i));
@@ -122,7 +122,7 @@ public class EditCommentCommand extends Command{
             // read with console
             String newText = consoleReader.readLine();
 
-            commentUseCases.editComment(commentId, newText, userUseCases.getLoggedInUser().getUsername());
+            commentUseCases.editComment(commentId, newText, null);
             consolePrinter.printSuccess("Comment successfully edited!");
         } catch (Exception e) {
             consolePrinter.printError(e.getMessage());

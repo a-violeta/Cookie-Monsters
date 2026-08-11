@@ -1,7 +1,6 @@
 package com.app.mapper;
 
 import com.app.dto.CommentDto;
-import com.app.dto.CommentReplyDto;
 import com.app.model.Comment;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -20,9 +19,4 @@ public interface CommentMapper {
     @Mapping(target = "postId", source = "post.id")
     @Mapping(target = "parentId", source = "parent.id")
     CommentDto toDto(Comment comment);
-
-    @Mapping(target = "author", source = "author.username")
-    @Mapping(target = "postId", source = "post.id")
-    @Mapping(target = "parentId", source = "parent.id")
-    CommentReplyDto toReplyDto(Comment comment);
 }
