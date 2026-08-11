@@ -23,7 +23,6 @@ public class PostService implements PostUseCases {
     private final CommunityRepository communityRepository;
     private final UserRepository userRepository;
     private final PostVoteRepository postVoteRepository;
-    private final VoteRepository voteRepository;
     private final ImageStorageService imageStorageService;
 
     public void validatePostImage(MultipartFile image) {
@@ -68,7 +67,6 @@ public class PostService implements PostUseCases {
         post.setUpdatedAt(Instant.now());
         post.setCommentList(new ArrayList<>());
 
-        // Voting initialization from the main branch
         post.setUpvotes(1);
         post.setScore(1);
 
