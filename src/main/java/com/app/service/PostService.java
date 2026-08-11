@@ -26,14 +26,19 @@ public class PostService implements PostUseCases {
     private final CommunityRepository communityRepository;
     private final UserRepository userRepository;
     private final VoteRepository voteRepository;
+    private final ImageStorageService imageStorageService;
 
-    public void validatePost(String title, String content) {
-        if (title == null || title.isBlank()) {
-            throw new IllegalArgumentException("Title is required");
+    public void validatePostImage(MultipartFile image) {
+        // size validation (max 5 MB)
+        long maxSizeBytes = 5 * 1024 * 1024;
+        if (image.getSize() > maxSizeBytes) {
+            throw new IllegalArgumentException("Image size must be less than 5 MB");
         }
 
-        if (content == null || content.isBlank()) {
-            throw new IllegalArgumentException("Content is required");
+        // format validation (only JPG and PNG)
+        String contentType = image.getContentType();
+        if (contentType == null || (!contentType.equals("image/jpeg") && !contentType.equals("image/png"))) {
+            throw new IllegalArgumentException("Only JPG and PNG formats are allowed");
         }
     }
 
@@ -65,7 +70,6 @@ public class PostService implements PostUseCases {
         post.setUpdatedAt(Instant.now());
         post.setCommentList(new ArrayList<>());
 
-        // Voting initialization from the main branch
         post.setUpvotes(1);
         post.setScore(1);
 
@@ -74,13 +78,13 @@ public class PostService implements PostUseCases {
         post.setUserVote("up");
 
         if (image != null && !image.isEmpty()) {
+            validatePostImage(image);
+
             String originalFileName = image.getOriginalFilename();
-            String uniqueFileName = UUID.randomUUID() + "_" + originalFileName;
 
-            String simulatedPath = "https://localhost:8080/uploads/" + uniqueFileName;
+            String imageUrl = imageStorageService.saveImage(image);
 
-            Media media = new Media(simulatedPath, uniqueFileName, MediaType.IMAGE);
-
+            Media media = new Media(imageUrl, originalFileName, MediaType.IMAGE, filter);
             post.setMedia(media);
         }
 

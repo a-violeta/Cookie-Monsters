@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface PostUseCases {
-    void validatePost(String title, String content);
+    void validatePostImage(MultipartFile image);
     Post addPost(String title, String content, String subreddit, String requesterUsername,
                  MultipartFile image, Integer filter);
     void deletePost(UUID postId, String requesterUsername);

@@ -17,3 +17,9 @@ spring:
     console:
       enabled: true
       path: /h2-console
+
+app:
+  storage:
+    s3:
+      enabled: true # uploads on Amazon S3
+      bucket-name: cookie-monsters-images
