@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -25,34 +26,36 @@ public class CommentController {
     public ResponseEntity<ApiResponse<CommentDto>> addComment(@PathVariable UUID postId, @Valid @RequestBody CommentDto dto,  Authentication authentication) {
         // CommentUseCases re-derives Post/User from the ids
         // CommentUseCases checks the person is a member of the post's community
-        Comment created = commentService.addComment(dto.getContent(), postId, dto.getParentId(), authentication.getName());
+        Comment created = commentService.addComment(dto.getContent(), postId, dto.getParentId(), authentication);
         return ResponseEntity.ok(ApiResponse.ok(commentMapper.toDto(created)));
     }
 
     @GetMapping("/comments/{id}")
     public ResponseEntity<ApiResponse<CommentDto>> getComment(@PathVariable UUID id, Authentication authentication) {
-        return ResponseEntity.ok(ApiResponse.ok(commentMapper.toDto(commentService.findCommentById(id, authentication.getName()))));
+        return ResponseEntity.ok(ApiResponse.ok(commentMapper.toDto(commentService.findCommentById(id, authentication))));
     }
 
     @PutMapping("/comments/{id}")
     public ResponseEntity<ApiResponse<CommentDto>> editComment(@PathVariable UUID id, @Valid @RequestBody CommentDto dto, Authentication authentication) {
-        Comment updated = commentService.editComment(id, dto.getContent(), authentication.getName());
+        Comment updated = commentService.editComment(id, dto.getContent(), authentication);
         return ResponseEntity.ok(ApiResponse.ok(commentMapper.toDto(updated)));
     }
 
     @DeleteMapping("/comments/{id}")
     public ResponseEntity<ApiResponse<Void>> removeComment(@PathVariable UUID id, Authentication authentication) {
-        commentService.removeComment(id, authentication.getName());
+        commentService.removeComment(id, authentication);
         return ResponseEntity.ok(ApiResponse.message("Comment deleted successfully"));
     }
 
-    /*@GetMapping
-    public ResponseEntity<ApiResponse<List<CommentDto>>> listComments() {
-        return ResponseEntity.ok(ApiResponse.ok(commentService.listComments().stream().map(commentMapper::toDto).toList()));
-    }*/
-
     @GetMapping("/posts/{id}/comments")
     public ResponseEntity<ApiResponse<List<CommentDto>>> listCommentsByPost(@PathVariable UUID id, Authentication authentication) {
-        return ResponseEntity.ok(ApiResponse.ok(commentService.listCommentByPostId(id, authentication.getName()).stream().map(commentMapper::toDto).toList()));
+        return ResponseEntity.ok(ApiResponse.ok(commentService.listCommentByPostId(id, authentication).stream().map(commentMapper::toDto).toList()));
+    }
+
+    @PutMapping("/comments/{id}/vote")
+    public ResponseEntity<ApiResponse<CommentDto>> voteComment(@PathVariable UUID id, @RequestBody Map<String, String>requestBody, Authentication authentication) {
+        String voteType = requestBody.get("voteType");
+        Comment updated = commentService.voteComment(id, voteType, authentication);
+        return ResponseEntity.ok(ApiResponse.ok(commentMapper.toDto(updated)));
     }
 }
