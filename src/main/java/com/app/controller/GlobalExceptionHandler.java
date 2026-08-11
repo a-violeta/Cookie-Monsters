@@ -25,6 +25,11 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.CONFLICT, "CONFLICT", e.getMessage(), null, request);
     }
 
+    @ExceptionHandler(com.app.service.DuplicateResourceException.class)
+    public ResponseEntity<ApiResponse<Void>> handleDuplicateResource(com.app.service.DuplicateResourceException e, HttpServletRequest request) {
+        return buildErrorResponse(HttpStatus.CONFLICT, "CONFLICT", e.getMessage(), null, request);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<Void>> handleValidation(MethodArgumentNotValidException e, HttpServletRequest request) {
         List<ApiError.FieldError> details = e.getBindingResult().getFieldErrors().stream()

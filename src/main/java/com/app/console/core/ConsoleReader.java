@@ -1,4 +1,4 @@
-package com.app.console;
+package com.app.console.core;
 
 import java.io.Console;
 import java.util.Scanner;

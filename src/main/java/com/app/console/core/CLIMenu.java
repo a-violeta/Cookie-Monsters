@@ -1,5 +1,6 @@
-package com.app.console;
+package com.app.console.core;
 
+import com.app.console.postcommand.PostsFeedCommand;
 import com.app.model.User;
 import com.app.service.*;
 import org.springframework.boot.CommandLineRunner;

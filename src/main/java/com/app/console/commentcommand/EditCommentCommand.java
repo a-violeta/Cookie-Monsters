@@ -1,36 +1,41 @@
-package com.app.console;
+package com.app.console.commentcommand;
 
+import com.app.console.core.Command;
+import com.app.console.core.ConsolePrinter;
+import com.app.console.core.ConsoleReader;
 import com.app.model.Comment;
 import com.app.model.Community;
 import com.app.model.Post;
 import com.app.service.CommentUseCases;
 import com.app.service.CommunityUseCases;
+import com.app.service.PostUseCases;
 import com.app.service.UserUseCases;
 
 import java.util.List;
 import java.util.UUID;
 
-public class DeleteCommentCommand extends Command {
+public class EditCommentCommand extends Command {
 
     private final CommentUseCases commentUseCases;
     private final ConsoleReader consoleReader;
-    private final CommunityUseCases communityUseCases;
+    private final PostUseCases postUseCases;
     private final UserUseCases userUseCases;
+    private final CommunityUseCases communityUseCases;
 
-    public DeleteCommentCommand(ConsolePrinter consolePrinter,CommentUseCases commentUseCases, ConsoleReader consoleReader, CommunityUseCases communityUseCases, UserUseCases userUseCases) {
+    public EditCommentCommand(ConsolePrinter consolePrinter, CommentUseCases commentUseCases, ConsoleReader consoleReader, PostUseCases postUseCases, UserUseCases userUseCases, CommunityUseCases communityUseCases) {
         super(consolePrinter);
         this.commentUseCases = commentUseCases;
         this.consoleReader = consoleReader;
-        this.communityUseCases = communityUseCases;
+        this.postUseCases = postUseCases;
         this.userUseCases = userUseCases;
+        this.communityUseCases = communityUseCases;
     }
 
     @Override
     public void execute(String[] args) {
 
-        if (args.length > 0) {
+        if (args.length >= 1) {
             consolePrinter.printError("Too Many Arguments");
-            consolePrinter.printExplanation("delete-comment");
             return;
         }
 
@@ -115,8 +120,13 @@ public class DeleteCommentCommand extends Command {
 
             UUID commentId = comments.get(chosenIndex-1).getId();
 
-            commentUseCases.removeComment(commentId, userUseCases.getLoggedInUser().getUsername());
-            consolePrinter.printSuccess("Comment successfully deleted!");
+            consolePrinter.printPrompt("Type comment");
+
+            // read with console
+            String newText = consoleReader.readLine();
+
+            commentUseCases.editComment(commentId, newText, userUseCases.getLoggedInUser().getUsername());
+            consolePrinter.printSuccess("Comment successfully edited!");
         } catch (Exception e) {
             consolePrinter.printError(e.getMessage());
         }

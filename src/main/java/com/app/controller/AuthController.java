@@ -86,6 +86,13 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.message("Password changed successfully"));
     }
 
+    @DeleteMapping("/me")
+    public ResponseEntity<ApiResponse<Void>> deleteAccount(@Valid @RequestBody DeleteAccountRequest request, Authentication authentication) {
+        userService.deleteAccount(authentication.getName(), request.getPassword());
+        asyncLogger.logInfo("User deleted their account: " + authentication.getName());
+        return ResponseEntity.ok(ApiResponse.message("Account deleted successfully"));
+    }
+
     private AuthResponseDto.UserDetails mapToUserDetails(User user) {
         return new AuthResponseDto.UserDetails(
                 user.getUsername(),

@@ -24,10 +24,10 @@ public class UserService implements UserUseCases {
     @Transactional
     public User createUser(String username, String email, String password, String description) {
         if (userRepository.existsByUsername(username)) {
-            throw new IllegalArgumentException("Username is already taken");
+            throw new DuplicateResourceException("Username is already taken");
         }
         if (userRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException("Email is already taken");
+            throw new DuplicateResourceException("Email is already taken");
         }
         User user = new User(username, email, passwordEncoder.encode(password), description);
         return userRepository.save(user);
@@ -84,10 +84,25 @@ public class UserService implements UserUseCases {
     }
 
     @Override
+    @Transactional
+    public void deleteAccount(String username, String password) {
+        User user = findByUsername(username);
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new IllegalArgumentException("Incorrect password");
+        }
+        user.setDeleted(true);
+        userRepository.save(user);
+    }
+
+    @Override
     public User login(String identifier, String password) {
         User user = userRepository.findByUsername(identifier)
                 .or(() -> userRepository.findByEmail(identifier))
                 .orElseThrow(() -> new IllegalArgumentException("Invalid username/email or password"));
+
+        if (user.isDeleted()) {
+            throw new IllegalArgumentException("This account has been deleted");
+        }
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new IllegalArgumentException("Invalid username/email or password");

@@ -1,10 +1,10 @@
-package com.app.console;
+package com.app.console.core;
 
 public abstract class Command {
 
     protected ConsolePrinter consolePrinter;
 
-    Command(ConsolePrinter consolePrinter){
+    protected Command(ConsolePrinter consolePrinter){
         this.consolePrinter=consolePrinter;
     }
 

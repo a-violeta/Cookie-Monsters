@@ -28,6 +28,7 @@ public class UserHttpClient implements UserUseCases {
 
     private final RestTemplate restTemplate;
     private final HttpClientConfig clientConfig;
+    private final AuthTokenHolder authTokenHolder;
 
     // client side cache
     private User loggedInUser = null;
@@ -86,6 +87,7 @@ public class UserHttpClient implements UserUseCases {
             user.setDisplayName(authData.getUser().getDisplayName());
 
             this.loggedInUser = user;
+            this.authTokenHolder.setToken(authData.getAccessToken());
             log.info("Logged in via HTTP: {}", username);
             return user;
         } catch (HttpClientErrorException | HttpServerErrorException e) {
@@ -96,6 +98,7 @@ public class UserHttpClient implements UserUseCases {
     @Override
     public void logout() {
         this.loggedInUser = null;
+        this.authTokenHolder.clear();
         log.info("Logged out locally from HTTP client.");
     }
 
@@ -119,15 +122,24 @@ public class UserHttpClient implements UserUseCases {
 
     @Override
     public User updateProfile(String username, String displayName, String avatarUrl) {
-        String url = clientConfig.getBaseUrl() + "/api/users/" + username + "/profile";
-        Map<String, String> request = Map.of(
-                "displayName", displayName != null ? displayName : "",
-                "avatarUrl", avatarUrl != null ? avatarUrl : ""
-        );
+        // matches AuthController: PUT /auth/me (derives user from the JWT, not a path variable)
+        String url = clientConfig.getBaseUrl() + "/auth/me";
+        com.app.dto.AuthRequests.UpdateProfileRequest request = new com.app.dto.AuthRequests.UpdateProfileRequest();
+        request.setDisplayName(displayName);
+        request.setAvatarUrl(avatarUrl);
 
         try {
-            restTemplate.put(url, request);
-            return findByUsername(username);
+            ResponseEntity<ApiResponse<AuthResponseDto.UserDetails>> response = restTemplate.exchange(
+                    url, HttpMethod.PUT, new HttpEntity<>(request),
+                    new ParameterizedTypeReference<ApiResponse<AuthResponseDto.UserDetails>>() {});
+            AuthResponseDto.UserDetails details = response.getBody().getData();
+
+            User user = new User();
+            user.setUsername(details.getUsername());
+            user.setEmail(details.getEmail());
+            user.setDisplayName(details.getDisplayName());
+            this.loggedInUser = user;
+            return user;
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             throw new IllegalArgumentException(extractMessage(e));
         }
@@ -135,14 +147,29 @@ public class UserHttpClient implements UserUseCases {
 
     @Override
     public void changePassword(String username, String currentPassword, String newPassword) {
-        String url = clientConfig.getBaseUrl() + "/api/users/" + username + "/password";
-        Map<String, String> request = Map.of(
-                "currentPassword", currentPassword,
-                "newPassword", newPassword
-        );
+        // matches AuthController: PUT /auth/me/password
+        String url = clientConfig.getBaseUrl() + "/auth/me/password";
+        com.app.dto.AuthRequests.ChangePasswordRequest request = new com.app.dto.AuthRequests.ChangePasswordRequest();
+        request.setCurrentPassword(currentPassword);
+        request.setNewPassword(newPassword);
 
         try {
-            restTemplate.put(url, request);
+            restTemplate.exchange(url, HttpMethod.PUT, new HttpEntity<>(request), Void.class);
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            throw new IllegalArgumentException(extractMessage(e));
+        }
+    }
+
+    @Override
+    public void deleteAccount(String username, String password) {
+        // matches AuthController: DELETE /auth/me, now requires password confirmation
+        String url = clientConfig.getBaseUrl() + "/auth/me";
+        com.app.dto.AuthRequests.DeleteAccountRequest request = new com.app.dto.AuthRequests.DeleteAccountRequest();
+        request.setPassword(password);
+
+        try {
+            restTemplate.exchange(url, HttpMethod.DELETE, new HttpEntity<>(request), Void.class);
+            this.loggedInUser = null;
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             throw new IllegalArgumentException(extractMessage(e));
         }

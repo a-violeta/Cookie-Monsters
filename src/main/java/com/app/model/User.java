@@ -30,6 +30,10 @@ public class User {
     private String displayName;
     private String avatarUrl;
 
+    // soft delete: keeps posts/comments intact and keeps the username permanently
+    // taken (existsByUsername already checks the whole table, deleted rows included)
+    private boolean isDeleted = false;
+
     private Instant createdAt;
 
     @ManyToMany(mappedBy = "communityUsers")

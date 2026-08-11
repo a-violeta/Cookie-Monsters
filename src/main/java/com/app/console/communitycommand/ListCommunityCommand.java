@@ -1,11 +1,13 @@
-package com.app.console;
+package com.app.console.communitycommand;
 
+import com.app.console.core.Command;
+import com.app.console.core.ConsolePrinter;
 import com.app.model.Community;
 import com.app.service.CommunityUseCases;
 
 import java.util.List;
 
-public class ListCommunityCommand extends Command{
+public class ListCommunityCommand extends Command {
 
     private final CommunityUseCases communityUseCases;
 

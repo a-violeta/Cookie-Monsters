@@ -1,32 +1,33 @@
-package com.app.console;
+package com.app.console.postcommand;
 
+import com.app.console.core.Command;
+import com.app.console.core.ConsolePrinter;
+import com.app.console.core.ConsoleReader;
 import com.app.model.Community;
+import com.app.model.Post;
 import com.app.service.CommunityUseCases;
-import com.app.service.UserUseCases;
+import com.app.service.PostUseCases;
 
 import java.util.List;
-import java.util.UUID;
 
-public class ExitCommunityCommand extends Command {
+public class ListPostsCommand extends Command {
 
+    private final PostUseCases postUseCases;
     private final CommunityUseCases communityUseCases;
-    private final UserUseCases userUseCases;
     private final ConsoleReader consoleReader;
 
-    public ExitCommunityCommand(ConsolePrinter consolePrinter, CommunityUseCases communityUseCases, UserUseCases userUseCases, ConsoleReader consoleReader) {
-        super(consolePrinter);
-        this.communityUseCases=communityUseCases;
-        this.userUseCases = userUseCases;
+    public ListPostsCommand(ConsolePrinter printer, PostUseCases postUseCases, CommunityUseCases communityUseCases, ConsoleReader consoleReader) {
+        super(printer);
+        this.postUseCases = postUseCases;
+        this.communityUseCases = communityUseCases;
         this.consoleReader = consoleReader;
     }
 
     @Override
     public void execute(String[] args) {
-        // arg validation
         if (args.length > 0) {
-
             consolePrinter.printError("Too Many Arguments");
-            consolePrinter.printExplanation("exit-community");
+            consolePrinter.printExplanation("list-posts");
             return;
         }
 
@@ -55,15 +56,19 @@ public class ExitCommunityCommand extends Command {
                 throw new IllegalArgumentException("Index out of bounds!");
             }
 
-            UUID communityId = communities.get(chosenIndex-1).getId();
+            String communityName = communities.get(chosenIndex-1).getName();
 
-            Long userId = userUseCases.getLoggedInUser().getId();
+            List<Post> posts = communityUseCases.listCommunityPosts(communityName);
 
-            communityUseCases.exitCommunity(communityId, userId);
-            consolePrinter.printSuccess("Successfully exited the community!");
-        } catch (IllegalArgumentException | IllegalStateException e) {
+            if (posts.isEmpty()) {
+                consolePrinter.printError("No posts to list!");
+                return;
+            }
+            for (Post post : posts) {
+                consolePrinter.displayPost(post);
+            }
+        } catch (Exception e){
             consolePrinter.printError(e.getMessage());
         }
-
     }
 }

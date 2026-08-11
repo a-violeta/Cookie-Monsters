@@ -1,33 +1,41 @@
-package com.app.console;
+package com.app.console.postcommand;
 
+import com.app.console.core.Command;
+import com.app.console.core.ConsolePrinter;
+import com.app.console.core.ConsoleReader;
 import com.app.model.Community;
+import com.app.model.Post;
 import com.app.service.CommunityUseCases;
+import com.app.service.PostUseCases;
 import com.app.service.UserUseCases;
 
 import java.util.List;
 
-public class EditCommunityCommand extends Command {
-
+public class AddPostCommand extends Command {
+    private final PostUseCases postUseCases;
+    private final UserUseCases userUseCases;
     private final CommunityUseCases communityUseCases;
     private final ConsoleReader consoleReader;
-    private final UserUseCases userUseCases;
 
-    public EditCommunityCommand(ConsolePrinter consolePrinter, CommunityUseCases communityUseCases, ConsoleReader consoleReader, UserUseCases userUseCases) {
+    public AddPostCommand(ConsolePrinter consolePrinter, PostUseCases postUseCases, UserUseCases userUseCases, CommunityUseCases communityUseCases, ConsoleReader consoleReader) {
         super(consolePrinter);
-        this.communityUseCases=communityUseCases;
-        this.consoleReader = consoleReader;
+        this.postUseCases = postUseCases;
         this.userUseCases = userUseCases;
+        this.communityUseCases = communityUseCases;
+        this.consoleReader = consoleReader;
     }
 
     @Override
     public void execute(String[] args) {
 
         if (args.length >= 1) {
+
             consolePrinter.printError("Too Many Arguments");
             return;
         }
 
         try {
+
             List<Community> communities = communityUseCases.listCommunities();
 
             for (int i = 0; i < communities.size(); i++) {
@@ -51,32 +59,24 @@ public class EditCommunityCommand extends Command {
                 throw new IllegalArgumentException("Index out of bounds!");
             }
 
-            String communityName = communities.get(chosenIndex-1).getName();
+            String subredditName = communities.get(chosenIndex-1).getName();
 
-            consolePrinter.printPrompt("Type new community display name");
+            String username = userUseCases.getLoggedInUser().getUsername();
 
-            // read with console
-            String newDisplayName = consoleReader.readLine();
-
-            consolePrinter.printPrompt("Type new community icon URL");
+            consolePrinter.printPrompt("Type post title");
 
             // read with console
-            String newIconUrl = consoleReader.readLine();
+            String title = consoleReader.readLine();
 
-            consolePrinter.printPrompt("Type new community description");
+            consolePrinter.printPrompt("Type post body");
 
             // read with console
-            String newDescription = consoleReader.readLine();
+            String text = consoleReader.readLine();
 
-            communityUseCases.editCommunity(communityName, newDisplayName, newIconUrl, newDescription, userUseCases.getLoggedInUser().getUsername());
-
-            consolePrinter.printSuccess("Community successfully updated!");
-
-            // all of this just to print the community after the edit
-            List<Community> communitiesNewList = communityUseCases.listCommunities();
-            Community community = communitiesNewList.get(chosenIndex-1);
-            consolePrinter.displayCommunity(community);
-        } catch (Exception e) {
+            Post newPost = postUseCases.addPost(title, text, subredditName, username);
+            consolePrinter.printSuccess("Post successfully added!");
+            consolePrinter.displayPost(newPost);
+        } catch (Exception e){
             consolePrinter.printError(e.getMessage());
         }
     }

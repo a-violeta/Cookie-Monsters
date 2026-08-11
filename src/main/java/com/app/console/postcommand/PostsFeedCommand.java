@@ -1,5 +1,7 @@
-package com.app.console;
+package com.app.console.postcommand;
 
+import com.app.console.core.Command;
+import com.app.console.core.ConsolePrinter;
 import com.app.model.Post;
 import com.app.service.PostUseCases;
 import com.app.service.UserUseCases;

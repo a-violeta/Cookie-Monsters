@@ -1,5 +1,18 @@
-package com.app.console;
+package com.app.console.core;
 
+import com.app.console.postcommand.PostsFeedCommand;
+import com.app.console.clicommand.ExitCommand;
+import com.app.console.clicommand.HelpCommand;
+import com.app.console.commentcommand.CreateCommentCommand;
+import com.app.console.commentcommand.DeleteCommentCommand;
+import com.app.console.commentcommand.EditCommentCommand;
+import com.app.console.commentcommand.ListCommentCommand;
+import com.app.console.communitycommand.*;
+import com.app.console.postcommand.AddPostCommand;
+import com.app.console.postcommand.DeletePostCommand;
+import com.app.console.postcommand.EditPostCommand;
+import com.app.console.postcommand.ListPostsCommand;
+import com.app.console.usercommand.LogoutCommand;
 import com.app.service.CommentUseCases;
 import com.app.service.CommunityUseCases;
 import com.app.service.PostUseCases;

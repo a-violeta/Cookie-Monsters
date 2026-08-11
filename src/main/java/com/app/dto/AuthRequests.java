@@ -12,7 +12,7 @@ public class AuthRequests {
     public static class RegisterRequest {
         @NotBlank
         @Size(min = 3, max = 20)
-        @Pattern(regexp = "^[a-zA-Z0-9_]+$", message = "Alphanumeric and underscores only")
+        @Pattern(regexp = "^\\S+$", message = "Spaces are not allowed")
         private String username;
 
         @NotBlank
@@ -51,5 +51,11 @@ public class AuthRequests {
         @NotBlank
         @Size(min = 8)
         private String newPassword;
+    }
+
+    @Data
+    public static class DeleteAccountRequest {
+        @NotBlank
+        private String password;
     }
 }
