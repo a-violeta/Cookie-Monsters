@@ -110,7 +110,7 @@ public class CommentService implements CommentUseCases {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("Post with id " + postId + " not found"));
 
-        List<Comment> comments = commentRepository.findAllByPost(post);
+        List<Comment> comments = commentRepository.findAllByPostAndParentIsNull(post);
 
         comments.forEach(comment -> {
 
