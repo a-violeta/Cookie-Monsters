@@ -3,7 +3,6 @@ package com.app.console;
 import com.app.model.Comment;
 import com.app.model.Community;
 import com.app.model.Post;
-import com.app.model.User;
 import com.app.service.CommentUseCases;
 import com.app.service.CommunityUseCases;
 import com.app.service.UserUseCases;
@@ -91,7 +90,7 @@ public class DeleteCommentCommand extends Command {
             Post post = posts.get(postChosenIndex-1);
             UUID postId = post.getId();
 
-            List<Comment> comments = commentUseCases.listCommentByPostId(postId);
+            List<Comment> comments = commentUseCases.listCommentByPostId(postId, userUseCases.getLoggedInUser().getUsername());
 
             for (int i = 0; i < comments.size(); i++) {
                 consolePrinter.printCommentListItem(i+1, comments.get(i));
@@ -114,9 +113,9 @@ public class DeleteCommentCommand extends Command {
                 throw new IllegalArgumentException("Index out of bounds!");
             }
 
-            Long commentId = comments.get(chosenIndex-1).getId();
+            UUID commentId = comments.get(chosenIndex-1).getId();
 
-            commentUseCases.removeComment(commentId);
+            commentUseCases.removeComment(commentId, userUseCases.getLoggedInUser().getUsername());
             consolePrinter.printSuccess("Comment successfully deleted!");
         } catch (Exception e) {
             consolePrinter.printError(e.getMessage());

@@ -92,7 +92,7 @@ public class EditCommentCommand extends Command{
             Post post = posts.get(postChosenIndex-1);
             UUID postId = post.getId();
 
-            List<Comment> comments = commentUseCases.listCommentByPostId(postId);
+            List<Comment> comments = commentUseCases.listCommentByPostId(postId, userUseCases.getLoggedInUser().getUsername());
 
             for (int i = 0; i < comments.size(); i++) {
                 consolePrinter.printCommentListItem(i+1, comments.get(i));
@@ -115,14 +115,14 @@ public class EditCommentCommand extends Command{
                 throw new IllegalArgumentException("Index out of bounds!");
             }
 
-            Long commentId = comments.get(chosenIndex-1).getId();
+            UUID commentId = comments.get(chosenIndex-1).getId();
 
             consolePrinter.printPrompt("Type comment");
 
             // read with console
             String newText = consoleReader.readLine();
 
-            commentUseCases.editComment(commentId, newText);
+            commentUseCases.editComment(commentId, newText, userUseCases.getLoggedInUser().getUsername());
             consolePrinter.printSuccess("Comment successfully edited!");
         } catch (Exception e) {
             consolePrinter.printError(e.getMessage());

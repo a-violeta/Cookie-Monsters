@@ -91,7 +91,7 @@ public class ListCommentCommand extends Command {
 
             Post post = posts.get(postChosenIndex - 1);
             UUID postId = post.getId();
-            List<Comment> comments = commentUseCases.listCommentByPostId(postId);
+            List<Comment> comments = commentUseCases.listCommentByPostId(postId, userUseCases.getLoggedInUser().getUsername());
 
             consolePrinter.displayPost(post);
             if (comments.isEmpty()) {

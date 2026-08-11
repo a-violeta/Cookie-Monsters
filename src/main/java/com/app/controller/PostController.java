@@ -38,7 +38,7 @@ public class PostController {
     }
 
     @PostMapping
-    public ApiResponse<PostDto> createPost(@Valid @RequestBody PostDto dto, Authentication authentication) {
+    public ApiResponse<PostDto> createPost(@Valid @ModelAttribute PostDto dto, Authentication authentication) {
         Post created = postService.addPost(dto.getTitle(), dto.getContent(), dto.getSubreddit(), authentication.getName());
         return ApiResponse.ok(postMapper.toDto(created));
     }

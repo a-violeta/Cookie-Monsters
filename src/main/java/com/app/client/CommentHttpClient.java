@@ -37,14 +37,15 @@ public class CommentHttpClient implements CommentUseCases {
     }
 
     @Override
-    public Comment addComment(String text, long userId, UUID postId) {
+    public Comment addComment(String text, UUID postId, UUID parentId, String username) {
         validateComment(text);
         String url = clientConfig.getBaseUrl() + "/api/comments";
 
         CommentDto request = new CommentDto();
-        request.setText(text);
-        request.setUserId(userId);
+        request.setContent(text);
+        request.setAuthor(username);
         request.setPostId(postId);
+        request.setParentId(parentId);
 
         try {
             CommentDto response = restTemplate.postForObject(url, request, CommentDto.class);
@@ -56,7 +57,7 @@ public class CommentHttpClient implements CommentUseCases {
     }
 
     @Override
-    public Comment findCommentById(long commentId) {
+    public Comment findCommentById(UUID commentId, String requesterUsername) {
         String url = clientConfig.getBaseUrl() + "/api/comments/" + commentId;
         try {
             return toComment(restTemplate.getForObject(url, CommentDto.class));
@@ -68,19 +69,29 @@ public class CommentHttpClient implements CommentUseCases {
     }
 
     @Override
-    public void editComment(long commentId, String newText) {
+    public Comment editComment(UUID commentId, String newText, String requesterUsername) {
+
         String url = clientConfig.getBaseUrl() + "/api/comments/" + commentId;
+
         CommentDto request = new CommentDto();
-        request.setText(newText);
+        request.setContent(newText);
+
         try {
-            restTemplate.put(url, request);
+            org.springframework.http.HttpEntity<CommentDto> requestEntity = new org.springframework.http.HttpEntity<>(request);
+            org.springframework.http.ResponseEntity<CommentDto> response = restTemplate.exchange(
+                    url,
+                    org.springframework.http.HttpMethod.PUT,
+                    requestEntity,
+                    CommentDto.class
+            );
+            return toComment(response.getBody());
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             throw new IllegalArgumentException(extractMessage(e));
         }
     }
 
     @Override
-    public void removeComment(long commentId) {
+    public void removeComment(UUID commentId, String requesterUsername) {
         String url = clientConfig.getBaseUrl() + "/api/comments/" + commentId;
         try {
             restTemplate.delete(url);
@@ -103,7 +114,7 @@ public class CommentHttpClient implements CommentUseCases {
     }
 
     @Override
-    public List<Comment> listCommentByPostId(UUID postId) {
+    public List<Comment> listCommentByPostId(UUID postId, String requesterUsername) {
         String url = clientConfig.getBaseUrl() + "/api/comments/post/" + postId;
         try {
             ResponseEntity<List<CommentDto>> response = restTemplate.exchange(
@@ -121,16 +132,15 @@ public class CommentHttpClient implements CommentUseCases {
         if (dto == null) return null;
 
         User user = new User();
-        user.setId(dto.getUserId());
-        user.setUsername(dto.getUsername());
+        user.setUsername(dto.getAuthor());
 
         Post post = new Post();
         post.setId(dto.getPostId());
 
         Comment comment = new Comment();
         comment.setId(dto.getId());
-        comment.setText(dto.getText());
-        comment.setUser(user);
+        comment.setContent(dto.getContent());
+        comment.setAuthor(user);
         comment.setPost(post);
         comment.setCreatedAt(dto.getCreatedAt());
         return comment;

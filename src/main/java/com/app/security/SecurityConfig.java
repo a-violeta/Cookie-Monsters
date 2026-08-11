@@ -28,20 +28,14 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
-                        // the console app (UserHttpClient/PostHttpClient/CommentHttpClient/CommunityHttpClient) never obtains or sends a JWT - its "login"
-                        // only sets an in-memory field server-side. So every endpoint the console touches must
-                        // be permitAll here, or it will always 403 regardless of "login" state.
-//                        .requestMatchers("/api/users/**").permitAll()
-//                        .requestMatchers("/subreddits/**").permitAll()
-//                        .requestMatchers("/posts/**").permitAll()
-//                        .requestMatchers("/comments/**").permitAll()
-                                .requestMatchers("/h2-console/**").permitAll() // keep database console accessible
-                                .anyRequest().authenticated()
-
+                        .requestMatchers("/health", "/auth/**").permitAll()
+                        .requestMatchers("/error").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/users", "/api/users/login").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/subreddits/**").permitAll() // Allows seeding communities
+                        .requestMatchers(HttpMethod.GET, "/posts/**").permitAll() // Allows seeding posts
+                        .requestMatchers(HttpMethod.GET, "/comments/**").permitAll()
+                        .anyRequest().authenticated()
                 )
-                // required to allow H2 console frames to render properly
-                .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -56,5 +50,4 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
-
 }
