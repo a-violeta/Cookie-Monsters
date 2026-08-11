@@ -15,5 +15,6 @@ public interface CommentRepository {
     List<Comment> findAll();
     List<Comment> findAllByPost(Post post);
     boolean existsById(UUID id);
+    List<Comment> findAllByPostAndParentIsNull(Post post);
     void deleteById(UUID id);
 }

@@ -1,10 +1,7 @@
 package com.app.service;
 
 import com.app.model.*;
-import com.app.repository.CommunityRepository;
-import com.app.repository.PostRepository;
-import com.app.repository.UserRepository;
-import com.app.repository.VoteRepository;
+import com.app.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
@@ -25,6 +22,7 @@ public class PostService implements PostUseCases {
     private final PostRepository postRepository;
     private final CommunityRepository communityRepository;
     private final UserRepository userRepository;
+    private final PostVoteRepository postVoteRepository;
     private final VoteRepository voteRepository;
     private final ImageStorageService imageStorageService;
 
@@ -70,6 +68,7 @@ public class PostService implements PostUseCases {
         post.setUpdatedAt(Instant.now());
         post.setCommentList(new ArrayList<>());
 
+        // Voting initialization from the main branch
         post.setUpvotes(1);
         post.setScore(1);
 
@@ -90,11 +89,11 @@ public class PostService implements PostUseCases {
 
         postRepository.save(post);
 
-        Vote vote = new Vote();
-        vote.setAuthor(requester);
-        vote.setPost(post);
-        vote.setUserVote(VoteType.UP);
-        voteRepository.save(vote);
+        PostVote postVote = new PostVote();
+        postVote.setAuthor(requester);
+        postVote.setPost(post);
+        postVote.setVoteType(VoteType.UP);
+        postVoteRepository.save(postVote);
 
         return post;
     }
@@ -104,9 +103,9 @@ public class PostService implements PostUseCases {
             return;
         }
 
-        voteRepository.findByPostAndAuthor(post, currentUser).ifPresent(vote -> {
-            if (vote.getUserVote() != null) {
-                post.setUserVote(vote.getUserVote().toString().toLowerCase());
+        postVoteRepository.findByPostAndAuthor(post, currentUser).ifPresent(vote -> {
+            if (vote.getVoteType() != null) {
+                post.setUserVote(vote.getVoteType().toString().toLowerCase());
             }
         });
     }
@@ -143,7 +142,6 @@ public class PostService implements PostUseCases {
     @Transactional(readOnly = true)
     public List<Post> listPosts(String requesterUsername) {
         List<Post> posts = postRepository.findAll();
-
         User requester = userRepository.findByUsername(requesterUsername)
                 .orElseThrow(() -> new IllegalArgumentException("User " + requesterUsername + " not found"));
 
@@ -200,15 +198,15 @@ public class PostService implements PostUseCases {
         User requester = userRepository.findByUsername(requesterUsername)
                 .orElseThrow(() -> new IllegalArgumentException("User " + requesterUsername + " not found"));
 
-        Vote vote = voteRepository.findByPostAndAuthor(post, requester).orElse(null);
+        PostVote postVote = postVoteRepository.findByPostAndAuthor(post, requester).orElse(null);
 
-        if (vote == null) {
-            vote = new Vote();
-            vote.setPost(post);
-            vote.setAuthor(requester);
+        if (postVote == null) {
+            postVote = new PostVote();
+            postVote.setPost(post);
+            postVote.setAuthor(requester);
         }
 
-        VoteType currentVote = vote.getUserVote();
+        VoteType currentVote = postVote.getVoteType();
 
         // toggle logic: if voteType in request is the same as current vote, user intention is to cancel the vote
         if (("up".equals(voteType) && currentVote == VoteType.UP) ||
@@ -225,25 +223,25 @@ public class PostService implements PostUseCases {
         switch (voteType) {
             case "up" -> {
                 post.setUpvotes(post.getUpvotes() + 1);
-                vote.setUserVote(VoteType.UP);
+                postVote.setVoteType(VoteType.UP);
             }
             case "down" -> {
                 post.setDownvotes(post.getDownvotes() + 1);
-                vote.setUserVote(VoteType.DOWN);
+                postVote.setVoteType(VoteType.DOWN);
             }
-            case "none" -> vote.setUserVote(null);
+            case "none" -> postVote.setVoteType(null);
             case null, default -> throw new IllegalArgumentException("Invalid vote.");
         }
 
         post.setScore(post.getUpvotes() - post.getDownvotes());
 
-        if (vote.getUserVote() != null) {
-            post.setUserVote(vote.getUserVote().toString().toLowerCase());
+        if (postVote.getVoteType() != null) {
+            post.setUserVote(postVote.getVoteType().toString().toLowerCase());
         } else {
             post.setUserVote(null);
         }
 
-        voteRepository.save(vote);
+        postVoteRepository.save(postVote);
         postRepository.save(post);
         return post;
     }

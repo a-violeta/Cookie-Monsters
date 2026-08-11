@@ -1,17 +1,13 @@
 package com.app.service;
 
 import com.app.model.*;
-import com.app.repository.CommentRepository;
-import com.app.repository.PostRepository;
-import com.app.repository.UserRepository;
-import com.app.repository.VoteRepository;
+import com.app.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -25,8 +21,7 @@ public class CommentService implements CommentUseCases {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
-    private final UserUseCases userUseCases;
-    private final VoteRepository voteRepository;
+    private final CommentVoteRepository commentVoteRepository;
 
     public void validateComment(String text) {
         if (text == null || text.isBlank()) {
@@ -39,9 +34,9 @@ public class CommentService implements CommentUseCases {
             return;
         }
 
-        voteRepository.findByCommentAndAuthor(comment, currentUser).ifPresent(vote -> {
-            if (vote.getUserVote() != null) {
-                comment.setUserVote(vote.getUserVote().toString().toLowerCase());
+        commentVoteRepository.findByCommentAndAuthor(comment, currentUser).ifPresent(vote -> {
+            if (vote.getVoteType() != null) {
+                comment.setUserVote(vote.getVoteType().toString().toLowerCase());
             }
         });
     }
@@ -115,7 +110,7 @@ public class CommentService implements CommentUseCases {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("Post with id " + postId + " not found"));
 
-        List<Comment> comments = commentRepository.findAllByPost(post);
+        List<Comment> comments = commentRepository.findAllByPostAndParentIsNull(post);
 
         comments.forEach(comment -> {
 
@@ -174,15 +169,15 @@ public class CommentService implements CommentUseCases {
         User requester = userRepository.findByUsername(requesterUsername)
                 .orElseThrow(() -> new IllegalArgumentException("User " + requesterUsername + " not found"));
 
-        Vote vote = voteRepository.findByCommentAndAuthor(comment, requester).orElse(null);
+        CommentVote commentVote = commentVoteRepository.findByCommentAndAuthor(comment, requester).orElse(null);
 
-        if (vote == null) {
-            vote = new Vote();
-            vote.setComment(comment);
-            vote.setAuthor(requester);
+        if (commentVote == null) {
+            commentVote = new CommentVote();
+            commentVote.setComment(comment);
+            commentVote.setAuthor(requester);
         }
 
-        VoteType currentVote = vote.getUserVote();
+        VoteType currentVote = commentVote.getVoteType();
 
         // toggle logic: if voteType in request is the same as current vote, user intention is to cancel the vote
         if (("up".equals(voteType) && currentVote == VoteType.UP) ||
@@ -199,27 +194,27 @@ public class CommentService implements CommentUseCases {
         switch (voteType) {
             case "up" -> {
                 comment.setUpvotes(comment.getUpvotes() + 1);
-                vote.setUserVote(VoteType.UP);
+                commentVote.setVoteType(VoteType.UP);
             }
             case "down" -> {
                 comment.setDownvotes(comment.getDownvotes() + 1);
-                vote.setUserVote(VoteType.DOWN);
+                commentVote.setVoteType(VoteType.DOWN);
             }
-            case "none" -> vote.setUserVote(null);
+            case "none" -> commentVote.setVoteType(null);
             case null, default -> throw new IllegalArgumentException("Invalid vote.");
         }
 
         comment.setScore(comment.getUpvotes() - comment.getDownvotes());
 
-        if (vote.getUserVote() != null) {
-            comment.setUserVote(vote.getUserVote().toString().toLowerCase());
+        if (commentVote.getVoteType() != null) {
+            comment.setUserVote(commentVote.getVoteType().toString().toLowerCase());
         } else {
             comment.setUserVote(null);
         }
 
         comment.setUpdatedAt(Instant.now());
 
-        voteRepository.save(vote);
+        commentVoteRepository.save(commentVote);
         commentRepository.save(comment);
         return comment;
     }
