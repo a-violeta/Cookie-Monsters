@@ -23,19 +23,19 @@ jobs:
         run: |
           mvn clean package -DskipTests
           mv target/*.jar target/app.jar
-          cp Dockerfile target/
+          cp Dockerfile docker-compose.yml target/
 
-      - name: 2. Transfer the .jar and Dockerfile to EC2
+      - name: 2. Transfer the .jar, Dockerfile and docker-compose.yml to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_PEM_KEY }}
-          source: "target/app.jar,target/Dockerfile"
+          source: "target/app.jar,target/Dockerfile,target/docker-compose.yml"
           target: "/home/ubuntu/app"
           strip_components: 1
 
-      - name: 3. SSH into EC2, Rebuild and Run Docker
+      - name: 3. SSH into EC2, Rebuild and Run Docker Compose
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -44,12 +44,11 @@ jobs:
           script: |
             cd /home/ubuntu/app
             
-            # Stop any container already running
-            sudo docker stop rb || true
-            sudo docker rm rb || true
+            # Create the .env file dynamically from GitHub Secrets
+            echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" > .env
             
-            # Rebuild the docker image
-            sudo docker build -t server .
+            # Stop and remove existing containers
+            sudo docker compose down
             
-            # Run the backend with the new image 
-            sudo docker run --name rb -d -p 8080:8080 server
+            # Rebuild the images and start the containers
+            sudo docker compose up -d --build
