@@ -22,7 +22,7 @@ public class ListCommentCommand extends Command {
     private final UserUseCases userUseCases;
     private final PostUseCases postUseCases;
 
-    ListCommentCommand(ConsolePrinter consolePrinter, CommentUseCases commentUseCases, ConsoleReader consoleReader, CommunityUseCases communityUseCases, UserUseCases userUseCases, PostUseCases postUseCases) {
+    public ListCommentCommand(ConsolePrinter consolePrinter, CommentUseCases commentUseCases, ConsoleReader consoleReader, CommunityUseCases communityUseCases, UserUseCases userUseCases, PostUseCases postUseCases) {
         super(consolePrinter);
         this.commentUseCases = commentUseCases;
         this.consoleReader = consoleReader;
