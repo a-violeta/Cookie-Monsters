@@ -5,7 +5,7 @@ import com.app.model.Community;
 import com.app.model.Post;
 import com.app.model.User;
 import com.app.response.ApiResponse;
-import com.app.service.PostUseCases;
+import com.app.service.PostAbstract;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -28,7 +28,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Slf4j
 @ConditionalOnProperty(name = "app.http.client.enabled", havingValue = "true")
-public class PostHttpClient implements PostUseCases {
+public class PostHttpClient implements PostAbstract {
 
     private final RestTemplate restTemplate;
     private final HttpClientConfig clientConfig;

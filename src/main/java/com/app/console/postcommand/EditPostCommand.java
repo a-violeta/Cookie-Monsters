@@ -4,22 +4,22 @@ import com.app.console.core.Command;
 import com.app.console.core.ConsolePrinter;
 import com.app.console.core.ConsoleReader;
 import com.app.model.Post;
-import com.app.service.PostUseCases;
-import com.app.service.UserUseCases;
+import com.app.service.PostAbstract;
+import com.app.service.UserAbstract;
 
 import java.util.List;
 import java.util.UUID;
 
 public class EditPostCommand extends Command {
-    private final PostUseCases postUseCases;
+    private final PostAbstract postAbstract;
     private final ConsoleReader consoleReader;
-    private final UserUseCases userUseCases;
+    private final UserAbstract userAbstract;
 
-    public EditPostCommand(ConsolePrinter consolePrinter, PostUseCases postUseCases, ConsoleReader consoleReader, UserUseCases userUseCases) {
+    public EditPostCommand(ConsolePrinter consolePrinter, PostAbstract postAbstract, ConsoleReader consoleReader, UserAbstract userAbstract) {
         super(consolePrinter);
-        this.postUseCases = postUseCases;
+        this.postAbstract = postAbstract;
         this.consoleReader = consoleReader;
-        this.userUseCases = userUseCases;
+        this.userAbstract = userAbstract;
     }
 
     @Override
@@ -30,7 +30,7 @@ public class EditPostCommand extends Command {
         }
 
         try {
-            List<Post> posts = postUseCases.listPosts(userUseCases.getLoggedInUser().getUsername());
+            List<Post> posts = postAbstract.listPosts(userAbstract.getLoggedInUser().getUsername());
 
             for (int i = 0; i < posts.size(); i++) {
                 consolePrinter.printPostListItem(i+1, posts.get(i));
@@ -60,10 +60,10 @@ public class EditPostCommand extends Command {
             // read with console
             String newText = consoleReader.readLine();
 
-            postUseCases.editPost(postId, null, newText, userUseCases.getLoggedInUser().getUsername() );
+            postAbstract.editPost(postId, null, newText, userAbstract.getLoggedInUser().getUsername() );
             consolePrinter.printSuccess("Post successfully edited!");
 
-            List<Post> postsAfterChange = postUseCases.listPosts(userUseCases.getLoggedInUser().getUsername());
+            List<Post> postsAfterChange = postAbstract.listPosts(userAbstract.getLoggedInUser().getUsername());
             Post changedPost = postsAfterChange.get(chosenIndex-1);
             consolePrinter.displayPost(changedPost);
         } catch (Exception e){

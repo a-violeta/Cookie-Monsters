@@ -7,7 +7,7 @@ import com.app.mapper.CommunityMapper;
 import com.app.mapper.PostMapper;
 import com.app.model.Community;
 import com.app.response.ApiResponse;
-import com.app.service.CommunityUseCases;
+import com.app.service.CommunityAbstract;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +22,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CommunityController {
 
-    private final CommunityUseCases communityService;
+    private final CommunityAbstract communityService;
     private final CommunityMapper communityMapper;
     private final PostMapper postMapper;
 

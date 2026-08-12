@@ -4,20 +4,20 @@ import com.app.console.core.Command;
 import com.app.console.core.ConsolePrinter;
 import com.app.console.core.ConsoleReader;
 import com.app.model.Community;
-import com.app.service.CommunityUseCases;
-import com.app.service.UserUseCases;
+import com.app.service.CommunityAbstract;
+import com.app.service.UserAbstract;
 
 public class CreateCommunityCommand extends Command {
 
-    private final CommunityUseCases communityUseCases;
+    private final CommunityAbstract communityAbstract;
     private final ConsoleReader consoleReader;
-    private final UserUseCases userUseCases;
+    private final UserAbstract userAbstract;
 
-    public CreateCommunityCommand(ConsolePrinter consolePrinter, CommunityUseCases communityUseCases, ConsoleReader consoleReader, UserUseCases userUseCases) {
+    public CreateCommunityCommand(ConsolePrinter consolePrinter, CommunityAbstract communityAbstract, ConsoleReader consoleReader, UserAbstract userAbstract) {
         super(consolePrinter);
-        this.communityUseCases=communityUseCases;
+        this.communityAbstract = communityAbstract;
         this.consoleReader = consoleReader;
-        this.userUseCases = userUseCases;
+        this.userAbstract = userAbstract;
     }
 
     @Override
@@ -48,7 +48,7 @@ public class CreateCommunityCommand extends Command {
         // read with console
         String iconUrl = consoleReader.readLine();
 
-        Community newCommunity = communityUseCases.createCommunity(name, displayName, description, iconUrl, userUseCases.getLoggedInUser().getUsername());
+        Community newCommunity = communityAbstract.createCommunity(name, displayName, description, iconUrl, userAbstract.getLoggedInUser().getUsername());
 
         consolePrinter.printSuccess("Community successfully created!");
         consolePrinter.displayCommunity(newCommunity);

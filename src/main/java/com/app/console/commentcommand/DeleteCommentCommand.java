@@ -6,26 +6,26 @@ import com.app.console.core.ConsoleReader;
 import com.app.model.Comment;
 import com.app.model.Community;
 import com.app.model.Post;
-import com.app.service.CommentUseCases;
-import com.app.service.CommunityUseCases;
-import com.app.service.UserUseCases;
+import com.app.service.CommentAbstract;
+import com.app.service.CommunityAbstract;
+import com.app.service.UserAbstract;
 
 import java.util.List;
 import java.util.UUID;
 
 public class DeleteCommentCommand extends Command {
 
-    private final CommentUseCases commentUseCases;
+    private final CommentAbstract commentAbstract;
     private final ConsoleReader consoleReader;
-    private final CommunityUseCases communityUseCases;
-    private final UserUseCases userUseCases;
+    private final CommunityAbstract communityAbstract;
+    private final UserAbstract userAbstract;
 
-    public DeleteCommentCommand(ConsolePrinter consolePrinter, CommentUseCases commentUseCases, ConsoleReader consoleReader, CommunityUseCases communityUseCases, UserUseCases userUseCases) {
+    public DeleteCommentCommand(ConsolePrinter consolePrinter, CommentAbstract commentAbstract, ConsoleReader consoleReader, CommunityAbstract communityAbstract, UserAbstract userAbstract) {
         super(consolePrinter);
-        this.commentUseCases = commentUseCases;
+        this.commentAbstract = commentAbstract;
         this.consoleReader = consoleReader;
-        this.communityUseCases = communityUseCases;
-        this.userUseCases = userUseCases;
+        this.communityAbstract = communityAbstract;
+        this.userAbstract = userAbstract;
     }
 
     @Override
@@ -38,8 +38,8 @@ public class DeleteCommentCommand extends Command {
         }
 
         try {
-            Long loggedInUserId = userUseCases.getLoggedInUser().getId();
-            List<Community> communities = communityUseCases.listCommunitiesByUserId(loggedInUserId);
+            Long loggedInUserId = userAbstract.getLoggedInUser().getId();
+            List<Community> communities = communityAbstract.listCommunitiesByUserId(loggedInUserId);
             // we needed a new method to do this
 
             for (int i = 0; i < communities.size(); i++) {
@@ -66,7 +66,7 @@ public class DeleteCommentCommand extends Command {
             Community community = communities.get(communityChosenIndex-1);
 
             //List<Post> posts = postUseCases.listPosts(community.getId());
-            List<Post> posts = communityUseCases.listCommunityPosts(community.getName());
+            List<Post> posts = communityAbstract.listCommunityPosts(community.getName());
             // once we have the community, we take all its posts
 
             for (int i = 0; i < posts.size(); i++) {
@@ -93,7 +93,7 @@ public class DeleteCommentCommand extends Command {
             Post post = posts.get(postChosenIndex-1);
             UUID postId = post.getId();
 
-            List<Comment> comments = commentUseCases.listCommentByPostId(postId,userUseCases.getLoggedInUser().getUsername());
+            List<Comment> comments = commentAbstract.listCommentByPostId(postId, userAbstract.getLoggedInUser().getUsername());
 
             for (int i = 0; i < comments.size(); i++) {
                 consolePrinter.printCommentListItem(i+1, comments.get(i));
@@ -118,7 +118,7 @@ public class DeleteCommentCommand extends Command {
 
             UUID commentId = comments.get(chosenIndex-1).getId();
 
-            commentUseCases.removeComment(commentId,userUseCases.getLoggedInUser().getUsername());
+            commentAbstract.removeComment(commentId, userAbstract.getLoggedInUser().getUsername());
             consolePrinter.printSuccess("Comment successfully deleted!");
         } catch (Exception e) {
             consolePrinter.printError(e.getMessage());

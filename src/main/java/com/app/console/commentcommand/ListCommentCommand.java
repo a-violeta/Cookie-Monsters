@@ -6,29 +6,26 @@ import com.app.console.core.ConsoleReader;
 import com.app.model.Comment;
 import com.app.model.Community;
 import com.app.model.Post;
-import com.app.service.CommentUseCases;
-import com.app.service.CommunityUseCases;
-import com.app.service.PostUseCases;
-import com.app.service.UserUseCases;
+import com.app.service.*;
 
 import java.util.List;
 import java.util.UUID;
 
 public class ListCommentCommand extends Command {
 
-    private final CommentUseCases commentUseCases;
+    private final CommentAbstract commentAbstract;
     private final ConsoleReader consoleReader;
-    private final CommunityUseCases communityUseCases;
-    private final UserUseCases userUseCases;
-    private final PostUseCases postUseCases;
+    private final CommunityAbstract communityAbstract;
+    private final UserAbstract userAbstract;
+    private final PostAbstract postAbstract;
 
-    public ListCommentCommand(ConsolePrinter consolePrinter, CommentUseCases commentUseCases, ConsoleReader consoleReader, CommunityUseCases communityUseCases, UserUseCases userUseCases, PostUseCases postUseCases) {
+    public ListCommentCommand(ConsolePrinter consolePrinter, CommentAbstract commentAbstract, ConsoleReader consoleReader, CommunityAbstract communityAbstract, UserAbstract userAbstract, PostAbstract postAbstract) {
         super(consolePrinter);
-        this.commentUseCases = commentUseCases;
+        this.commentAbstract = commentAbstract;
         this.consoleReader = consoleReader;
-        this.communityUseCases = communityUseCases;
-        this.userUseCases = userUseCases;
-        this.postUseCases = postUseCases;
+        this.communityAbstract = communityAbstract;
+        this.userAbstract = userAbstract;
+        this.postAbstract = postAbstract;
     }
 
     @Override
@@ -40,8 +37,8 @@ public class ListCommentCommand extends Command {
         }
 
         try {
-            Long loggedInUserId = userUseCases.getLoggedInUser().getId();
-            List<Community> communities = communityUseCases.listCommunitiesByUserId(loggedInUserId);
+            Long loggedInUserId = userAbstract.getLoggedInUser().getId();
+            List<Community> communities = communityAbstract.listCommunitiesByUserId(loggedInUserId);
 
             if (communities.isEmpty()) {
                 consolePrinter.printError("No communities found for your user!");
@@ -67,7 +64,7 @@ public class ListCommentCommand extends Command {
             }
 
             Community community = communities.get(communityChosenIndex - 1);
-            List<Post> posts = postUseCases.listPosts(community.getId());
+            List<Post> posts = postAbstract.listPosts(community.getId());
 
             if (posts.isEmpty()) {
                 consolePrinter.printError("No posts found in this community!");
@@ -94,7 +91,7 @@ public class ListCommentCommand extends Command {
 
             Post post = posts.get(postChosenIndex - 1);
             UUID postId = post.getId();
-            List<Comment> comments = commentUseCases.listCommentByPostId(postId, userUseCases.getLoggedInUser().getUsername());
+            List<Comment> comments = commentAbstract.listCommentByPostId(postId, userAbstract.getLoggedInUser().getUsername());
 
             consolePrinter.displayPost(post);
             if (comments.isEmpty()) {

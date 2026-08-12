@@ -6,7 +6,7 @@ import com.app.model.Post;
 import java.util.List;
 import java.util.UUID;
 
-public interface CommunityUseCases {
+public interface CommunityAbstract {
     void validateCommunity(String communityName, String displayName, String description);
 
     Community createCommunity(String name, String displayName, String description, String iconUrl, String creatorUsername);

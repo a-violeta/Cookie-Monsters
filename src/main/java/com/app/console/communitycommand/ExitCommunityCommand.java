@@ -4,22 +4,22 @@ import com.app.console.core.Command;
 import com.app.console.core.ConsolePrinter;
 import com.app.console.core.ConsoleReader;
 import com.app.model.Community;
-import com.app.service.CommunityUseCases;
-import com.app.service.UserUseCases;
+import com.app.service.CommunityAbstract;
+import com.app.service.UserAbstract;
 
 import java.util.List;
 import java.util.UUID;
 
 public class ExitCommunityCommand extends Command {
 
-    private final CommunityUseCases communityUseCases;
-    private final UserUseCases userUseCases;
+    private final CommunityAbstract communityAbstract;
+    private final UserAbstract userAbstract;
     private final ConsoleReader consoleReader;
 
-    public ExitCommunityCommand(ConsolePrinter consolePrinter, CommunityUseCases communityUseCases, UserUseCases userUseCases, ConsoleReader consoleReader) {
+    public ExitCommunityCommand(ConsolePrinter consolePrinter, CommunityAbstract communityAbstract, UserAbstract userAbstract, ConsoleReader consoleReader) {
         super(consolePrinter);
-        this.communityUseCases=communityUseCases;
-        this.userUseCases = userUseCases;
+        this.communityAbstract = communityAbstract;
+        this.userAbstract = userAbstract;
         this.consoleReader = consoleReader;
     }
 
@@ -35,7 +35,7 @@ public class ExitCommunityCommand extends Command {
 
         try {
 
-            List<Community> communities = communityUseCases.listCommunities();
+            List<Community> communities = communityAbstract.listCommunities();
 
             for (int i = 0; i < communities.size(); i++) {
                 consolePrinter.printCommunityListItem(i+1, communities.get(i));
@@ -60,9 +60,9 @@ public class ExitCommunityCommand extends Command {
 
             UUID communityId = communities.get(chosenIndex-1).getId();
 
-            Long userId = userUseCases.getLoggedInUser().getId();
+            Long userId = userAbstract.getLoggedInUser().getId();
 
-            communityUseCases.exitCommunity(communityId, userId);
+            communityAbstract.exitCommunity(communityId, userId);
             consolePrinter.printSuccess("Successfully exited the community!");
         } catch (IllegalArgumentException | IllegalStateException e) {
             consolePrinter.printError(e.getMessage());

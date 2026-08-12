@@ -18,9 +18,10 @@ public interface PostMapper {
     @Mapping(target = "filter", source = "media.filter")
     PostDto toDto(Post post);
 
-    // defensive null check even though author is a required FK (never actually null);
-    // the real case this handles is a soft-deleted author - row still exists, but we
-    // don't want to keep showing their real username on old posts/comments
+    /* defensive null check even though author is a required FK (never actually null);
+    the real case this handles is a soft-deleted author - row still exists, but we
+    don't want to keep showing their real username on old posts/comments
+     */
     @Named("authorDisplayName")
     default String authorDisplayName(User author) {
         if (author == null) {

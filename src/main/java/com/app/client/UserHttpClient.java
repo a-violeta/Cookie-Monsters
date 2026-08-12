@@ -5,7 +5,7 @@ import com.app.dto.AuthResponseDto;
 import com.app.dto.UserDto;
 import com.app.model.User;
 import com.app.response.ApiResponse;
-import com.app.service.UserUseCases;
+import com.app.service.UserAbstract;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -18,13 +18,11 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Map;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
 @ConditionalOnProperty(name = "app.http.client.enabled", havingValue = "true")
-public class UserHttpClient implements UserUseCases {
+public class UserHttpClient implements UserAbstract {
 
     private final RestTemplate restTemplate;
     private final HttpClientConfig clientConfig;

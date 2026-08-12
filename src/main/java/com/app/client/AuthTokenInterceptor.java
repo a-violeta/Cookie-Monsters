@@ -10,8 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-// Always registered (harmless on the "server" profile, where nothing calls
-// out through this RestTemplate) so Application.java's bean wiring stays simple.
+// Always registered so Application.java's bean wiring stays simple.
 @Component
 @RequiredArgsConstructor
 public class AuthTokenInterceptor implements ClientHttpRequestInterceptor {

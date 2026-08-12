@@ -3,17 +3,17 @@ package com.app.console.communitycommand;
 import com.app.console.core.Command;
 import com.app.console.core.ConsolePrinter;
 import com.app.model.Community;
-import com.app.service.CommunityUseCases;
+import com.app.service.CommunityAbstract;
 
 import java.util.List;
 
 public class ListCommunityCommand extends Command {
 
-    private final CommunityUseCases communityUseCases;
+    private final CommunityAbstract communityAbstract;
 
-    public ListCommunityCommand(ConsolePrinter consolePrinter, CommunityUseCases communityUseCases) {
+    public ListCommunityCommand(ConsolePrinter consolePrinter, CommunityAbstract communityAbstract) {
         super(consolePrinter);
-        this.communityUseCases=communityUseCases;
+        this.communityAbstract = communityAbstract;
     }
 
     @Override
@@ -27,7 +27,7 @@ public class ListCommunityCommand extends Command {
             return;
         }
 
-        List<Community> communities = communityUseCases.listCommunities();
+        List<Community> communities = communityAbstract.listCommunities();
 
         if(communities.isEmpty()){
             consolePrinter.printError("No communities found!");

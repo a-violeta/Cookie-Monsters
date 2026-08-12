@@ -11,7 +11,7 @@ import java.time.Instant;
 public class UserDto {
     private Long id;
 
-    @Pattern(regexp = "^[a-zA-Z0-9_]+$", message = "User name must contain only letters, numbers, and '_'")
+    @Pattern(regexp = "^\\S+$", message = "Spaces are not allowed")
     @NotBlank(message = "User name is required")
     @Size(min = 3, message = "User name must have at least 3 characters")
     @Size(max = 21, message = "User name is too long")

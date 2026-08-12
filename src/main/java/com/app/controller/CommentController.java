@@ -4,7 +4,7 @@ import com.app.dto.CommentDto;
 import com.app.mapper.CommentMapper;
 import com.app.model.Comment;
 import com.app.response.ApiResponse;
-import com.app.service.CommentUseCases;
+import com.app.service.CommentAbstract;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +19,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CommentController {
 
-    private final CommentUseCases commentService;
+    private final CommentAbstract commentService;
     private final CommentMapper commentMapper;
 
     @PostMapping("/posts/{postId}/comments")

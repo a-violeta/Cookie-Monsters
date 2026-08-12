@@ -2,7 +2,7 @@ package com.app.service;
 
 import com.app.model.User;
 
-public interface UserUseCases {
+public interface UserAbstract {
     User createUser(String username, String email, String password, String description);
     User createUser(String username, String email, String password);
     User login(String identifier, String password);

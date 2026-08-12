@@ -5,7 +5,7 @@ import com.app.model.Comment;
 import java.util.List;
 import java.util.UUID;
 
-public interface CommentUseCases {
+public interface CommentAbstract {
     void validateComment(String text);
     Comment addComment(String text, UUID postId, UUID parentId, String requesterUsername);
     Comment findCommentById(UUID commentId, String requesterUsername);

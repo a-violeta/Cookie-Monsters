@@ -19,7 +19,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "app.http.client.enabled", havingValue = "false", matchIfMissing = true)
-public class CommunityService implements CommunityUseCases {
+public class CommunityService implements CommunityAbstract {
 
     private final CommunityRepository communityRepository;
     private final UserRepository userRepository;
