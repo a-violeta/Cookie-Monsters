@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -31,12 +32,16 @@ public class CommentController {
 
     @GetMapping("/comments/{id}")
     public ResponseEntity<ApiResponse<CommentDto>> getComment(@PathVariable UUID id, Authentication authentication) {
-        return ResponseEntity.ok(ApiResponse.ok(commentMapper.toDto(commentService.findCommentById(id, authentication.getName()))));
+        String username = null;
+        if  (authentication != null) {
+            username = authentication.getName();
+        }
+        return ResponseEntity.ok(ApiResponse.ok(commentMapper.toDto(commentService.findCommentById(id, username))));
     }
 
     @PutMapping("/comments/{id}")
     public ResponseEntity<ApiResponse<CommentDto>> editComment(@PathVariable UUID id, @Valid @RequestBody CommentDto dto, Authentication authentication) {
-        Comment updated = commentService.editComment(id, dto.getContent(), authentication.getName());
+        Comment updated = commentService.editComment(id, dto.getContent(),authentication.getName());
         return ResponseEntity.ok(ApiResponse.ok(commentMapper.toDto(updated)));
     }
 
@@ -46,13 +51,19 @@ public class CommentController {
         return ResponseEntity.ok(ApiResponse.message("Comment deleted successfully"));
     }
 
-    /*@GetMapping
-    public ResponseEntity<ApiResponse<List<CommentDto>>> listComments() {
-        return ResponseEntity.ok(ApiResponse.ok(commentService.listComments().stream().map(commentMapper::toDto).toList()));
-    }*/
-
     @GetMapping("/posts/{id}/comments")
     public ResponseEntity<ApiResponse<List<CommentDto>>> listCommentsByPost(@PathVariable UUID id, Authentication authentication) {
-        return ResponseEntity.ok(ApiResponse.ok(commentService.listCommentByPostId(id, authentication.getName()).stream().map(commentMapper::toDto).toList()));
+        String username = null;
+        if  (authentication != null) {
+            username = authentication.getName();
+        }
+        return ResponseEntity.ok(ApiResponse.ok(commentService.listCommentByPostId(id, username).stream().map(commentMapper::toDto).toList()));
+    }
+
+    @PutMapping("/comments/{id}/vote")
+    public ResponseEntity<ApiResponse<CommentDto>> voteComment(@PathVariable UUID id, @RequestBody Map<String, String>requestBody, Authentication authentication) {
+        String voteType = requestBody.get("voteType");
+        Comment updated = commentService.voteComment(id, voteType, authentication.getName());
+        return ResponseEntity.ok(ApiResponse.ok(commentMapper.toDto(updated)));
     }
 }

@@ -15,6 +15,7 @@ public interface PostMapper {
     @Mapping(target = "subreddit", source = "subreddit.name")
     @Mapping(target = "author", source = "author", qualifiedByName = "authorDisplayName")
     @Mapping(target = "imageUrl", source = "media.path")
+    @Mapping(target = "filter", source = "media.filter")
     PostDto toDto(Post post);
 
     // defensive null check even though author is a required FK (never actually null);

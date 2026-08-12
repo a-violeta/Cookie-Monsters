@@ -73,7 +73,7 @@ public class AddPostCommand extends Command {
             // read with console
             String text = consoleReader.readLine();
 
-            Post newPost = postUseCases.addPost(title, text, subredditName, username);
+            Post newPost = postUseCases.addPost(title, text, subredditName, username, null, 1);
             consolePrinter.printSuccess("Post successfully added!");
             consolePrinter.displayPost(newPost);
         } catch (Exception e){

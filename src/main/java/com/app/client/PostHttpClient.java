@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,17 +34,25 @@ public class PostHttpClient implements PostUseCases {
     private final HttpClientConfig clientConfig;
 
     @Override
-    public void validatePost(String title, String content) {
-        if (title == null || title.isBlank()) {
-            throw new IllegalArgumentException("Title is required");
-        }
+    public void validatePostImage(MultipartFile image) {
+        if (image != null && !image.isEmpty()) {
 
-        if (content == null || content.isBlank()) {
-            throw new IllegalArgumentException("Content is required");
+            // size validation (max 5 MB)
+            long maxSizeBytes = 5 * 1024 * 1024;
+            if (image.getSize() > maxSizeBytes) {
+                throw new IllegalArgumentException("Image size must be less than 5 MB");
+            }
+
+            // format validation (only JPG and PNG)
+            String contentType = image.getContentType();
+            if (contentType == null || (!contentType.equals("image/jpg") && !contentType.equals("image/png"))) {
+                throw new IllegalArgumentException("Only JPG and PNG formats are allowed");
+            }
         }
     }
 
-    public Post addPost(String title, String content, String subreddit, String requesterUsername) {
+    public Post addPost(String title, String content, String subreddit, String requesterUsername,
+                        MultipartFile image, Integer filter) {
         String url = clientConfig.getBaseUrl() + "/posts";
 
         PostDto request = new PostDto();

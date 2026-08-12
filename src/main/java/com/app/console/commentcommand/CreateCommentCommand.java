@@ -102,7 +102,7 @@ public class CreateCommentCommand extends Command {
             // read with console
             String text = consoleReader.readLine();
 
-            Comment newComment = commentUseCases.addComment(text, postId, parentId, username);
+            Comment newComment = commentUseCases.addComment(text, postId, parentId,userUseCases.getLoggedInUser().getUsername());
             consolePrinter.printSuccess("Comment successfully created!");
             consolePrinter.displayComment(newComment);
         } catch (Exception e) {

@@ -32,5 +32,5 @@ public class CommentDto {
 
     private Instant updatedAt;
 
-    private List<CommentReplyDto> replies;
+    private List<CommentDto> replies;
 }

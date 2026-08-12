@@ -37,13 +37,13 @@ public class CommentHttpClient implements CommentUseCases {
     }
 
     @Override
-    public Comment addComment(String text, UUID postId, UUID parentId, String username) {
+    public Comment addComment(String text, UUID postId, UUID parentId, String requesterUsername) {
         validateComment(text);
         String url = clientConfig.getBaseUrl() + "/api/comments";
 
         CommentDto request = new CommentDto();
         request.setContent(text);
-        request.setAuthor(username);
+        request.setAuthor(requesterUsername);
         request.setPostId(postId);
         request.setParentId(parentId);
 
@@ -101,8 +101,8 @@ public class CommentHttpClient implements CommentUseCases {
     }
 
     @Override
-    public List<Comment> listComments() {
-        String url = clientConfig.getBaseUrl() + "/api/comments";
+    public List<Comment> listCommentByPostId(UUID postId, String requesterUsername) {
+        String url = clientConfig.getBaseUrl() + "/api/comments/post/" + postId;
         try {
             ResponseEntity<List<CommentDto>> response = restTemplate.exchange(
                     url, HttpMethod.GET, null, new ParameterizedTypeReference<>() {
@@ -114,16 +114,8 @@ public class CommentHttpClient implements CommentUseCases {
     }
 
     @Override
-    public List<Comment> listCommentByPostId(UUID postId, String requesterUsername) {
-        String url = clientConfig.getBaseUrl() + "/api/comments/post/" + postId;
-        try {
-            ResponseEntity<List<CommentDto>> response = restTemplate.exchange(
-                    url, HttpMethod.GET, null, new ParameterizedTypeReference<>() {
-                    });
-            return response.getBody() != null ? response.getBody().stream().map(this::toComment).toList() : null;
-        } catch (HttpClientErrorException | HttpServerErrorException e) {
-            throw new IllegalArgumentException(extractMessage(e));
-        }
+    public Comment voteComment(UUID commentId, String voteType, String requesterUsername) {
+        return null;
     }
 
     // detached objects for console display

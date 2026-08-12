@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.time.Instant;
 import java.util.List;
@@ -36,6 +37,13 @@ public class GlobalExceptionHandler {
                 .map(fe -> new ApiError.FieldError(fe.getField(), fe.getDefaultMessage()))
                 .toList();
         return buildErrorResponse(HttpStatus.BAD_REQUEST, "VALIDATION_ERROR", "The provided data is invalid", details, request);
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMaxSizeException(HttpServletRequest request) {
+        // returns 413 Payload Too Large
+        return buildErrorResponse(HttpStatus.PAYLOAD_TOO_LARGE, "PAYLOAD_TOO_LARGE", "Image size must be less than 5 MB", null, request);
+
     }
 
     private ResponseEntity<ApiResponse<Void>> buildErrorResponse(
