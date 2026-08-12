@@ -32,6 +32,14 @@ public class User {
 
     // soft delete: keeps posts/comments intact and keeps the username permanently
     // taken (existsByUsername already checks the whole table, deleted rows included)
+    //
+    // columnDefinition is required here: without a DEFAULT, Hibernate's ddl-auto=update
+    // generates "ALTER TABLE users ADD COLUMN is_deleted BOOLEAN NOT NULL" with no
+    // fallback value - which Postgres rejects outright on a table that already has rows
+    // (it has nothing to backfill existing rows with). Hibernate just logs that failure
+    // and starts the app anyway, so the column silently never gets added, and the very
+    // next INSERT references a column that doesn't exist -> raw 500.
+    @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean isDeleted = false;
 
     private Instant createdAt;
