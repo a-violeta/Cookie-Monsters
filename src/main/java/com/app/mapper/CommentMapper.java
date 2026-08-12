@@ -1,7 +1,6 @@
 package com.app.mapper;
 
 import com.app.dto.CommentDto;
-import com.app.dto.CommentReplyDto;
 import com.app.model.Comment;
 import com.app.model.User;
 import org.mapstruct.Mapper;
@@ -22,11 +21,6 @@ public interface CommentMapper {
     @Mapping(target = "postId", source = "post.id")
     @Mapping(target = "parentId", source = "parent.id")
     CommentDto toDto(Comment comment);
-
-    @Mapping(target = "author", source = "author", qualifiedByName = "authorDisplayName")
-    @Mapping(target = "postId", source = "post.id")
-    @Mapping(target = "parentId", source = "parent.id")
-    CommentReplyDto toReplyDto(Comment comment);
 
     // same convention as PostMapper.authorDisplayName - defensive null check plus
     // "[deleted user]" placeholder for soft-deleted authors on old comments
