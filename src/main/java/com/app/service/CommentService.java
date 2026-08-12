@@ -16,7 +16,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "app.http.client.enabled", havingValue = "false", matchIfMissing = true)
-public class CommentService implements CommentUseCases {
+public class CommentService implements CommentAbstract {
 
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;

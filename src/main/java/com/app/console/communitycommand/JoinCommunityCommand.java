@@ -4,22 +4,22 @@ import com.app.console.core.Command;
 import com.app.console.core.ConsolePrinter;
 import com.app.console.core.ConsoleReader;
 import com.app.model.Community;
-import com.app.service.CommunityUseCases;
-import com.app.service.UserUseCases;
+import com.app.service.CommunityAbstract;
+import com.app.service.UserAbstract;
 
 import java.util.List;
 import java.util.UUID;
 
 public class JoinCommunityCommand extends Command {
 
-    private final CommunityUseCases communityUseCases;
-    private final UserUseCases userUseCases;
+    private final CommunityAbstract communityAbstract;
+    private final UserAbstract userAbstract;
     private final ConsoleReader consoleReader;
 
-    public JoinCommunityCommand(ConsolePrinter consolePrinter, CommunityUseCases communityUseCases, UserUseCases userUseCases, ConsoleReader consoleReader) {
+    public JoinCommunityCommand(ConsolePrinter consolePrinter, CommunityAbstract communityAbstract, UserAbstract userAbstract, ConsoleReader consoleReader) {
         super(consolePrinter);
-        this.communityUseCases=communityUseCases;
-        this.userUseCases = userUseCases;
+        this.communityAbstract = communityAbstract;
+        this.userAbstract = userAbstract;
         this.consoleReader = consoleReader;
     }
 
@@ -37,7 +37,7 @@ public class JoinCommunityCommand extends Command {
         try {
             //Long communityId = Long.parseLong(args[0]);
 
-            List<Community> communities = communityUseCases.listCommunities();
+            List<Community> communities = communityAbstract.listCommunities();
 
             for (int i = 0; i < communities.size(); i++) {
                 consolePrinter.printCommunityListItem(i+1, communities.get(i));
@@ -62,9 +62,9 @@ public class JoinCommunityCommand extends Command {
 
             UUID communityId = communities.get(chosenIndex-1).getId();
 
-            Long userId = userUseCases.getLoggedInUser().getId();
+            Long userId = userAbstract.getLoggedInUser().getId();
 
-            communityUseCases.joinCommunity(communityId, userId);
+            communityAbstract.joinCommunity(communityId, userId);
 
             consolePrinter.printSuccess("Successfully joined the community!");
         } catch (Exception e) {

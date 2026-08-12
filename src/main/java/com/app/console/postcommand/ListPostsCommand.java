@@ -5,21 +5,19 @@ import com.app.console.core.ConsolePrinter;
 import com.app.console.core.ConsoleReader;
 import com.app.model.Community;
 import com.app.model.Post;
-import com.app.service.CommunityUseCases;
-import com.app.service.PostUseCases;
+import com.app.service.CommunityAbstract;
+import com.app.service.PostAbstract;
 
 import java.util.List;
 
 public class ListPostsCommand extends Command {
 
-    private final PostUseCases postUseCases;
-    private final CommunityUseCases communityUseCases;
+    private final CommunityAbstract communityAbstract;
     private final ConsoleReader consoleReader;
 
-    public ListPostsCommand(ConsolePrinter printer, PostUseCases postUseCases, CommunityUseCases communityUseCases, ConsoleReader consoleReader) {
+    public ListPostsCommand(ConsolePrinter printer, PostAbstract postAbstract, CommunityAbstract communityAbstract, ConsoleReader consoleReader) {
         super(printer);
-        this.postUseCases = postUseCases;
-        this.communityUseCases = communityUseCases;
+        this.communityAbstract = communityAbstract;
         this.consoleReader = consoleReader;
     }
 
@@ -33,7 +31,7 @@ public class ListPostsCommand extends Command {
 
         try {
 
-            List<Community> communities = communityUseCases.listCommunities();
+            List<Community> communities = communityAbstract.listCommunities();
 
             for (int i = 0; i < communities.size(); i++) {
                 consolePrinter.printCommunityListItem(i+1, communities.get(i));
@@ -58,7 +56,7 @@ public class ListPostsCommand extends Command {
 
             String communityName = communities.get(chosenIndex-1).getName();
 
-            List<Post> posts = communityUseCases.listCommunityPosts(communityName);
+            List<Post> posts = communityAbstract.listCommunityPosts(communityName);
 
             if (posts.isEmpty()) {
                 consolePrinter.printError("No posts to list!");

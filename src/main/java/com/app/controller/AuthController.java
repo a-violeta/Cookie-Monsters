@@ -6,7 +6,7 @@ import com.app.dto.AuthResponseDto;
 import com.app.model.User;
 import com.app.security.JwtUtil;
 import com.app.service.AsyncLoggerService;
-import com.app.service.UserUseCases;
+import com.app.service.UserAbstract;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final UserUseCases userService;
+    private final UserAbstract userService;
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
     private final AsyncLoggerService asyncLogger;

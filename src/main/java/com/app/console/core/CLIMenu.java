@@ -12,16 +12,16 @@ import org.springframework.stereotype.Component;
 @Profile("console")
 public class CLIMenu implements CommandLineRunner {
 
-    private final CommunityUseCases communityUseCases;
-    private final CommentUseCases commentUseCases;
-    private final PostUseCases postUseCases;
-    private final UserUseCases userUseCases;
+    private final CommunityAbstract communityAbstract;
+    private final CommentAbstract commentAbstract;
+    private final PostAbstract postAbstract;
+    private final UserAbstract userAbstract;
 
-    public CLIMenu(CommunityUseCases communityUseCases, CommentUseCases commentUseCases, PostUseCases postUseCases, UserUseCases userUseCases){
-        this.communityUseCases = communityUseCases;
-        this.commentUseCases = commentUseCases;
-        this.postUseCases = postUseCases;
-        this.userUseCases = userUseCases;
+    public CLIMenu(CommunityAbstract communityAbstract, CommentAbstract commentAbstract, PostAbstract postAbstract, UserAbstract userAbstract){
+        this.communityAbstract = communityAbstract;
+        this.commentAbstract = commentAbstract;
+        this.postAbstract = postAbstract;
+        this.userAbstract = userAbstract;
     }
 
     @Override
@@ -31,7 +31,7 @@ public class CLIMenu implements CommandLineRunner {
         ConsolePrinter consolePrinter = new ConsolePrinter();
 
         try {
-            new SeedData(userUseCases, communityUseCases, postUseCases, commentUseCases).seed();
+            new SeedData(userAbstract, communityAbstract, postAbstract, commentAbstract).seed();
         } catch (Exception e) {
             System.err.println("Failed to seed data: " + e.getMessage());
             e.printStackTrace();
@@ -55,9 +55,9 @@ public class CLIMenu implements CommandLineRunner {
                         consolePrinter.printPrompt("Password");
                         String loginPass = consoleReader.readSecret();
                         try {
-                            userUseCases.login(loginIdentifier, loginPass);
-                            consolePrinter.printSuccess("Welcome back, " + userUseCases.getLoggedInUser().getUsername() + "!");
-                            Command feedPosts = new PostsFeedCommand(consolePrinter, postUseCases,  userUseCases);
+                            userAbstract.login(loginIdentifier, loginPass);
+                            consolePrinter.printSuccess("Welcome back, " + userAbstract.getLoggedInUser().getUsername() + "!");
+                            Command feedPosts = new PostsFeedCommand(consolePrinter, postAbstract, userAbstract);
                             feedPosts.execute(new String[0]);
                             //consolePrinter.printPostLoginHint();
                             isAuthenticated = true;
@@ -75,7 +75,7 @@ public class CLIMenu implements CommandLineRunner {
                         consolePrinter.printPrompt("Short Description");
                         String newDesc = consoleReader.readLine();
                         try {
-                            User user = userUseCases.createUser(newUser, newEmail, newPass, newDesc);
+                            User user = userAbstract.createUser(newUser, newEmail, newPass, newDesc);
                             consolePrinter.printSuccess("Account created successfully! You can now log in (Option 1).");
                             consolePrinter.displayUser(user);
                         } catch (Exception e) {
@@ -92,7 +92,7 @@ public class CLIMenu implements CommandLineRunner {
             }
 
             //after login
-            InputParser inputParser = new InputParser(consoleReader, consolePrinter, communityUseCases, commentUseCases, postUseCases, userUseCases);
+            InputParser inputParser = new InputParser(consoleReader, consolePrinter, communityAbstract, commentAbstract, postAbstract, userAbstract);
 
             inputParser.startListening();
         }

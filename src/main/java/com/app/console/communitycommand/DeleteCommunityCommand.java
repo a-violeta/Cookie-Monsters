@@ -3,20 +3,20 @@ package com.app.console.communitycommand;
 import com.app.console.core.Command;
 import com.app.console.core.ConsolePrinter;
 import com.app.console.core.ConsoleReader;
-import com.app.service.CommunityUseCases;
-import com.app.service.UserUseCases;
+import com.app.service.CommunityAbstract;
+import com.app.service.UserAbstract;
 
 public class DeleteCommunityCommand extends Command {
 
-    private final CommunityUseCases communityUseCases;
+    private final CommunityAbstract communityAbstract;
     private final ConsoleReader consoleReader;
-    private final UserUseCases userUseCases;
+    private final UserAbstract userAbstract;
 
-    public DeleteCommunityCommand(ConsolePrinter consolePrinter, CommunityUseCases communityUseCases, ConsoleReader consoleReader, UserUseCases userUseCases) {
+    public DeleteCommunityCommand(ConsolePrinter consolePrinter, CommunityAbstract communityAbstract, ConsoleReader consoleReader, UserAbstract userAbstract) {
         super(consolePrinter);
-        this.communityUseCases=communityUseCases;
+        this.communityAbstract = communityAbstract;
         this.consoleReader = consoleReader;
-        this.userUseCases = userUseCases;
+        this.userAbstract = userAbstract;
     }
 
     @Override
@@ -33,8 +33,8 @@ public class DeleteCommunityCommand extends Command {
             // read with console
             String name = consoleReader.readLine();
 
-            String communityName = communityUseCases.findCommunityByName(name.toLowerCase()).getName();
-            communityUseCases.deleteCommunity(communityName, userUseCases.getLoggedInUser().getUsername());
+            String communityName = communityAbstract.findCommunityByName(name.toLowerCase()).getName();
+            communityAbstract.deleteCommunity(communityName, userAbstract.getLoggedInUser().getUsername());
 
             consolePrinter.printSuccess("Community successfully deleted!");
         } catch (Exception e) {

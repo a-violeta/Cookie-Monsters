@@ -14,11 +14,11 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.time.Instant;
 
-/**
- * Fires when a protected endpoint is hit with no JWT, or an invalid/expired one.
- * Without this, Spring Security's default handling kicks in - which does NOT
- * match the documented {success:false, error:{...}, timestamp, path} error shape
- * that GlobalExceptionHandler produces for every other error case.
+/*
+    Fires when a protected endpoint is hit with no JWT, or an invalid/expired one.
+    Without this, Spring Security's default handling kicks in - which does NOT
+    match the documented {success:false, error:{...}, timestamp, path} error shape
+    that GlobalExceptionHandler produces for every other error case.
  */
 @Component
 public class JsonAuthenticationEntryPoint implements AuthenticationEntryPoint {

@@ -38,7 +38,7 @@ public class AuthRequests {
     public static class UpdateProfileRequest {
         private String displayName;
 
-        @Pattern(regexp = "^(http|https)://.*$", message = "Must be a valid HTTP/HTTPS URL")
+        @Pattern(regexp = "^(http|https)://.*$", message = "Must be a valid HTTP/HTTPS URL")    //accept anything beside space; before was alpha numeric
         private String avatarUrl;
     }
 

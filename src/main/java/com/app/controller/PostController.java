@@ -5,10 +5,9 @@ import com.app.dto.PostUpdateRequest;
 import com.app.mapper.PostMapper;
 import com.app.model.Post;
 import com.app.response.ApiResponse;
-import com.app.service.PostUseCases;
+import com.app.service.PostAbstract;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +20,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PostController {
 
-    private final PostUseCases postService;
+    private final PostAbstract postService;
     private final PostMapper postMapper;
 
     @GetMapping

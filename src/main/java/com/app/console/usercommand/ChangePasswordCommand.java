@@ -3,15 +3,15 @@ package com.app.console.usercommand;
 import com.app.console.core.Command;
 import com.app.console.core.ConsolePrinter;
 import com.app.console.core.ConsoleReader;
-import com.app.service.UserUseCases;
+import com.app.service.UserAbstract;
 
 public class ChangePasswordCommand extends Command {
-    private final UserUseCases userUseCases;
+    private final UserAbstract userAbstract;
     private final ConsoleReader consoleReader;
 
-    public ChangePasswordCommand(ConsolePrinter consolePrinter, UserUseCases userUseCases, ConsoleReader consoleReader) {
+    public ChangePasswordCommand(ConsolePrinter consolePrinter, UserAbstract userAbstract, ConsoleReader consoleReader) {
         super(consolePrinter);
-        this.userUseCases = userUseCases;
+        this.userAbstract = userAbstract;
         this.consoleReader = consoleReader;
     }
 
@@ -23,7 +23,7 @@ public class ChangePasswordCommand extends Command {
         }
 
         try {
-            String currentUsername = userUseCases.getLoggedInUser().getUsername();
+            String currentUsername = userAbstract.getLoggedInUser().getUsername();
 
             consolePrinter.printPrompt("Current password");
             String currentPassword = consoleReader.readSecret();
@@ -38,7 +38,7 @@ public class ChangePasswordCommand extends Command {
                 throw new IllegalArgumentException("New password and confirmation do not match");
             }
 
-            userUseCases.changePassword(currentUsername, currentPassword, newPassword);
+            userAbstract.changePassword(currentUsername, currentPassword, newPassword);
             consolePrinter.printSuccess("Password changed successfully!");
         } catch (Exception e) {
             consolePrinter.printError(e.getMessage());

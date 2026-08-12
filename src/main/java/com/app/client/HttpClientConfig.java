@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
  * app:
  *   http:
  *     client:
- *       base-url: http://localhost:8081
+ *       base-url: http://localhost:8081    //was the last localhost
  *       connection-timeout: 5000
  *       read-timeout: 10000
  */

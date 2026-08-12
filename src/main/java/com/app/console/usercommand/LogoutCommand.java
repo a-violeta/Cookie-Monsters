@@ -2,15 +2,15 @@ package com.app.console.usercommand;
 
 import com.app.console.core.Command;
 import com.app.console.core.ConsolePrinter;
-import com.app.service.UserUseCases;
+import com.app.service.UserAbstract;
 
 public class LogoutCommand extends Command {
 
-    private final UserUseCases userUseCases;
+    private final UserAbstract userAbstract;
 
-    public LogoutCommand(ConsolePrinter consolePrinter, UserUseCases userUseCases) {
+    public LogoutCommand(ConsolePrinter consolePrinter, UserAbstract userAbstract) {
         super(consolePrinter);
-        this.userUseCases = userUseCases;
+        this.userAbstract = userAbstract;
     }
 
     @Override
@@ -22,7 +22,7 @@ public class LogoutCommand extends Command {
             return;
         }
 
-        userUseCases.logout();
+        userAbstract.logout();
         consolePrinter.printSuccess("Logged out successfully! Returning to login menu...");
     }
 }

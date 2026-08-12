@@ -38,7 +38,7 @@ Without the exception handler, this would just be a generic Spring error blob in
 ### Console side:
 ```
 CreatePostCommand.execute(args)
-└─ postUseCases.addPost(communityId, userId, title, text)      <- Command only knows the interface
+└─ postAbstract.addPost(communityId, userId, title, text)      <- Command only knows the interface
 └─ PostHttpClient.addPost(...)                             <- Spring injected THIS impl (enabled=true)
 ├─ builds PostDto from the args
 ├─ restTemplate.postForObject(url, dto, PostDto.class)

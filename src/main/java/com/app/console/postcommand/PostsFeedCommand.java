@@ -3,20 +3,20 @@ package com.app.console.postcommand;
 import com.app.console.core.Command;
 import com.app.console.core.ConsolePrinter;
 import com.app.model.Post;
-import com.app.service.PostUseCases;
-import com.app.service.UserUseCases;
+import com.app.service.PostAbstract;
+import com.app.service.UserAbstract;
 
 import java.util.List;
 
 public class PostsFeedCommand extends Command {
 
-    private final PostUseCases postUseCases;
-    private final UserUseCases userUseCases;
+    private final PostAbstract postAbstract;
+    private final UserAbstract userAbstract;
 
-    public PostsFeedCommand(ConsolePrinter printer, PostUseCases postUseCases, UserUseCases userUseCases) {
+    public PostsFeedCommand(ConsolePrinter printer, PostAbstract postAbstract, UserAbstract userAbstract) {
         super(printer);
-        this.postUseCases = postUseCases;
-        this.userUseCases = userUseCases;
+        this.postAbstract = postAbstract;
+        this.userAbstract = userAbstract;
     }
 
     @Override
@@ -28,7 +28,7 @@ public class PostsFeedCommand extends Command {
             return;
         }
 
-        List<Post> posts = postUseCases.listPosts(userUseCases.getLoggedInUser().getUsername());
+        List<Post> posts = postAbstract.listPosts(userAbstract.getLoggedInUser().getUsername());
 
         if (posts.isEmpty()) {
             consolePrinter.printError("No posts found!");

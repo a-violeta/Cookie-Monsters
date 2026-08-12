@@ -6,8 +6,8 @@ import com.app.mapper.CommunityMapper;
 import com.app.model.Community;
 import com.app.model.User;
 import com.app.response.ApiResponse;
-import com.app.service.CommunityUseCases;
-import com.app.service.UserUseCases;
+import com.app.service.CommunityAbstract;
+import com.app.service.UserAbstract;
 import com.app.service.AsyncLoggerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserUseCases userService;
-    private final CommunityUseCases communityService;
+    private final UserAbstract userService;
+    private final CommunityAbstract communityService;
     private final CommunityMapper communityMapper;
     private final AsyncLoggerService asyncLogger;
 

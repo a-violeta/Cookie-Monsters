@@ -6,10 +6,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.UUID;
 
-public interface PostUseCases {
+public interface PostAbstract {
     void validatePostImage(MultipartFile image);
-    Post addPost(String title, String content, String subreddit, String requesterUsername,
-                 MultipartFile image, Integer filter);
+    Post addPost(String title, String content, String subreddit, String requesterUsername, MultipartFile image, Integer filter);
     void deletePost(UUID postId, String requesterUsername);
     List<Post> listPosts(UUID communityId);
     List<Post> listPosts(String requesterUsername);

@@ -5,23 +5,23 @@ import com.app.console.core.ConsolePrinter;
 import com.app.console.core.ConsoleReader;
 import com.app.model.Community;
 import com.app.model.Post;
-import com.app.service.CommunityUseCases;
-import com.app.service.PostUseCases;
-import com.app.service.UserUseCases;
+import com.app.service.CommunityAbstract;
+import com.app.service.PostAbstract;
+import com.app.service.UserAbstract;
 
 import java.util.List;
 
 public class AddPostCommand extends Command {
-    private final PostUseCases postUseCases;
-    private final UserUseCases userUseCases;
-    private final CommunityUseCases communityUseCases;
+    private final PostAbstract postAbstract;
+    private final UserAbstract userAbstract;
+    private final CommunityAbstract communityAbstract;
     private final ConsoleReader consoleReader;
 
-    public AddPostCommand(ConsolePrinter consolePrinter, PostUseCases postUseCases, UserUseCases userUseCases, CommunityUseCases communityUseCases, ConsoleReader consoleReader) {
+    public AddPostCommand(ConsolePrinter consolePrinter, PostAbstract postAbstract, UserAbstract userAbstract, CommunityAbstract communityAbstract, ConsoleReader consoleReader) {
         super(consolePrinter);
-        this.postUseCases = postUseCases;
-        this.userUseCases = userUseCases;
-        this.communityUseCases = communityUseCases;
+        this.postAbstract = postAbstract;
+        this.userAbstract = userAbstract;
+        this.communityAbstract = communityAbstract;
         this.consoleReader = consoleReader;
     }
 
@@ -36,7 +36,7 @@ public class AddPostCommand extends Command {
 
         try {
 
-            List<Community> communities = communityUseCases.listCommunities();
+            List<Community> communities = communityAbstract.listCommunities();
 
             for (int i = 0; i < communities.size(); i++) {
                 consolePrinter.printCommunityListItem(i+1, communities.get(i));
@@ -61,7 +61,7 @@ public class AddPostCommand extends Command {
 
             String subredditName = communities.get(chosenIndex-1).getName();
 
-            String username = userUseCases.getLoggedInUser().getUsername();
+            String username = userAbstract.getLoggedInUser().getUsername();
 
             consolePrinter.printPrompt("Type post title");
 
@@ -73,7 +73,7 @@ public class AddPostCommand extends Command {
             // read with console
             String text = consoleReader.readLine();
 
-            Post newPost = postUseCases.addPost(title, text, subredditName, username, null, 1);
+            Post newPost = postAbstract.addPost(title, text, subredditName, username, null, 1);
             consolePrinter.printSuccess("Post successfully added!");
             consolePrinter.displayPost(newPost);
         } catch (Exception e){

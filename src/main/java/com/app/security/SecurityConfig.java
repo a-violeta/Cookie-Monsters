@@ -32,7 +32,7 @@ public class SecurityConfig {
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(jsonAuthenticationEntryPoint)
                         .accessDeniedHandler(jsonAccessDeniedHandler)
-                )
+                )//sorry for the structure idk how to do to look it better
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/health", "/auth/**").permitAll()
                         .requestMatchers("/error").permitAll()

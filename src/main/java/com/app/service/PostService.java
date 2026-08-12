@@ -17,7 +17,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "app.http.client.enabled", havingValue = "false", matchIfMissing = true)
-public class PostService implements PostUseCases {
+public class PostService implements PostAbstract {
 
     private final PostRepository postRepository;
     private final CommunityRepository communityRepository;

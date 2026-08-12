@@ -6,7 +6,7 @@ import com.app.model.Community;
 import com.app.model.Post;
 import com.app.model.User;
 import com.app.response.ApiResponse;
-import com.app.service.CommunityUseCases;
+import com.app.service.CommunityAbstract;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -26,7 +26,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Slf4j
 @ConditionalOnProperty(name = "app.http.client.enabled", havingValue = "true")
-public class CommunityHttpClient implements CommunityUseCases {
+public class CommunityHttpClient implements CommunityAbstract {
 
     private final RestTemplate restTemplate;
     private final HttpClientConfig clientConfig;
