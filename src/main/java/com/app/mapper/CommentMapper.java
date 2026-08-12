@@ -21,7 +21,6 @@ public interface CommentMapper {
     @Mapping(target = "postId", source = "post.id")
     @Mapping(target = "parentId", source = "parent.id")
     CommentDto toDto(Comment comment);
-    //CommentReplyDto toReplyDto(Comment comment);
 
     // same convention as PostMapper.authorDisplayName - defensive null check plus
     // "[deleted user]" placeholder for soft-deleted authors on old comments
