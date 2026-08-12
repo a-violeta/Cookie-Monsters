@@ -12,7 +12,6 @@ public class AuthRequests {
     public static class RegisterRequest {
         @NotBlank
         @Size(min = 3, max = 20)
-        @Pattern(regexp = "^\\S+$", message = "Spaces are not allowed")
         private String username;
 
         @NotBlank
