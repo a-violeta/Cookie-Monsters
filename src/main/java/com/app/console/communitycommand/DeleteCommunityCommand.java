@@ -1,9 +1,12 @@
-package com.app.console;
+package com.app.console.communitycommand;
 
+import com.app.console.core.Command;
+import com.app.console.core.ConsolePrinter;
+import com.app.console.core.ConsoleReader;
 import com.app.service.CommunityUseCases;
 import com.app.service.UserUseCases;
 
-public class DeleteCommunityCommand extends Command{
+public class DeleteCommunityCommand extends Command {
 
     private final CommunityUseCases communityUseCases;
     private final ConsoleReader consoleReader;

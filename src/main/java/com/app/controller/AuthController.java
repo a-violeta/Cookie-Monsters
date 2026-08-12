@@ -1,6 +1,6 @@
 package com.app.controller;
 
-import com.app.dto.ApiResponse;
+import com.app.response.ApiResponse;
 import com.app.dto.AuthRequests.*;
 import com.app.dto.AuthResponseDto;
 import com.app.model.User;
@@ -32,12 +32,12 @@ public class AuthController {
         String token = jwtUtil.generateToken(user.getUsername());
         asyncLogger.logInfo("New user registered: " + user.getUsername());
 
-        return ResponseEntity.ok(ApiResponse.success(new AuthResponseDto(token, mapToUserDetails(user))));
+        return ResponseEntity.ok(ApiResponse.ok(new AuthResponseDto(token, mapToUserDetails(user))));
     }
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<AuthResponseDto>> login(@Valid @RequestBody LoginRequest request) {
-        // Spring Security handles the password verification against the hashed DB password here
+
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
         );
@@ -47,14 +47,13 @@ public class AuthController {
 
         asyncLogger.logInfo("User logged in: " + user.getUsername());
 
-        return ResponseEntity.ok(ApiResponse.success(new AuthResponseDto(token, mapToUserDetails(user))));
+        return ResponseEntity.ok(ApiResponse.ok(new AuthResponseDto(token, mapToUserDetails(user))));
     }
 
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<AuthResponseDto.UserDetails>> getMe(Authentication authentication) {
-        // authentication.getName() securely extracts the username from the validated JWT
         User user = userService.findByUsername(authentication.getName());
-        return ResponseEntity.ok(ApiResponse.success(mapToUserDetails(user)));
+        return ResponseEntity.ok(ApiResponse.ok(mapToUserDetails(user)));
     }
 
     @PutMapping("/me")
@@ -69,7 +68,7 @@ public class AuthController {
         );
 
         asyncLogger.logInfo("User updated profile: " + updatedUser.getUsername());
-        return ResponseEntity.ok(ApiResponse.success(mapToUserDetails(updatedUser)));
+        return ResponseEntity.ok(ApiResponse.ok(mapToUserDetails(updatedUser)));
     }
 
     @PutMapping("/me/password")
@@ -84,10 +83,16 @@ public class AuthController {
         );
 
         asyncLogger.logInfo("User changed password: " + authentication.getName());
-        return ResponseEntity.ok(ApiResponse.successMessage("Password changed successfully"));
+        return ResponseEntity.ok(ApiResponse.message("Password changed successfully"));
     }
 
-    // Helper method to convert the User entity to the DTO expected by the frontend
+    @DeleteMapping("/me")
+    public ResponseEntity<ApiResponse<Void>> deleteAccount(@Valid @RequestBody DeleteAccountRequest request, Authentication authentication) {
+        userService.deleteAccount(authentication.getName(), request.getPassword());
+        asyncLogger.logInfo("User deleted their account: " + authentication.getName());
+        return ResponseEntity.ok(ApiResponse.message("Account deleted successfully"));
+    }
+
     private AuthResponseDto.UserDetails mapToUserDetails(User user) {
         return new AuthResponseDto.UserDetails(
                 user.getUsername(),

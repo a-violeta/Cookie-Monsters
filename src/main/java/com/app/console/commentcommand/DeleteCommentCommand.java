@@ -1,5 +1,8 @@
-package com.app.console;
+package com.app.console.commentcommand;
 
+import com.app.console.core.Command;
+import com.app.console.core.ConsolePrinter;
+import com.app.console.core.ConsoleReader;
 import com.app.model.Comment;
 import com.app.model.Community;
 import com.app.model.Post;
@@ -17,7 +20,7 @@ public class DeleteCommentCommand extends Command {
     private final CommunityUseCases communityUseCases;
     private final UserUseCases userUseCases;
 
-    public DeleteCommentCommand(ConsolePrinter consolePrinter,CommentUseCases commentUseCases, ConsoleReader consoleReader, CommunityUseCases communityUseCases, UserUseCases userUseCases) {
+    public DeleteCommentCommand(ConsolePrinter consolePrinter, CommentUseCases commentUseCases, ConsoleReader consoleReader, CommunityUseCases communityUseCases, UserUseCases userUseCases) {
         super(consolePrinter);
         this.commentUseCases = commentUseCases;
         this.consoleReader = consoleReader;

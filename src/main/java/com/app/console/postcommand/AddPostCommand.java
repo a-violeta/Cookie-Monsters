@@ -1,31 +1,36 @@
-package com.app.console;
+package com.app.console.postcommand;
 
+import com.app.console.core.Command;
+import com.app.console.core.ConsolePrinter;
+import com.app.console.core.ConsoleReader;
 import com.app.model.Community;
 import com.app.model.Post;
 import com.app.service.CommunityUseCases;
 import com.app.service.PostUseCases;
+import com.app.service.UserUseCases;
 
 import java.util.List;
-import java.util.UUID;
 
-public class ListPostsCommand extends Command {
-
+public class AddPostCommand extends Command {
     private final PostUseCases postUseCases;
+    private final UserUseCases userUseCases;
     private final CommunityUseCases communityUseCases;
     private final ConsoleReader consoleReader;
 
-    public ListPostsCommand(ConsolePrinter printer, PostUseCases postUseCases, CommunityUseCases communityUseCases, ConsoleReader consoleReader) {
-        super(printer);
+    public AddPostCommand(ConsolePrinter consolePrinter, PostUseCases postUseCases, UserUseCases userUseCases, CommunityUseCases communityUseCases, ConsoleReader consoleReader) {
+        super(consolePrinter);
         this.postUseCases = postUseCases;
+        this.userUseCases = userUseCases;
         this.communityUseCases = communityUseCases;
         this.consoleReader = consoleReader;
     }
 
     @Override
     public void execute(String[] args) {
-        if (args.length > 0) {
+
+        if (args.length >= 1) {
+
             consolePrinter.printError("Too Many Arguments");
-            consolePrinter.printExplanation("list-posts");
             return;
         }
 
@@ -54,17 +59,23 @@ public class ListPostsCommand extends Command {
                 throw new IllegalArgumentException("Index out of bounds!");
             }
 
-            String communityName = communities.get(chosenIndex-1).getName();
+            String subredditName = communities.get(chosenIndex-1).getName();
 
-            List<Post> posts = communityUseCases.listCommunityPosts(communityName);
+            String username = userUseCases.getLoggedInUser().getUsername();
 
-            if (posts.isEmpty()) {
-                consolePrinter.printError("No posts to list!");
-                return;
-            }
-            for (Post post : posts) {
-                consolePrinter.displayPost(post);
-            }
+            consolePrinter.printPrompt("Type post title");
+
+            // read with console
+            String title = consoleReader.readLine();
+
+            consolePrinter.printPrompt("Type post body");
+
+            // read with console
+            String text = consoleReader.readLine();
+
+            Post newPost = postUseCases.addPost(title, text, subredditName, username, null, 1);
+            consolePrinter.printSuccess("Post successfully added!");
+            consolePrinter.displayPost(newPost);
         } catch (Exception e){
             consolePrinter.printError(e.getMessage());
         }

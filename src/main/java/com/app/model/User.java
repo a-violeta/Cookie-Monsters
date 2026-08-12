@@ -26,9 +26,13 @@ public class User {
     private String password;
     private String description;
 
-    // New fields mapped from the API specification
+    // new fields mapped from the API specification
     private String displayName;
     private String avatarUrl;
+
+    // soft delete: keeps posts/comments intact and keeps the username permanently
+    // taken (existsByUsername already checks the whole table, deleted rows included)
+    private boolean isDeleted = false;
 
     private Instant createdAt;
 

@@ -1,4 +1,4 @@
-package com.app.console;
+package com.app.console.core;
 
 import com.app.model.*;
 import com.app.service.*;

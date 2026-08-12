@@ -1,5 +1,6 @@
-package com.app.console;
+package com.app.console.core;
 
+import com.app.console.postcommand.PostsFeedCommand;
 import com.app.model.User;
 import com.app.service.*;
 import org.springframework.boot.CommandLineRunner;
@@ -60,7 +61,7 @@ public class CLIMenu implements CommandLineRunner {
                             feedPosts.execute(new String[0]);
                             //consolePrinter.printPostLoginHint();
                             isAuthenticated = true;
-                        } catch (IllegalArgumentException e) {
+                        } catch (Exception e) {
                             consolePrinter.printError(e.getMessage());
                         }
                         break;
@@ -77,7 +78,7 @@ public class CLIMenu implements CommandLineRunner {
                             User user = userUseCases.createUser(newUser, newEmail, newPass, newDesc);
                             consolePrinter.printSuccess("Account created successfully! You can now log in (Option 1).");
                             consolePrinter.displayUser(user);
-                        } catch (IllegalArgumentException e) {
+                        } catch (Exception e) {
                             consolePrinter.printError(e.getMessage());
                         }
                         break;

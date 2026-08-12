@@ -1,12 +1,18 @@
 package com.app.client;
 
-import com.app.dto.LoginRequest;
+import com.app.dto.AuthRequests.LoginRequest; // Make sure this points to the updated AuthRequests nested class
+import com.app.dto.AuthResponseDto;
 import com.app.dto.UserDto;
 import com.app.model.User;
+import com.app.response.ApiResponse;
 import com.app.service.UserUseCases;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -22,6 +28,7 @@ public class UserHttpClient implements UserUseCases {
 
     private final RestTemplate restTemplate;
     private final HttpClientConfig clientConfig;
+    private final AuthTokenHolder authTokenHolder;
 
     // client side cache
     private User loggedInUser = null;
@@ -36,9 +43,16 @@ public class UserHttpClient implements UserUseCases {
         request.setDescription(description);
 
         try {
-            UserDto response = restTemplate.postForObject(url, request, UserDto.class);
+            // updated to unwrap ApiResponse<UserDto>
+            ResponseEntity<ApiResponse<UserDto>> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.POST,
+                    new HttpEntity<>(request),
+                    new ParameterizedTypeReference<ApiResponse<UserDto>>() {}
+            );
+
             log.info("User created via HTTP: {}", username);
-            return toUser(response);
+            return toUser(response.getBody().getData());
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             log.error("Failed to create user via HTTP: {}", username, e);
             throw new IllegalArgumentException(extractMessage(e));
@@ -52,15 +66,28 @@ public class UserHttpClient implements UserUseCases {
 
     @Override
     public User login(String username, String password) {
-        String url = clientConfig.getBaseUrl() + "/api/users/login";
+        String url = clientConfig.getBaseUrl() + "/auth/login";
         LoginRequest request = new LoginRequest();
-        request.setIdentifier(username);
+        request.setUsername(username);
         request.setPassword(password);
 
         try {
-            UserDto response = restTemplate.postForObject(url, request, UserDto.class);
-            User user = toUser(response);
+            ResponseEntity<ApiResponse<AuthResponseDto>> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.POST,
+                    new HttpEntity<>(request),
+                    new ParameterizedTypeReference<ApiResponse<AuthResponseDto>>() {}
+            );
+
+            AuthResponseDto authData = response.getBody().getData();
+
+            User user = new User();
+            user.setUsername(authData.getUser().getUsername());
+            user.setEmail(authData.getUser().getEmail());
+            user.setDisplayName(authData.getUser().getDisplayName());
+
             this.loggedInUser = user;
+            this.authTokenHolder.setToken(authData.getAccessToken());
             log.info("Logged in via HTTP: {}", username);
             return user;
         } catch (HttpClientErrorException | HttpServerErrorException e) {
@@ -70,14 +97,9 @@ public class UserHttpClient implements UserUseCases {
 
     @Override
     public void logout() {
-        String url = clientConfig.getBaseUrl() + "/api/users/logout";
-        try {
-            restTemplate.postForLocation(url, null);
-        } catch (HttpClientErrorException | HttpServerErrorException e) {
-            log.warn("Server logout call failed, clearing local state anyway", e);
-        } finally {
-            this.loggedInUser = null;
-        }
+        this.loggedInUser = null;
+        this.authTokenHolder.clear();
+        log.info("Logged out locally from HTTP client.");
     }
 
     @Override
@@ -85,7 +107,6 @@ public class UserHttpClient implements UserUseCases {
         return this.loggedInUser;
     }
 
-    // FIX: Added findByUsername (Required by AuthController)
     @Override
     public User findByUsername(String username) {
         String url = clientConfig.getBaseUrl() + "/api/users/" + username;
@@ -99,34 +120,56 @@ public class UserHttpClient implements UserUseCases {
         }
     }
 
-    // FIX: Added updateProfile (Required by AuthController)
     @Override
     public User updateProfile(String username, String displayName, String avatarUrl) {
-        String url = clientConfig.getBaseUrl() + "/api/users/" + username + "/profile";
-        Map<String, String> request = Map.of(
-                "displayName", displayName != null ? displayName : "",
-                "avatarUrl", avatarUrl != null ? avatarUrl : ""
-        );
+        // matches AuthController: PUT /auth/me (derives user from the JWT, not a path variable)
+        String url = clientConfig.getBaseUrl() + "/auth/me";
+        com.app.dto.AuthRequests.UpdateProfileRequest request = new com.app.dto.AuthRequests.UpdateProfileRequest();
+        request.setDisplayName(displayName);
+        request.setAvatarUrl(avatarUrl);
 
         try {
-            restTemplate.put(url, request);
-            return findByUsername(username);
+            ResponseEntity<ApiResponse<AuthResponseDto.UserDetails>> response = restTemplate.exchange(
+                    url, HttpMethod.PUT, new HttpEntity<>(request),
+                    new ParameterizedTypeReference<ApiResponse<AuthResponseDto.UserDetails>>() {});
+            AuthResponseDto.UserDetails details = response.getBody().getData();
+
+            User user = new User();
+            user.setUsername(details.getUsername());
+            user.setEmail(details.getEmail());
+            user.setDisplayName(details.getDisplayName());
+            this.loggedInUser = user;
+            return user;
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             throw new IllegalArgumentException(extractMessage(e));
         }
     }
 
-    // FIX: Added changePassword (Required by AuthController)
     @Override
     public void changePassword(String username, String currentPassword, String newPassword) {
-        String url = clientConfig.getBaseUrl() + "/api/users/" + username + "/password";
-        Map<String, String> request = Map.of(
-                "currentPassword", currentPassword,
-                "newPassword", newPassword
-        );
+        // matches AuthController: PUT /auth/me/password
+        String url = clientConfig.getBaseUrl() + "/auth/me/password";
+        com.app.dto.AuthRequests.ChangePasswordRequest request = new com.app.dto.AuthRequests.ChangePasswordRequest();
+        request.setCurrentPassword(currentPassword);
+        request.setNewPassword(newPassword);
 
         try {
-            restTemplate.put(url, request);
+            restTemplate.exchange(url, HttpMethod.PUT, new HttpEntity<>(request), Void.class);
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            throw new IllegalArgumentException(extractMessage(e));
+        }
+    }
+
+    @Override
+    public void deleteAccount(String username, String password) {
+        // matches AuthController: DELETE /auth/me, now requires password confirmation
+        String url = clientConfig.getBaseUrl() + "/auth/me";
+        com.app.dto.AuthRequests.DeleteAccountRequest request = new com.app.dto.AuthRequests.DeleteAccountRequest();
+        request.setPassword(password);
+
+        try {
+            restTemplate.exchange(url, HttpMethod.DELETE, new HttpEntity<>(request), Void.class);
+            this.loggedInUser = null;
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             throw new IllegalArgumentException(extractMessage(e));
         }

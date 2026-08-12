@@ -1,5 +1,7 @@
-package com.app.console;
+package com.app.console.usercommand;
 
+import com.app.console.core.Command;
+import com.app.console.core.ConsolePrinter;
 import com.app.service.UserUseCases;
 
 public class LogoutCommand extends Command {

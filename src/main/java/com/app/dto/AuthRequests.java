@@ -12,7 +12,7 @@ public class AuthRequests {
     public static class RegisterRequest {
         @NotBlank
         @Size(min = 3, max = 20)
-        @Pattern(regexp = "^[a-zA-Z0-9_]+$", message = "Alphanumeric and underscores only")
+        @Pattern(regexp = "^\\S+$", message = "Spaces are not allowed")
         private String username;
 
         @NotBlank
@@ -26,8 +26,10 @@ public class AuthRequests {
 
     @Data
     public static class LoginRequest {
+        // field renamed from "username" to "identifier" for consistency with com.app.dto.LoginRequest (used by /api/users/login). Still only matches by
+        // username server-side (see CustomUserDetailsService) - email login for this JWT flow is not implemented.
         @NotBlank
-        private String username;
+        private String username;//EDIT: rename identifier to username cuz API use just username
 
         @NotBlank
         private String password;
@@ -49,5 +51,11 @@ public class AuthRequests {
         @NotBlank
         @Size(min = 8)
         private String newPassword;
+    }
+
+    @Data
+    public static class DeleteAccountRequest {
+        @NotBlank
+        private String password;
     }
 }

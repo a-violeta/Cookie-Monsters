@@ -4,9 +4,13 @@ import com.app.model.User;
 import com.app.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @Service
 @RequiredArgsConstructor
@@ -16,24 +20,16 @@ public class UserService implements UserUseCases {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    // Local session cache for non-HTTP (database/CLI) mode
-    private User loggedInUser = null;
-
     @Override
     @Transactional
     public User createUser(String username, String email, String password, String description) {
         if (userRepository.existsByUsername(username)) {
-            throw new IllegalArgumentException("Username is already taken");
+            throw new DuplicateResourceException("Username is already taken");
         }
         if (userRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException("Email is already taken");
+            throw new DuplicateResourceException("Email is already taken");
         }
-        User user = new User(
-                username,
-                email,
-                passwordEncoder.encode(password),
-                description
-        );
+        User user = new User(username, email, passwordEncoder.encode(password), description);
         return userRepository.save(user);
     }
 
@@ -44,27 +40,16 @@ public class UserService implements UserUseCases {
     }
 
     @Override
-    public User login(String identifier, String password) {
-        User user = userRepository.findByUsername(identifier)
-                .or(() -> userRepository.findByEmail(identifier))
-                .orElseThrow(() -> new IllegalArgumentException("Invalid username/email or password"));
-
-        if (!user.getPassword().equals(password)) {
-            throw new IllegalArgumentException("Invalid username/email or password");
+    @Transactional(readOnly = true)
+    public User getLoggedInUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
+            return null; // No user is logged in
         }
 
-        this.loggedInUser = user;
-        return user;
-    }
-
-    @Override
-    public void logout() {
-        this.loggedInUser = null;
-    }
-
-    @Override
-    public User getLoggedInUser() {
-        return this.loggedInUser;
+        //JWT filter places the username in the authentication principal
+        String username = auth.getName();
+        return findByUsername(username);
     }
 
     @Override
@@ -96,5 +81,43 @@ public class UserService implements UserUseCases {
         }
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void deleteAccount(String username, String password) {
+        User user = findByUsername(username);
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new IllegalArgumentException("Incorrect password");
+        }
+        user.setDeleted(true);
+        userRepository.save(user);
+    }
+
+    @Override
+    public User login(String identifier, String password) {
+        User user = userRepository.findByUsername(identifier)
+                .or(() -> userRepository.findByEmail(identifier))
+                .orElseThrow(() -> new IllegalArgumentException("Invalid username/email or password"));
+
+        if (user.isDeleted()) {
+            throw new IllegalArgumentException("This account has been deleted");
+        }
+
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new IllegalArgumentException("Invalid username/email or password");
+        }
+
+        // inject the user into the local spring security context for the CLI/seeddata
+        UsernamePasswordAuthenticationToken authToken =
+                new UsernamePasswordAuthenticationToken(user.getUsername(), null, new java.util.ArrayList<>());
+        SecurityContextHolder.getContext().setAuthentication(authToken);
+
+        return user;
+    }
+
+    @Override
+    public void logout() {
+        SecurityContextHolder.clearContext();
     }
 }

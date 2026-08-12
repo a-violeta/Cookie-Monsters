@@ -1,11 +1,9 @@
-package com.app.console;
+package com.app.console.core;
 
 import com.app.model.Comment;
 import com.app.model.Community;
 import com.app.model.Post;
 import com.app.model.User;
-
-import java.time.format.DateTimeFormatter;
 
 public class ConsolePrinter {
 

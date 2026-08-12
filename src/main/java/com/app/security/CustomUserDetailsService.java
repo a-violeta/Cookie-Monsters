@@ -18,12 +18,22 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // Fetch your custom User entity from the database
+        // fetch your custom User entity from the database
         User appUser = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
 
-        // Convert it to a Spring Security UserDetails object
-        // We pass an empty list of authorities (roles) for now, as we just need basic authentication
+        // reject deleted accounts here so this covers BOTH the login flow (via
+        // AuthenticationManager) AND every subsequent authenticated request, since
+        // JwtAuthenticationFilter calls this method on every request with a JWT -
+        // a still-valid token for a just-deleted account gets rejected on its very
+        // next use, not just at login
+        if (appUser.isDeleted()) {
+            throw new UsernameNotFoundException("This account has been deleted");
+        }
+
+        /*  convert it to a Spring Security UserDetails object
+            we pass an empty list of authorities (roles) for now, as we just need basic authentication
+        */
         return new org.springframework.security.core.userdetails.User(
                 appUser.getUsername(),
                 appUser.getPassword(),

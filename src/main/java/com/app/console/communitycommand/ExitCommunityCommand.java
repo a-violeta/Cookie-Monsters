@@ -1,5 +1,8 @@
-package com.app.console;
+package com.app.console.communitycommand;
 
+import com.app.console.core.Command;
+import com.app.console.core.ConsolePrinter;
+import com.app.console.core.ConsoleReader;
 import com.app.model.Community;
 import com.app.service.CommunityUseCases;
 import com.app.service.UserUseCases;
@@ -7,13 +10,13 @@ import com.app.service.UserUseCases;
 import java.util.List;
 import java.util.UUID;
 
-public class JoinCommunityCommand extends Command {
+public class ExitCommunityCommand extends Command {
 
     private final CommunityUseCases communityUseCases;
     private final UserUseCases userUseCases;
     private final ConsoleReader consoleReader;
 
-    public JoinCommunityCommand(ConsolePrinter consolePrinter, CommunityUseCases communityUseCases, UserUseCases userUseCases, ConsoleReader consoleReader) {
+    public ExitCommunityCommand(ConsolePrinter consolePrinter, CommunityUseCases communityUseCases, UserUseCases userUseCases, ConsoleReader consoleReader) {
         super(consolePrinter);
         this.communityUseCases=communityUseCases;
         this.userUseCases = userUseCases;
@@ -22,17 +25,15 @@ public class JoinCommunityCommand extends Command {
 
     @Override
     public void execute(String[] args) {
-
-        // Arguments Validations
+        // arg validation
         if (args.length > 0) {
 
             consolePrinter.printError("Too Many Arguments");
-            consolePrinter.printExplanation("join-community");
+            consolePrinter.printExplanation("exit-community");
             return;
         }
 
         try {
-            //Long communityId = Long.parseLong(args[0]);
 
             List<Community> communities = communityUseCases.listCommunities();
 
@@ -61,11 +62,11 @@ public class JoinCommunityCommand extends Command {
 
             Long userId = userUseCases.getLoggedInUser().getId();
 
-            communityUseCases.joinCommunity(communityId, userId);
-
-            consolePrinter.printSuccess("Successfully joined the community!");
-        } catch (Exception e) {
+            communityUseCases.exitCommunity(communityId, userId);
+            consolePrinter.printSuccess("Successfully exited the community!");
+        } catch (IllegalArgumentException | IllegalStateException e) {
             consolePrinter.printError(e.getMessage());
         }
+
     }
 }

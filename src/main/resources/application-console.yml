@@ -1,9 +1,8 @@
 spring:
   main:
     web-application-type: none
+
 app:
   http:
     client:
       enabled: true
-
-# the console has the bare minimum now, not even DB access

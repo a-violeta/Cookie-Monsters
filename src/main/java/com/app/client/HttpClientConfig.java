@@ -5,8 +5,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 /**
- * Configuration properties for HTTP client connections to remote API servers.
- * Properties are mapped from application.yml under 'app.http.client' prefix.
+ * configuration properties for HTTP client connections to remote API servers.
+ * properties are mapped from application.yml under 'app.http.client' prefix.
  *
  * Example configuration:
  * app:

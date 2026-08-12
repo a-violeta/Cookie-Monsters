@@ -1,55 +1,58 @@
-package com.app.console;
+package com.app.console.commentcommand;
 
+import com.app.console.core.Command;
+import com.app.console.core.ConsolePrinter;
+import com.app.console.core.ConsoleReader;
 import com.app.model.Comment;
 import com.app.model.Community;
 import com.app.model.Post;
-import com.app.model.User;
 import com.app.service.CommentUseCases;
 import com.app.service.CommunityUseCases;
+import com.app.service.PostUseCases;
 import com.app.service.UserUseCases;
 
 import java.util.List;
 import java.util.UUID;
 
-public class CreateCommentCommand extends Command {
+public class ListCommentCommand extends Command {
 
     private final CommentUseCases commentUseCases;
-    private final CommunityUseCases communityUseCases;
     private final ConsoleReader consoleReader;
+    private final CommunityUseCases communityUseCases;
     private final UserUseCases userUseCases;
+    private final PostUseCases postUseCases;
 
-    public CreateCommentCommand(ConsolePrinter consolePrinter, CommentUseCases commentUseCases, CommunityUseCases communityUseCases, ConsoleReader consoleReader, UserUseCases userUseCases){
+    ListCommentCommand(ConsolePrinter consolePrinter, CommentUseCases commentUseCases, ConsoleReader consoleReader, CommunityUseCases communityUseCases, UserUseCases userUseCases, PostUseCases postUseCases) {
         super(consolePrinter);
         this.commentUseCases = commentUseCases;
-        this.communityUseCases = communityUseCases;
         this.consoleReader = consoleReader;
+        this.communityUseCases = communityUseCases;
         this.userUseCases = userUseCases;
+        this.postUseCases = postUseCases;
     }
 
     @Override
     public void execute(String[] args) {
-
-        if (args.length >= 1) {
+        if (args.length > 0) {
             consolePrinter.printError("Too Many Arguments");
+            consolePrinter.printExplanation("list-comments");
             return;
         }
 
         try {
-            User requester = userUseCases.getLoggedInUser();
+            Long loggedInUserId = userUseCases.getLoggedInUser().getId();
+            List<Community> communities = communityUseCases.listCommunitiesByUserId(loggedInUserId);
 
-            String username = requester.getUsername();
-
-            List<Community> communities = communityUseCases.listCommunitiesByUserId(requester.getId());
-            // we needed a new method to do this
+            if (communities.isEmpty()) {
+                consolePrinter.printError("No communities found for your user!");
+                return;
+            }
 
             for (int i = 0; i < communities.size(); i++) {
-                consolePrinter.printCommunityListItem(i+1, communities.get(i));
+                consolePrinter.printCommunityListItem(i + 1, communities.get(i));
             }
 
             consolePrinter.printPrompt("Choose a community by typing its index");
-
-            // read with console
-            // and check the number chosen for validity
             String communityInput = consoleReader.readLine();
 
             int communityChosenIndex;
@@ -63,20 +66,19 @@ public class CreateCommentCommand extends Command {
                 throw new IllegalArgumentException("Index out of bounds!");
             }
 
-            Community community = communities.get(communityChosenIndex-1);
+            Community community = communities.get(communityChosenIndex - 1);
+            List<Post> posts = postUseCases.listPosts(community.getId());
 
-            //List<Post> posts = postUseCases.listPosts(community.getId());
-            List<Post> posts = communityUseCases.listCommunityPosts(community.getName());
-            // once we have the community, we take all its posts
+            if (posts.isEmpty()) {
+                consolePrinter.printError("No posts found in this community!");
+                return;
+            }
 
             for (int i = 0; i < posts.size(); i++) {
-                consolePrinter.printPostListItem(i+1, posts.get(i));
+                consolePrinter.printPostListItem(i + 1, posts.get(i));
             }
 
             consolePrinter.printPrompt("Choose a post by typing its index");
-
-            // read with console
-            // and check the number chosen for validity
             String postInput = consoleReader.readLine();
 
             int postChosenIndex;
@@ -90,18 +92,18 @@ public class CreateCommentCommand extends Command {
                 throw new IllegalArgumentException("Index out of bounds!");
             }
 
-            Post post = posts.get(postChosenIndex-1);
+            Post post = posts.get(postChosenIndex - 1);
             UUID postId = post.getId();
-            UUID parentId = null;
+            List<Comment> comments = commentUseCases.listCommentByPostId(postId, userUseCases.getLoggedInUser().getUsername());
 
-            consolePrinter.printPrompt("Type comment");
-
-            // read with console
-            String text = consoleReader.readLine();
-
-            Comment newComment = commentUseCases.addComment(text, postId, parentId,userUseCases.getLoggedInUser().getUsername());
-            consolePrinter.printSuccess("Comment successfully created!");
-            consolePrinter.displayComment(newComment);
+            consolePrinter.displayPost(post);
+            if (comments.isEmpty()) {
+                consolePrinter.printError("No comments to list!");
+                return;
+            }
+            for (Comment comment : comments) {
+                consolePrinter.displayComment(comment);
+            }
         } catch (Exception e) {
             consolePrinter.printError(e.getMessage());
         }

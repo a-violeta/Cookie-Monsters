@@ -11,4 +11,5 @@ public interface UserUseCases {
     User findByUsername(String username);
     User updateProfile(String username, String displayName, String avatarUrl);
     void changePassword(String username, String currentPassword, String newPassword);
+    void deleteAccount(String username, String password);
 }

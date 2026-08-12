@@ -1,6 +1,6 @@
-    package com.app.model;
+package com.app.model;
 
-    public enum VoteType {
-        UP,
-        DOWN
-    }
+public enum VoteType {
+    UP,
+    DOWN
+}
