@@ -12,7 +12,7 @@ import java.util.UUID;
 
 // why ids instead of objects:
 // circular references would break JSON serialization
-// CCmmunity has a list of Users, User has a list of Posts, Post has a Community ...
+// Community has a list of Users, User has a list of Posts, Post has a Community ...
 // it would leak data: a User has a password, why let that cross the wire?
 
 
@@ -25,7 +25,6 @@ public class PostDto {
     @Size(max = 300, message = "Title is too long")
     private String title;
 
-    @NotBlank(message = "Content is required")
     @Size(max = 10000, message = "Content is too long")
     private String content;
 
