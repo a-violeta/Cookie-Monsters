@@ -6,7 +6,7 @@ import com.app.console.core.ConsolePrinter;
 
 public class HelpCommand extends Command {
 
-    HelpCommand(ConsolePrinter consolePrinter) {
+    public HelpCommand(ConsolePrinter consolePrinter) {
         super(consolePrinter);
     }
 
