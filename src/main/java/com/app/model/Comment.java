@@ -45,6 +45,9 @@ public class Comment {
 
     private long score;
 
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean isDeleted = false;
+
     @Transient
     private String userVote;
 

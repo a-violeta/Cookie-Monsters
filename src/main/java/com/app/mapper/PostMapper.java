@@ -14,6 +14,8 @@ import org.mapstruct.Named;
 public interface PostMapper {
     @Mapping(target = "subreddit", source = "subreddit.name")
     @Mapping(target = "author", source = "author", qualifiedByName = "authorDisplayName")
+    @Mapping(target = "title", source = "post", qualifiedByName = "titleOrDeleted")
+    @Mapping(target = "content", source = "post", qualifiedByName = "contentOrDeleted")
     @Mapping(target = "imageUrl", source = "media.path")
     @Mapping(target = "filter", source = "media.filter")
     PostDto toDto(Post post);
@@ -28,5 +30,17 @@ public interface PostMapper {
             return null;
         }
         return author.isDeleted() ? "[deleted user]" : author.getUsername();
+    }
+
+    // soft-deleted posts stay in place (thread structure intact) but show masked
+    // content, matching real Reddit's "[deleted]" convention
+    @Named("titleOrDeleted")
+    default String titleOrDeleted(Post post) {
+        return post.isDeleted() ? "[deleted]" : post.getTitle();
+    }
+
+    @Named("contentOrDeleted")
+    default String contentOrDeleted(Post post) {
+        return post.isDeleted() ? "[deleted]" : post.getContent();
     }
 }

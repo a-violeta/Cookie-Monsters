@@ -167,11 +167,8 @@ public class CommentService implements CommentAbstract {
             throw new IllegalStateException("This comment was not created by you");
         }
 
-        Post post = comment.getPost();
-        post.setCommentCount(post.getCommentCount() - 1);
-        postRepository.save(post);
-
-        commentRepository.deleteById(commentId);
+        comment.setDeleted(true);
+        commentRepository.save(comment);
     }
 
     @Transactional
