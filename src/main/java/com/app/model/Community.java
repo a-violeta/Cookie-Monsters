@@ -23,6 +23,7 @@ public class Community {
 
     private String name;
     private String displayName;
+    @Column(length = 500)
     private String description;
     private Instant createdAt;
     private String iconUrl;

@@ -14,7 +14,7 @@ public class UserDto {
     @Pattern(regexp = "^\\S+$", message = "Spaces are not allowed")
     @NotBlank(message = "User name is required")
     @Size(min = 3, message = "User name must have at least 3 characters")
-    @Size(max = 21, message = "User name is too long")
+    @Size(max = 20, message = "User name is too long")
     // just copied requirements from CommunityName for now
     private String username;
 
@@ -22,6 +22,7 @@ public class UserDto {
     private String email;
 
     @NotBlank(message = "Password is required")
+    @Size(min = 8, message = "Password must have at least 8 characters")
     private String password;
 
     @NotBlank(message = "Description is required")
