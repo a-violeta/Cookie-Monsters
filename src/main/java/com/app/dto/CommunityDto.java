@@ -17,8 +17,11 @@ public class CommunityDto {
     @Size(max = 50, message = "Community name is too long")
     private String name;
     @NotBlank(message = "Community display name is required")
+    @Size(min = 3, message = "Display name must have at least 3 characters")
+    @Size(max = 100, message = "Display name is too long")
     private String displayName;
     @NotBlank(message = "Description is required")
+    @Size(max = 500, message = "Description is too long")
     private String description;
     private Integer memberCount;
     private Integer postCount;

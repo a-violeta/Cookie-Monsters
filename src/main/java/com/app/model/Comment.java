@@ -5,7 +5,6 @@ import lombok.*;
 import lombok.EqualsAndHashCode;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -58,7 +57,7 @@ public class Comment {
         this.post = null;
         this.createdAt = Instant.now();
         // lombok annotation @NoArgsConstructor would make createdAt = null
-        // I think it s better to use current time though
+        // I think it is better to use current time though
     }
 
     public Comment(String content, User user, Post post){

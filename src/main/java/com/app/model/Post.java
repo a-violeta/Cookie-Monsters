@@ -29,9 +29,9 @@ public class Post {
     @JoinColumn(name = "user_id")
     private User author;
 
-    @Column(length = 10000)
+    @Column(length = 300)
     private String title;
-    @Column(columnDefinition = "TEXT")
+    @Column(length = 10000)
     private String content;
     private Instant createdAt;
     private Instant updatedAt;
