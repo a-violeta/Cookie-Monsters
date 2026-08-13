@@ -25,6 +25,7 @@ public class Comment {
     @EqualsAndHashCode.Exclude
     private Comment parent;
 
+    @Column(length = 1000)
     private String content;
 
     @ManyToOne
