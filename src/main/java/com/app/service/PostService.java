@@ -196,7 +196,8 @@ public class PostService implements PostAbstract {
             throw new IllegalArgumentException("You are not the author of this post");
         }
 
-        postRepository.delete(post);
+        post.setDeleted(true);
+        postRepository.save(post);
     }
 
     @Transactional

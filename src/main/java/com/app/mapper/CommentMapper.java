@@ -20,6 +20,7 @@ public interface CommentMapper {
     @Mapping(target = "author", source = "author", qualifiedByName = "authorDisplayName")
     @Mapping(target = "postId", source = "post.id")
     @Mapping(target = "parentId", source = "parent.id")
+    @Mapping(target = "content", source = "comment", qualifiedByName = "contentOrDeleted")
     CommentDto toDto(Comment comment);
 
     // same convention as PostMapper.authorDisplayName - defensive null check plus
@@ -30,5 +31,12 @@ public interface CommentMapper {
             return null;
         }
         return author.isDeleted() ? "[deleted user]" : author.getUsername();
+    }
+
+    // soft-deleted comments stay in place (so replies underneath aren't orphaned)
+    // but show masked content, matching real Reddit's "[deleted]" convention
+    @Named("contentOrDeleted")
+    default String contentOrDeleted(Comment comment) {
+        return comment.isDeleted() ? "[deleted]" : comment.getContent();
     }
 }
