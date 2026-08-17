@@ -134,22 +134,9 @@ public class PostService implements PostAbstract {
     }
 
     @Transactional(readOnly = true)
-    public List<Post> listPosts(UUID communityId) {
-        Community subreddit = communityRepository.findById(communityId)
-                .orElseThrow(() -> new IllegalArgumentException("Community with id " + communityId + " not found"));
-
-        List<Post> posts = new ArrayList<>();
-        for (Post post : postRepository.findAll()) {
-            if (Objects.equals(post.getSubreddit(), subreddit)) {
-                posts.add(post);
-            }
-        }
-        return posts;
-    }
-
-    @Transactional(readOnly = true)
     public List<Post> listPosts(String requesterUsername) {
-        List<Post> posts = postRepository.findAll();
+
+        List<Post> posts = postRepository.findAllByIsDeletedFalse();
 
         User requester = null;
 
@@ -158,9 +145,12 @@ public class PostService implements PostAbstract {
         }
 
         final User finalRequester = requester;
+
         posts.forEach(post -> populateUserVoteStatus(post, finalRequester));
         return posts;
     }
+
+
 
     @Transactional
     public Post editPost(UUID postId, String newTitle, String newContent, String requesterUsername) {
@@ -171,7 +161,7 @@ public class PostService implements PostAbstract {
         Post post = findPostById(postId, requesterUsername);
 
         if(post.isDeleted()) {
-            return post;
+            throw new IllegalStateException("Cant edit a deleted post");
         }
 
         User requester = userRepository.findByUsername(requesterUsername)
@@ -199,14 +189,14 @@ public class PostService implements PostAbstract {
         Post post = findPostById(postId, requesterUsername);
 
         if(post.isDeleted()) {
-            throw new IllegalArgumentException("Post with id " + postId + " is already deleted");
+            throw new IllegalStateException("Post with id " + postId + " is already deleted");
         }
 
         User requester = userRepository.findByUsername(requesterUsername)
                 .orElseThrow(() -> new IllegalArgumentException("User " + requesterUsername + " not found"));
 
         if (!Objects.equals(post.getAuthor(), requester)) {
-            throw new IllegalArgumentException("You are not the author of this post");
+            throw new IllegalStateException("You are not the author of this post");
         }
 
         post.setDeleted(true);
@@ -218,7 +208,7 @@ public class PostService implements PostAbstract {
         Post post = findPostById(postId, requesterUsername);
 
         if(post.isDeleted()) {
-            return post;
+            throw new IllegalStateException("Cant vote on a deleted post");
         }
 
         User requester = userRepository.findByUsername(requesterUsername)
