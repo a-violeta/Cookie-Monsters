@@ -15,10 +15,11 @@ public class ImageFilteringService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
+    // read base URL (without filter name)
     @Value("${app.microservices.image-filtering-url}")
-    private String imageFilteringUrl;
+    private String imageFilteringMicroserviceUrl;
 
-    public MultipartFile applyGrayscale(MultipartFile originalImage) {
+    public MultipartFile applyFilter(MultipartFile originalImage, String filterName) {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -28,8 +29,11 @@ public class ImageFilteringService {
 
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
+            // build dynamic URL (e.g. http://localhost:5296/filter/sepia)
+            String dynamicUrl = imageFilteringMicroserviceUrl + "/" + filterName;
+
             ResponseEntity<byte[]> response = restTemplate.postForEntity(
-                    imageFilteringUrl,
+                    dynamicUrl,
                     requestEntity,
                     byte[].class
             );
@@ -37,7 +41,7 @@ public class ImageFilteringService {
             return new SimpleMultipartFile(
                     response.getBody(),
                     originalImage.getName(),
-                    "grayscale_" + originalImage.getOriginalFilename(),
+                    filterName + "_" + originalImage.getOriginalFilename(),
                     "image/jpeg"
             );
 
