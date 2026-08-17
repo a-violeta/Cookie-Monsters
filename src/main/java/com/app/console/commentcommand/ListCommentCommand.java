@@ -64,7 +64,7 @@ public class ListCommentCommand extends Command {
             }
 
             Community community = communities.get(communityChosenIndex - 1);
-            List<Post> posts = postAbstract.listPosts(community.getId());
+            List<Post> posts = postAbstract.listPostsBySubreddit(community.getName(),userAbstract.getLoggedInUser().getUsername());
 
             if (posts.isEmpty()) {
                 consolePrinter.printError("No posts found in this community!");

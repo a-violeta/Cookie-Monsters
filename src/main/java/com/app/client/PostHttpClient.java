@@ -5,6 +5,7 @@ import com.app.model.Community;
 import com.app.model.Post;
 import com.app.model.User;
 import com.app.response.ApiResponse;
+import com.app.service.CommunityAbstract;
 import com.app.service.PostAbstract;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +33,7 @@ public class PostHttpClient implements PostAbstract {
 
     private final RestTemplate restTemplate;
     private final HttpClientConfig clientConfig;
+    private final CommunityAbstract communityAbstract;
 
     @Override
     public void validatePostImage(MultipartFile image) {
@@ -97,19 +99,6 @@ public class PostHttpClient implements PostAbstract {
             throw new IllegalArgumentException("Post with id " + postId + " not found");
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             throw new RuntimeException("Failed to fetch post: " + e.getResponseBodyAsString(), e);
-        }
-    }
-
-    @Override
-    public List<Post> listPosts(UUID communityId) {
-        String url = clientConfig.getBaseUrl() + "/subreddits/" + communityId + "/posts";
-        try {
-            ResponseEntity<List<PostDto>> response = restTemplate.exchange(
-                    url, HttpMethod.GET, null, new ParameterizedTypeReference<>() {
-                    });
-            return response.getBody() != null ? response.getBody().stream().map(this::toPost).toList() : null;
-        } catch (HttpClientErrorException | HttpServerErrorException e) {
-            throw new RuntimeException("Failed to list posts: " + e.getResponseBodyAsString(), e);
         }
     }
 
