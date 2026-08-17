@@ -76,28 +76,44 @@ public class SeedData {
 
     private void seedPosts() {
         catPost1 = postAbstract.addPost("First post about cats", "Cats are awesome", "the_cat_lovers", ion.getUsername(), null, 1);
+
+        //attachImage(catPost1, "134110683555465878.jpg");
+
         catPost2 = postAbstract.addPost("My cat knocked over my plant again", "Third time this week. I've given up on plants.", "the_cat_lovers", anca.getUsername(), null, 1);
+
         catPost3 = postAbstract.addPost("Cat vs guitar", "She sits on the strings every single time I practice.", "the_cat_lovers", petru.getUsername(), null, 1);
+
         gamePost1 = postAbstract.addPost("New PB on my speedrun!", "Shaved off 40 seconds, finally under 2 hours.", "gamers_united", cristina.getUsername(), null, 1);
+
         gamePost2 = postAbstract.addPost("What are you all playing this weekend?", "Looking for co-op recommendations.", "gamers_united", radu.getUsername(), null, 1);
+
         bookPost1 = postAbstract.addPost("This month's pick: Project Hail Mary", "Starting Monday, discussion thread up next week.", "monthly_book_blub", elena.getUsername(), null, 1);
+
         foodPost1 = postAbstract.addPost("Made carbonara from scratch", "No cream, I promise. Recipe in comments if anyone wants it.", "foodies", radu.getUsername(), null, 1);
+
         foodPost2 = postAbstract.addPost("Best coffee spots near the office?", "Need something stronger than what the office machine makes.", "foodies", mihai.getUsername(), null, 1);
     }
 
     private void seedComments() {
         commentAbstract.addComment("So true", catPost1.getId(), null,anca.getUsername());
         commentAbstract.addComment("Yesss", catPost1.getId(), null, petru.getUsername());
+
         commentAbstract.addComment("Classic cat behavior honestly", catPost2.getId(), null, petru.getUsername());
         commentAbstract.addComment("Mine does the same, get a cactus instead", catPost2.getId(), null, ion.getUsername());
+
         commentAbstract.addComment("Lol get a cat-proof stand", catPost3.getId(), null, anca.getUsername());
+
         commentAbstract.addComment("Nice! What route did you change?", gamePost1.getId(), null, radu.getUsername());
         commentAbstract.addComment("That's insane, congrats", gamePost1.getId(), null, mihai.getUsername());
+
         commentAbstract.addComment("I'm down, what time?", gamePost2.getId(), null, cristina.getUsername());
+
         commentAbstract.addComment("Loved that one, great pick", bookPost1.getId(), null, adela.getUsername());
         commentAbstract.addComment("Ordering it today", bookPost1.getId(), null, anca.getUsername());
+
         commentAbstract.addComment("Yes please, share the recipe", foodPost1.getId(), null, mihai.getUsername());
         commentAbstract.addComment("Looks so much better than mine", foodPost1.getId(), null, cristina.getUsername());
+
         commentAbstract.addComment("Try the place two blocks from the station", foodPost2.getId(), null, petru.getUsername());
     }
 }

@@ -63,12 +63,6 @@ public class UserHttpClient implements UserAbstract {
     }
 
     @Override
-    public User createUser(String username, String email, String password, java.time.LocalDate dateOfBirth) {
-        // console seeding doesn't need age validation - unused here, same as the 3-arg overload above
-        return null;
-    }
-
-    @Override
     public User login(String username, String password) {
         String url = clientConfig.getBaseUrl() + "/auth/login";
         LoginRequest request = new LoginRequest();

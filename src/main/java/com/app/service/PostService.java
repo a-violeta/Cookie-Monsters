@@ -51,6 +51,10 @@ public class PostService implements PostAbstract {
         /*
         allow posting if you are not a member of the community
         because there is no option to join communities yet
+
+        if (subreddit.findUserById(requester.getId()) == null) {
+            throw new IllegalArgumentException("You are not a member of this community");
+        }
         */
 
         Post post = new Post();
@@ -161,11 +165,6 @@ public class PostService implements PostAbstract {
 
         Post post = findPostById(postId, requesterUsername);
 
-        // return the same post if post isDeleted so Cannot edit it
-        if (post.isDeleted()) {
-            return post;
-        }
-
         User requester = userRepository.findByUsername(requesterUsername)
                 .orElseThrow(() -> new IllegalArgumentException("User " + requesterUsername + " not found"));
 
@@ -190,11 +189,6 @@ public class PostService implements PostAbstract {
     public void deletePost(UUID postId, String requesterUsername) {
         Post post = findPostById(postId, requesterUsername);
 
-        // Throw an error if you try to delete an already deleted post
-        if (post.isDeleted()) {
-            throw new IllegalStateException("Post with id " + postId + " is already deleted");
-        }
-
         User requester = userRepository.findByUsername(requesterUsername)
                 .orElseThrow(() -> new IllegalArgumentException("User " + requesterUsername + " not found"));
 
@@ -202,19 +196,13 @@ public class PostService implements PostAbstract {
             throw new IllegalArgumentException("You are not the author of this post");
         }
 
-        // @SQLDelete on Post intercepts this and converts it into
-        // "UPDATE posts SET is_deleted = true" automatically - no manual flag flip needed
-        postRepository.delete(post);
+        post.setDeleted(true);
+        postRepository.save(post);
     }
 
     @Transactional
     public Post votePost(UUID postId, String voteType, String requesterUsername) {
         Post post = findPostById(postId, requesterUsername);
-
-        // return the same post if post isDeleted so Cannot upvote
-        if (post.isDeleted()) {
-            return post;
-        }
 
         User requester = userRepository.findByUsername(requesterUsername)
                 .orElseThrow(() -> new IllegalArgumentException("User " + requesterUsername + " not found"));

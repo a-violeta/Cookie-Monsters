@@ -31,11 +31,6 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.CONFLICT, "CONFLICT", e.getMessage(), null, request);
     }
 
-    @ExceptionHandler(com.app.service.UserTooYoungException.class)
-    public ResponseEntity<ApiResponse<Void>> handleUserTooYoung(com.app.service.UserTooYoungException e, HttpServletRequest request) {
-        return buildErrorResponse(HttpStatus.BAD_REQUEST, "VALIDATION_ERROR", e.getMessage(), null, request);
-    }
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<Void>> handleValidation(MethodArgumentNotValidException e, HttpServletRequest request) {
         List<ApiError.FieldError> details = e.getBindingResult().getFieldErrors().stream()
