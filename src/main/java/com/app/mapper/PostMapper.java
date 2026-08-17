@@ -16,8 +16,8 @@ public interface PostMapper {
     @Mapping(target = "author", source = "author", qualifiedByName = "authorDisplayName")
     @Mapping(target = "title", source = "post", qualifiedByName = "titleOrDeleted")
     @Mapping(target = "content", source = "post", qualifiedByName = "contentOrDeleted")
-    @Mapping(target = "imageUrl", source = "media.path")
-    @Mapping(target = "filter", source = "media.filter")
+    @Mapping(target = "imageUrl", source = "post", qualifiedByName = "imageUrlOrDeleted")
+    @Mapping(target = "filter", source = "post", qualifiedByName = "filterOrDeleted")
     PostDto toDto(Post post);
 
     /* defensive null check even though author is a required FK (never actually null);
@@ -42,5 +42,21 @@ public interface PostMapper {
     @Named("contentOrDeleted")
     default String contentOrDeleted(Post post) {
         return post.isDeleted() ? "[deleted]" : post.getContent();
+    }
+
+    @Named("imageUrlOrDeleted")
+    default String imageUrlOrDeleted(Post post) {
+        if (post.isDeleted() || post.getMedia() == null) {
+            return null;
+        }
+        return post.getMedia().getPath();
+    }
+
+    @Named("filterOrDeleted")
+    default Integer filterOrDeleted(Post post) {
+        if (post.isDeleted() || post.getMedia() == null) {
+            return null;
+        }
+        return post.getMedia().getFilter();
     }
 }

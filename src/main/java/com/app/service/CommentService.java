@@ -177,8 +177,9 @@ public class CommentService implements CommentAbstract {
             throw new IllegalStateException("This comment was not created by you");
         }
 
-        comment.setDeleted(true);
-        commentRepository.save(comment);
+        // @SQLDelete on Comment intercepts this and converts it into
+        // "UPDATE comments SET is_deleted = true" automatically - no manual flag flip needed
+        commentRepository.delete(comment);
     }
 
     @Transactional
