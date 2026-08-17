@@ -19,4 +19,17 @@ Thumbs.db
 
 # Environment files
 .env
-/logs/cookie-monsters.log.2026-07-30.0.gz
+logs/*.gz
+
+# SSH Keys
+*.pem
+
+# .NET Core build folders
+src/microservices/GrayscaleMicroservice/[Bb]in/
+src/microservices/GrayscaleMicroservice/[Oo]bj/
+
+# Visual Studio cache
+src/microservices/.vs/
+
+# local uploads
+uploads/

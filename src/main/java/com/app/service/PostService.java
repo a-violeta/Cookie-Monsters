@@ -24,6 +24,7 @@ public class PostService implements PostAbstract {
     private final UserRepository userRepository;
     private final PostVoteRepository postVoteRepository;
     private final ImageStorageService imageStorageService;
+    private final ImageFilteringService imageFilteringService;
 
     public void validatePostImage(MultipartFile image) {
         // size validation (max 5 MB)
@@ -77,8 +78,11 @@ public class PostService implements PostAbstract {
         if (image != null && !image.isEmpty()) {
             validatePostImage(image);
 
-            String originalFileName = image.getOriginalFilename();
+            if (filter != null && filter == 1) {
+                image = imageFilteringService.applyGrayscale(image);
+            }
 
+            String originalFileName = image.getOriginalFilename();
             String imageUrl = imageStorageService.saveImage(image);
 
             Media media = new Media(imageUrl, originalFileName, MediaType.IMAGE, filter);
