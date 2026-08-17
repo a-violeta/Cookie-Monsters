@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.hibernate.annotations.SQLDelete;
 
 import java.time.Instant;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.UUID;
 @ToString(exclude = {"subreddit", "author", "commentList", "media"})
 @Entity
 @Table(name = "posts")
+@SQLDelete(sql = "UPDATE posts SET is_deleted = true WHERE id=?")
 public class Post {
 
     @EqualsAndHashCode.Include
@@ -42,6 +44,9 @@ public class Post {
 
     private long commentCount;
 
+    // soft delete: same convention as User - keeps replies structurally intact
+    // (avoids the parent_id FK constraint failure a hard delete hits) and matches
+    // real Reddit behavior (content masked to "[deleted]", thread stays in place)
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean isDeleted = false;
 
