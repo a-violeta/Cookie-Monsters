@@ -24,6 +24,7 @@ public class PostService implements PostAbstract {
     private final UserRepository userRepository;
     private final PostVoteRepository postVoteRepository;
     private final ImageStorageService imageStorageService;
+    private final CommunityService communityService;
 
     public void validatePostImage(MultipartFile image) {
         // size validation (max 5 MB)
@@ -49,13 +50,13 @@ public class PostService implements PostAbstract {
                 .orElseThrow(() -> new IllegalArgumentException("User " + requesterUsername + " not found"));
 
         /*
-        allow posting if you are not a member of the community
-        because there is no option to join communities yet
+        when you post without being a member,
+        you are added to the community as a member
+         */
 
         if (subreddit.findUserById(requester.getId()) == null) {
-            throw new IllegalArgumentException("You are not a member of this community");
+            communityService.joinCommunity(subreddit.getId(), requester.getId());
         }
-        */
 
         Post post = new Post();
 
