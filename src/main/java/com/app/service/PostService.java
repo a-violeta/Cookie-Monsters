@@ -134,7 +134,8 @@ public class PostService implements PostAbstract {
 
     @Transactional(readOnly = true)
     public List<Post> listPosts(String requesterUsername) {
-        List<Post> posts = postRepository.findAll();
+
+        List<Post> posts = postRepository.findAllByIsDeletedFalse();
 
         User requester = null;
 
@@ -143,9 +144,12 @@ public class PostService implements PostAbstract {
         }
 
         final User finalRequester = requester;
+
         posts.forEach(post -> populateUserVoteStatus(post, finalRequester));
         return posts;
     }
+
+
 
     @Transactional
     public Post editPost(UUID postId, String newTitle, String newContent, String requesterUsername) {
