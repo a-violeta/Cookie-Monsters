@@ -54,5 +54,8 @@ jobs:
             # Stop and remove existing containers
             sudo docker compose down
             
+            # Clean up old images, stopped containers, and build cache to free up space
+            sudo docker system prune -a -f
+            
             # Rebuild the images and start the containers
             sudo docker compose up -d --build

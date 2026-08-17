@@ -40,3 +40,6 @@ services:
       dockerfile: Dockerfile
     container_name: grayscale_filter
     restart: unless-stopped
+
+volumes:
+  postgres_data:

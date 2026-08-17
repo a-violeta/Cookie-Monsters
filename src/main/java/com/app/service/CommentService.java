@@ -22,6 +22,7 @@ public class CommentService implements CommentAbstract {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final CommentVoteRepository commentVoteRepository;
+    private final CommunityService communityService;
 
     public void validateComment(String text) {
         if (text == null || text.isBlank()) {
@@ -51,6 +52,17 @@ public class CommentService implements CommentAbstract {
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("Post with id " + postId + " not found"));
+
+        /*
+        when you comment without being a member,
+        you are added to the community as a member
+         */
+
+        Community subreddit = post.getSubreddit();
+
+        if (subreddit.findUserById(author.getId()) == null) {
+            communityService.joinCommunity(subreddit.getId(), author.getId());
+        }
 
         Comment newComment = new Comment();
         newComment.setContent(text);
