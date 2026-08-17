@@ -65,6 +65,7 @@ public class DeleteCommentCommand extends Command {
 
             Community community = communities.get(communityChosenIndex-1);
 
+            //List<Post> posts = postUseCases.listPosts(community.getId());
             List<Post> posts = communityAbstract.listCommunityPosts(community.getName());
             // once we have the community, we take all its posts
 

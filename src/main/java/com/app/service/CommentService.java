@@ -154,7 +154,6 @@ public class CommentService implements CommentAbstract {
 
         Comment comment = findCommentById(commentId, requesterUsername );
 
-        // Cant edit an already Soft Deleted comment
         if (comment.isDeleted()) {
             return comment;
         }
@@ -177,9 +176,8 @@ public class CommentService implements CommentAbstract {
         // try to find this comment
         Comment comment = findCommentById(commentId,requesterUsername);
 
-        // Cant delete an already Soft Deleted comment
         if (comment.isDeleted()) {
-            throw new IllegalStateException("Comment with id " + commentId + " is already deleted");
+            throw new IllegalArgumentException("Comment with id " + commentId + " is already deleted");
         }
 
         User author = userRepository.findByUsername(requesterUsername)
@@ -189,9 +187,8 @@ public class CommentService implements CommentAbstract {
             throw new IllegalStateException("This comment was not created by you");
         }
 
-        // @SQLDelete on Comment intercepts this and converts it into
-        // "UPDATE comments SET is_deleted = true" automatically - no manual flag flip needed
-        commentRepository.delete(comment);
+        comment.setDeleted(true);
+        commentRepository.save(comment);
     }
 
     @Transactional

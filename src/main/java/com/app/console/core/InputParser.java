@@ -76,14 +76,14 @@ public class InputParser {
         commandMap.put("17", new HelpCommand(printer));
         commandMap.put("18", new LogoutCommand(printer, userAbstract));
 
-        //add Commands Classes to the map of commands
+        // Add Commands Classes to the map of commands
     }
 
     private String[] tokenizeInput(String input) {
         List<String> tokens = new ArrayList<>();
 
-        //searching for Quotations marks
-        //searching for every word without Spaces
+        // 1. Searching for Quotations marks
+        // 2. Searching for every word without Spaces
         Pattern pattern = Pattern.compile("\"([^\"]*)\"|(\\S+)");
         Matcher matcher = pattern.matcher(input);
 

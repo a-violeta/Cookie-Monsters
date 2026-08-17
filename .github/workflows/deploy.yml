@@ -19,19 +19,23 @@ jobs:
           distribution: 'corretto'
           java-version: '21'
 
-      - name: 1. Compile the project
+      - name: 1. Compile the project and prepare files
         run: |
           mvn clean package -DskipTests
           mv target/*.jar target/app.jar
           cp Dockerfile docker-compose.yml target/
+          
+          # Replicate C# directory tree structure inside target/ for transfer
+          mkdir -p target/src/microservices
+          cp -r src/microservices/GrayscaleMicroservice target/src/microservices/
 
-      - name: 2. Transfer the .jar, Dockerfile and docker-compose.yml to EC2
+      - name: 2. Transfer the .jar, Dockerfiles and microservices to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_PEM_KEY }}
-          source: "target/app.jar,target/Dockerfile,target/docker-compose.yml"
+          source: "target/app.jar,target/Dockerfile,target/docker-compose.yml,target/src"
           target: "/home/ubuntu/app"
           strip_components: 1
 

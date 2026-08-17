@@ -25,6 +25,7 @@ public class PostService implements PostAbstract {
     private final PostVoteRepository postVoteRepository;
     private final ImageStorageService imageStorageService;
     private final CommunityService communityService;
+    private final ImageFilteringService imageFilteringService;
 
     public void validatePostImage(MultipartFile image) {
         // size validation (max 5 MB)
@@ -78,8 +79,11 @@ public class PostService implements PostAbstract {
         if (image != null && !image.isEmpty()) {
             validatePostImage(image);
 
-            String originalFileName = image.getOriginalFilename();
+            if (filter != null && filter == 1) {
+                image = imageFilteringService.applyGrayscale(image);
+            }
 
+            String originalFileName = image.getOriginalFilename();
             String imageUrl = imageStorageService.saveImage(image);
 
             Media media = new Media(imageUrl, originalFileName, MediaType.IMAGE, filter);
@@ -166,8 +170,7 @@ public class PostService implements PostAbstract {
 
         Post post = findPostById(postId, requesterUsername);
 
-        // return the same post if post isDeleted so Cannot edit it
-        if (post.isDeleted()) {
+        if(post.isDeleted()) {
             return post;
         }
 
@@ -195,9 +198,8 @@ public class PostService implements PostAbstract {
     public void deletePost(UUID postId, String requesterUsername) {
         Post post = findPostById(postId, requesterUsername);
 
-        // Throw an error if you try to delete an already deleted post
-        if (post.isDeleted()) {
-            throw new IllegalStateException("Post with id " + postId + " is already deleted");
+        if(post.isDeleted()) {
+            throw new IllegalArgumentException("Post with id " + postId + " is already deleted");
         }
 
         User requester = userRepository.findByUsername(requesterUsername)
@@ -207,17 +209,15 @@ public class PostService implements PostAbstract {
             throw new IllegalArgumentException("You are not the author of this post");
         }
 
-        // @SQLDelete on Post intercepts this and converts it into
-        // "UPDATE posts SET is_deleted = true" automatically - no manual flag flip needed
-        postRepository.delete(post);
+        post.setDeleted(true);
+        postRepository.save(post);
     }
 
     @Transactional
     public Post votePost(UUID postId, String voteType, String requesterUsername) {
         Post post = findPostById(postId, requesterUsername);
 
-        // return the same post if post isDeleted so Cannot upvote
-        if (post.isDeleted()) {
+        if(post.isDeleted()) {
             return post;
         }
 

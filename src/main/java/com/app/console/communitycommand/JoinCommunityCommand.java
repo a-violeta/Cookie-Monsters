@@ -35,6 +35,8 @@ public class JoinCommunityCommand extends Command {
         }
 
         try {
+            //Long communityId = Long.parseLong(args[0]);
+
             List<Community> communities = communityAbstract.listCommunities();
 
             for (int i = 0; i < communities.size(); i++) {

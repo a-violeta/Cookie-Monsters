@@ -20,10 +20,9 @@ public interface PostMapper {
     @Mapping(target = "filter", source = "post", qualifiedByName = "filterOrDeleted")
     PostDto toDto(Post post);
 
-    /* defensive null check even though author is a required FK (never actually null);
-    the real case this handles is a soft-deleted author - row still exists, but we
-    don't want to keep showing their real username on old posts/comments
-     */
+    // defensive null check even though author is a required FK (never actually null);
+    // the real case this handles is a soft-deleted author - row still exists, but we
+    // don't want to keep showing their real username on old posts/comments
     @Named("authorDisplayName")
     default String authorDisplayName(User author) {
         if (author == null) {
@@ -44,6 +43,8 @@ public interface PostMapper {
         return post.isDeleted() ? "[deleted]" : post.getContent();
     }
 
+    // same masking as title/content - a deleted post's image shouldn't stay
+    // publicly viewable just because title/content are hidden
     @Named("imageUrlOrDeleted")
     default String imageUrlOrDeleted(Post post) {
         if (post.isDeleted() || post.getMedia() == null) {
