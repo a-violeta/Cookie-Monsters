@@ -33,7 +33,6 @@ public class PostHttpClient implements PostAbstract {
 
     private final RestTemplate restTemplate;
     private final HttpClientConfig clientConfig;
-    private final CommunityAbstract communityAbstract;
 
     @Override
     public void validatePostImage(MultipartFile image) {

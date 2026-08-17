@@ -1,6 +1,5 @@
 package com.app.service;
 
-import ch.qos.logback.classic.spi.IThrowableProxy;
 import com.app.model.*;
 import com.app.repository.*;
 import lombok.RequiredArgsConstructor;
