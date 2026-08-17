@@ -14,8 +14,8 @@ public class JwtUtil {
     private final String SECRET_STRING = "CookieMonstersSuperSecretKeyMustBeVeryLong2026";
     private final SecretKey key = Keys.hmacShaKeyFor(SECRET_STRING.getBytes());
 
-    // token validity: 24 hours idk i think it should change
-    private final long EXPIRATION_TIME = 86400000L;
+    // token validity was 24h i changed it to 10 mins
+    private final long EXPIRATION_TIME = 600000L;
 
     public String generateToken(String username) {
         return Jwts.builder()

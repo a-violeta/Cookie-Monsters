@@ -154,6 +154,11 @@ public class CommentService implements CommentAbstract {
 
         Comment comment = findCommentById(commentId, requesterUsername );
 
+        // Cant edit an already Soft Deleted comment
+        if (comment.isDeleted()) {
+            return comment;
+        }
+
         User author = userRepository.findByUsername(requesterUsername)
                 .orElseThrow(() -> new IllegalArgumentException("User " + requesterUsername + " user not found "));
 
@@ -172,6 +177,11 @@ public class CommentService implements CommentAbstract {
         // try to find this comment
         Comment comment = findCommentById(commentId,requesterUsername);
 
+        // Cant delete an already Soft Deleted comment
+        if (comment.isDeleted()) {
+            throw new IllegalStateException("Comment with id " + commentId + " is already deleted");
+        }
+
         User author = userRepository.findByUsername(requesterUsername)
                 .orElseThrow(() -> new IllegalStateException("Authenticated user not found"));
 
@@ -179,14 +189,19 @@ public class CommentService implements CommentAbstract {
             throw new IllegalStateException("This comment was not created by you");
         }
 
-        comment.setDeleted(true);
-        commentRepository.save(comment);
+        // @SQLDelete on Comment intercepts this and converts it into
+        // "UPDATE comments SET is_deleted = true" automatically - no manual flag flip needed
+        commentRepository.delete(comment);
     }
 
     @Transactional
     public Comment voteComment(UUID id, String voteType, String requesterUsername) {
 
         Comment comment = findCommentById(id,requesterUsername);
+
+        if (comment.isDeleted()) {
+            return comment;
+        }
 
         User requester = userRepository.findByUsername(requesterUsername)
                 .orElseThrow(() -> new IllegalArgumentException("User " + requesterUsername + " not found"));
