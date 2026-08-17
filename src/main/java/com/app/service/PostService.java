@@ -170,7 +170,7 @@ public class PostService implements PostAbstract {
         Post post = findPostById(postId, requesterUsername);
 
         if(post.isDeleted()) {
-            return post;
+            throw new IllegalStateException("Cant edit a deleted post");
         }
 
         User requester = userRepository.findByUsername(requesterUsername)
@@ -198,14 +198,14 @@ public class PostService implements PostAbstract {
         Post post = findPostById(postId, requesterUsername);
 
         if(post.isDeleted()) {
-            throw new IllegalArgumentException("Post with id " + postId + " is already deleted");
+            throw new IllegalStateException("Post with id " + postId + " is already deleted");
         }
 
         User requester = userRepository.findByUsername(requesterUsername)
                 .orElseThrow(() -> new IllegalArgumentException("User " + requesterUsername + " not found"));
 
         if (!Objects.equals(post.getAuthor(), requester)) {
-            throw new IllegalArgumentException("You are not the author of this post");
+            throw new IllegalStateException("You are not the author of this post");
         }
 
         post.setDeleted(true);
@@ -217,7 +217,7 @@ public class PostService implements PostAbstract {
         Post post = findPostById(postId, requesterUsername);
 
         if(post.isDeleted()) {
-            return post;
+            throw new IllegalStateException("Cant vote on a deleted post");
         }
 
         User requester = userRepository.findByUsername(requesterUsername)

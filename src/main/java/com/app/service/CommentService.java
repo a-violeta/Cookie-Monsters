@@ -1,5 +1,6 @@
 package com.app.service;
 
+import ch.qos.logback.classic.spi.IThrowableProxy;
 import com.app.model.*;
 import com.app.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -143,7 +144,7 @@ public class CommentService implements CommentAbstract {
         Comment comment = findCommentById(commentId, requesterUsername );
 
         if (comment.isDeleted()) {
-            return comment;
+            throw new IllegalStateException("Cannot edit a deleted comment");
         }
 
         User author = userRepository.findByUsername(requesterUsername)
@@ -165,14 +166,14 @@ public class CommentService implements CommentAbstract {
         Comment comment = findCommentById(commentId,requesterUsername);
 
         if (comment.isDeleted()) {
-            throw new IllegalArgumentException("Comment with id " + commentId + " is already deleted");
+            throw new IllegalStateException("Comment with id " + commentId + " is already deleted");
         }
 
         User author = userRepository.findByUsername(requesterUsername)
                 .orElseThrow(() -> new IllegalStateException("Authenticated user not found"));
 
         if (!Objects.equals(comment.getAuthor(), author)) {
-            throw new IllegalStateException("This comment was not created by you");
+            throw new IllegalStateException("This comment was not created by " + author);
         }
 
         comment.setDeleted(true);
@@ -185,7 +186,7 @@ public class CommentService implements CommentAbstract {
         Comment comment = findCommentById(id,requesterUsername);
 
         if (comment.isDeleted()) {
-            return comment;
+            throw new IllegalStateException("Cannot vote on a deleted comment");
         }
 
         User requester = userRepository.findByUsername(requesterUsername)
