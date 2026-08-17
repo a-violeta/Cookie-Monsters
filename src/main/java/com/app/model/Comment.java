@@ -51,7 +51,7 @@ public class Comment {
     @Transient
     private String userVote;
 
-    @OneToMany(mappedBy = "parent")
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> replies;
 
     public Comment(){
