@@ -27,7 +27,7 @@ jobs:
           
           # Replicate C# directory tree structure inside target/ for transfer
           mkdir -p target/src/microservices
-          cp -r src/microservices/GrayscaleMicroservice target/src/microservices/
+          cp -r src/microservices/ImageFilteringMicroservice target/src/microservices/
 
       - name: 2. Transfer the .jar, Dockerfiles and microservices to EC2
         uses: appleboy/scp-action@v0.1.7

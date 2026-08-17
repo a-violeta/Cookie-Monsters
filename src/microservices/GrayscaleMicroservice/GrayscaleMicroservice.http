@@ -1,6 +1,0 @@
-@GrayscaleMicroservice_HostAddress = http://localhost:5296
-
-GET {{GrayscaleMicroservice_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
