@@ -5,7 +5,7 @@ using SixLabors.ImageSharp.Formats.Jpeg;
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
-app.MapPost("/grayscale", async (IFormFile file) =>
+app.MapPost("/filter", async (IFormFile file) =>
 {
     if (file == null || file.Length == 0)
         return Results.BadRequest("No image was found");

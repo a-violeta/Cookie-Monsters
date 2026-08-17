@@ -15,8 +15,8 @@ public class ImageFilteringService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    @Value("${app.microservices.grayscale-url}")
-    private String grayscaleMicroserviceUrl;
+    @Value("${app.microservices.image-filtering-url}")
+    private String imageFilteringUrl;
 
     public MultipartFile applyGrayscale(MultipartFile originalImage) {
         try {
@@ -29,7 +29,7 @@ public class ImageFilteringService {
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
             ResponseEntity<byte[]> response = restTemplate.postForEntity(
-                    grayscaleMicroserviceUrl,
+                    imageFilteringUrl,
                     requestEntity,
                     byte[].class
             );
@@ -46,7 +46,7 @@ public class ImageFilteringService {
             throw new IllegalArgumentException(errorMessageFromCSharp);
 
         } catch (Exception e) {
-            throw new RuntimeException("Failed to communicate with Grayscale service", e);
+            throw new RuntimeException("Failed to communicate with image filtering service", e);
         }
     }
 }
