@@ -10,7 +10,6 @@ public interface PostAbstract {
     void validatePostImage(MultipartFile image);
     Post addPost(String title, String content, String subreddit, String requesterUsername, MultipartFile image, Integer filter);
     void deletePost(UUID postId, String requesterUsername);
-    List<Post> listPosts(UUID communityId);
     List<Post> listPosts(String requesterUsername);
     Post findPostById(UUID postId, String requesterUsername);
     Post editPost(UUID postId, String newTitle, String newContent, String requesterUsername);

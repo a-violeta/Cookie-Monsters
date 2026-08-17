@@ -10,5 +10,5 @@ public interface PostRepository {
     List<Post> findBySubredditName(String subredditName);
     Post save(Post post);
     void delete(Post post);
-    List<Post> findAll();
+    List<Post> findAllByIsDeletedFalse();
 }

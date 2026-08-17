@@ -101,19 +101,6 @@ public class PostHttpClient implements PostAbstract {
     }
 
     @Override
-    public List<Post> listPosts(UUID communityId) {
-        String url = clientConfig.getBaseUrl() + "/subreddits/" + communityId + "/posts";
-        try {
-            ResponseEntity<List<PostDto>> response = restTemplate.exchange(
-                    url, HttpMethod.GET, null, new ParameterizedTypeReference<>() {
-                    });
-            return response.getBody() != null ? response.getBody().stream().map(this::toPost).toList() : null;
-        } catch (HttpClientErrorException | HttpServerErrorException e) {
-            throw new RuntimeException("Failed to list posts: " + e.getResponseBodyAsString(), e);
-        }
-    }
-
-    @Override
     public List<Post> listPosts(String requesterUsername) {
         String url = clientConfig.getBaseUrl() + "/posts";
         try {
