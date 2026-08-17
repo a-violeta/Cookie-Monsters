@@ -1,4 +1,4 @@
-package com.app.controller;
+package com.app.exception;
 
 import com.app.response.ApiError;
 import com.app.response.ApiResponse;
@@ -26,8 +26,8 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.CONFLICT, "CONFLICT", e.getMessage(), null, request);
     }
 
-    @ExceptionHandler(com.app.service.DuplicateResourceException.class)
-    public ResponseEntity<ApiResponse<Void>> handleDuplicateResource(com.app.service.DuplicateResourceException e, HttpServletRequest request) {
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<ApiResponse<Void>> handleDuplicateResource(DuplicateResourceException e, HttpServletRequest request) {
         return buildErrorResponse(HttpStatus.CONFLICT, "CONFLICT", e.getMessage(), null, request);
     }
 

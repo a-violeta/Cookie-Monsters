@@ -1,4 +1,4 @@
-package com.app.service;
+package com.app.exception;
 
 /**
  * Thrown when a registration/creation would collide with an existing, unique value
