@@ -39,12 +39,12 @@ public class CommentHttpClient implements CommentAbstract {
     @Override
     public Comment addComment(String text, UUID postId, UUID parentId, String requesterUsername) {
         validateComment(text);
-        // matches CommentController: POST /posts/{postId}/comments - postId is a path
-        // variable there, not a body field, and author is derived from the JWT, not sent
-        String url = clientConfig.getBaseUrl() + "/posts/" + postId + "/comments";
+        String url = clientConfig.getBaseUrl() + "/api/comments";
 
         CommentDto request = new CommentDto();
         request.setContent(text);
+        request.setAuthor(requesterUsername);
+        request.setPostId(postId);
         request.setParentId(parentId);
 
         try {
@@ -58,8 +58,7 @@ public class CommentHttpClient implements CommentAbstract {
 
     @Override
     public Comment findCommentById(UUID commentId, String requesterUsername) {
-        // matches CommentController: GET /comments/{id}
-        String url = clientConfig.getBaseUrl() + "/comments/" + commentId;
+        String url = clientConfig.getBaseUrl() + "/api/comments/" + commentId;
         try {
             return toComment(restTemplate.getForObject(url, CommentDto.class));
         } catch (HttpClientErrorException.NotFound e) {
@@ -72,8 +71,7 @@ public class CommentHttpClient implements CommentAbstract {
     @Override
     public Comment editComment(UUID commentId, String newText, String requesterUsername) {
 
-        // matches CommentController: PUT /comments/{id}
-        String url = clientConfig.getBaseUrl() + "/comments/" + commentId;
+        String url = clientConfig.getBaseUrl() + "/api/comments/" + commentId;
 
         CommentDto request = new CommentDto();
         request.setContent(newText);
@@ -94,10 +92,7 @@ public class CommentHttpClient implements CommentAbstract {
 
     @Override
     public void removeComment(UUID commentId, String requesterUsername) {
-        // matches CommentController: DELETE /comments/{id}
-        // (this was hitting the wrong path - "/api/comments/{id}" doesn't exist on the
-        // server, so every console delete 404'd)
-        String url = clientConfig.getBaseUrl() + "/comments/" + commentId;
+        String url = clientConfig.getBaseUrl() + "/api/comments/" + commentId;
         try {
             restTemplate.delete(url);
         } catch (HttpClientErrorException | HttpServerErrorException e) {
@@ -107,8 +102,7 @@ public class CommentHttpClient implements CommentAbstract {
 
     @Override
     public List<Comment> listCommentByPostId(UUID postId, String requesterUsername) {
-        // matches CommentController: GET /posts/{id}/comments
-        String url = clientConfig.getBaseUrl() + "/posts/" + postId + "/comments";
+        String url = clientConfig.getBaseUrl() + "/api/comments/post/" + postId;
         try {
             ResponseEntity<List<CommentDto>> response = restTemplate.exchange(
                     url, HttpMethod.GET, null, new ParameterizedTypeReference<>() {

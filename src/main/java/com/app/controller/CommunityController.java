@@ -36,6 +36,13 @@ public class CommunityController {
         return ResponseEntity.ok(ApiResponse.ok(communityMapper.toDto(created)));
     }
 
+    /*
+    @GetMapping
+    public ResponseEntity<List<CommunityDto>> listCommunities() {
+        return ResponseEntity.ok(communityService.listCommunities().stream().map(communityMapper::toDto).toList());
+    }
+    */
+
     @GetMapping
     public ResponseEntity<ApiResponse<List<CommunityDto>>> listCommunities() {
         List<CommunityDto> dtos = communityService.listCommunities().stream()
@@ -46,6 +53,12 @@ public class CommunityController {
 
     // it has the same path as find community by name: /subreddits/{parameter}
     // can't distinguish by parameter alone
+    /*
+    @GetMapping("/{communityId}")
+    public ResponseEntity<CommunityDto> getCommunity(@PathVariable long communityId) {
+        return ResponseEntity.ok(communityMapper.toDto(communityService.findCommunityById(communityId)));
+    }
+    */
 
     @GetMapping("/{name}")
     public ResponseEntity<ApiResponse<CommunityDto>> getCommunityByName(@PathVariable String name) {

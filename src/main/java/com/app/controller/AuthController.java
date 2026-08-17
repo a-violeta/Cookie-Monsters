@@ -27,7 +27,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<AuthResponseDto>> register(@Valid @RequestBody RegisterRequest request) {
-        User user = userService.createUser(request.getUsername(), request.getEmail(), request.getPassword(), request.getDateOfBirth());
+        User user = userService.createUser(request.getUsername(), request.getEmail(), request.getPassword());
 
         String token = jwtUtil.generateToken(user.getUsername());
         asyncLogger.logInfo("New user registered: " + user.getUsername());

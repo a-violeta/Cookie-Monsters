@@ -14,16 +14,16 @@ public class JwtUtil {
     private final String SECRET_STRING = "CookieMonstersSuperSecretKeyMustBeVeryLong2026";
     private final SecretKey key = Keys.hmacShaKeyFor(SECRET_STRING.getBytes());
 
-    // token validity was 24h i changed it to 10 mins
-    private final long EXPIRATION_TIME = 600000L;
+    // token validity: 24 hours idk i think it should change
+    private final long EXPIRATION_TIME = 86400000L;
 
     public String generateToken(String username) {
         return Jwts.builder()
-                    .subject(username)
-                    .issuedAt(new Date(System.currentTimeMillis()))
-                    .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                    .signWith(key)
-                    .compact();
+                .subject(username)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .signWith(key)
+                .compact();
     }
 
     public String extractUsername(String token) {

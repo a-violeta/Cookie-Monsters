@@ -3,10 +3,8 @@ package com.app.model;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.EqualsAndHashCode;
-import org.hibernate.annotations.SQLDelete;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,7 +13,6 @@ import java.util.UUID;
 @ToString(exclude = {"author", "post","parent"})
 @Entity
 @Table(name = "comments")
-@SQLDelete(sql = "UPDATE comments SET is_deleted = true WHERE id=?")
 public class Comment {
 
     @Id // PK of the table
@@ -48,9 +45,6 @@ public class Comment {
 
     private long score;
 
-    // soft delete: avoids the parent_id FK constraint failure a hard delete hits
-    // when a comment has replies - content gets masked to "[deleted]" instead,
-    // and the comment stays in place so replies underneath aren't orphaned
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean isDeleted = false;
 
@@ -66,7 +60,7 @@ public class Comment {
         this.post = null;
         this.createdAt = Instant.now();
         // lombok annotation @NoArgsConstructor would make createdAt = null
-        // I think it s better to use current time though
+        // I think it is better to use current time though
     }
 
     public Comment(String content, User user, Post post){
