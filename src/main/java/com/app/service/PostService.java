@@ -196,8 +196,9 @@ public class PostService implements PostAbstract {
             throw new IllegalArgumentException("You are not the author of this post");
         }
 
-        post.setDeleted(true);
-        postRepository.save(post);
+        // @SQLDelete on Post intercepts this and converts it into
+        // "UPDATE posts SET is_deleted = true" automatically - no manual flag flip needed
+        postRepository.delete(post);
     }
 
     @Transactional

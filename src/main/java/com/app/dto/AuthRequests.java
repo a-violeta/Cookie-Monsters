@@ -21,6 +21,10 @@ public class AuthRequests {
         @NotBlank
         @Size(min = 8)
         private String password;
+
+        // optional - not part of the current API spec, so omitting it must stay
+        // valid. When provided, UserService enforces a minimum age.
+        private java.time.LocalDate dateOfBirth;
     }
 
     @Data
