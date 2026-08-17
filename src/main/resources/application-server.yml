@@ -13,6 +13,10 @@ spring:
     show-sql: true
 
 app:
+  microservices:
+    # reads variable from docker-compose.yml
+    grayscale-url: ${APP_MICROSERVICES_GRAYSCALE_URL:http://grayscale-service:8080/grayscale}
+
   storage:
     s3:
       enabled: true # uploads on Amazon S3
