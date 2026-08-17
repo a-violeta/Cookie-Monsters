@@ -1,6 +1,5 @@
 package com.app.repository;
 
-import com.app.model.Comment;
 import com.app.model.Post;
 import java.util.List;
 import java.util.Optional;
