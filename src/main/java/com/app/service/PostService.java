@@ -165,6 +165,10 @@ public class PostService implements PostAbstract {
 
         Post post = findPostById(postId, requesterUsername);
 
+        if(post.isDeleted()) {
+            return post;
+        }
+
         User requester = userRepository.findByUsername(requesterUsername)
                 .orElseThrow(() -> new IllegalArgumentException("User " + requesterUsername + " not found"));
 
@@ -189,6 +193,10 @@ public class PostService implements PostAbstract {
     public void deletePost(UUID postId, String requesterUsername) {
         Post post = findPostById(postId, requesterUsername);
 
+        if(post.isDeleted()) {
+            throw new IllegalArgumentException("Post with id " + postId + " is already deleted");
+        }
+
         User requester = userRepository.findByUsername(requesterUsername)
                 .orElseThrow(() -> new IllegalArgumentException("User " + requesterUsername + " not found"));
 
@@ -203,6 +211,10 @@ public class PostService implements PostAbstract {
     @Transactional
     public Post votePost(UUID postId, String voteType, String requesterUsername) {
         Post post = findPostById(postId, requesterUsername);
+
+        if(post.isDeleted()) {
+            return post;
+        }
 
         User requester = userRepository.findByUsername(requesterUsername)
                 .orElseThrow(() -> new IllegalArgumentException("User " + requesterUsername + " not found"));

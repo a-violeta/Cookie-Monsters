@@ -142,6 +142,10 @@ public class CommentService implements CommentAbstract {
 
         Comment comment = findCommentById(commentId, requesterUsername );
 
+        if (comment.isDeleted()) {
+            return comment;
+        }
+
         User author = userRepository.findByUsername(requesterUsername)
                 .orElseThrow(() -> new IllegalArgumentException("User " + requesterUsername + " user not found "));
 
@@ -160,6 +164,10 @@ public class CommentService implements CommentAbstract {
         // try to find this comment
         Comment comment = findCommentById(commentId,requesterUsername);
 
+        if (comment.isDeleted()) {
+            throw new IllegalArgumentException("Comment with id " + commentId + " is already deleted");
+        }
+
         User author = userRepository.findByUsername(requesterUsername)
                 .orElseThrow(() -> new IllegalStateException("Authenticated user not found"));
 
@@ -175,6 +183,10 @@ public class CommentService implements CommentAbstract {
     public Comment voteComment(UUID id, String voteType, String requesterUsername) {
 
         Comment comment = findCommentById(id,requesterUsername);
+
+        if (comment.isDeleted()) {
+            return comment;
+        }
 
         User requester = userRepository.findByUsername(requesterUsername)
                 .orElseThrow(() -> new IllegalArgumentException("User " + requesterUsername + " not found"));
