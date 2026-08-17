@@ -5,7 +5,6 @@ import com.app.model.Community;
 import com.app.model.Post;
 import com.app.model.User;
 import com.app.response.ApiResponse;
-import com.app.service.CommunityAbstract;
 import com.app.service.PostAbstract;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
