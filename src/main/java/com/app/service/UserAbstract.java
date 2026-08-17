@@ -5,6 +5,7 @@ import com.app.model.User;
 public interface UserAbstract {
     User createUser(String username, String email, String password, String description);
     User createUser(String username, String email, String password);
+    User createUser(String username, String email, String password, java.time.LocalDate dateOfBirth);
     User login(String identifier, String password);
     void logout();
     User getLoggedInUser();
