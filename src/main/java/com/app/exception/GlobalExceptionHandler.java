@@ -2,6 +2,7 @@ package com.app.exception;
 
 import com.app.response.ApiError;
 import com.app.response.ApiResponse;
+import com.app.service.AsyncLoggerService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,12 @@ import java.util.List;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private final AsyncLoggerService asyncLoggerService;
+
+    public GlobalExceptionHandler(AsyncLoggerService asyncLoggerService) {
+        this.asyncLoggerService = asyncLoggerService;
+    }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiResponse<Void>> handleIllegalArgument(IllegalArgumentException e, HttpServletRequest request) {
@@ -48,6 +55,11 @@ public class GlobalExceptionHandler {
 
     private ResponseEntity<ApiResponse<Void>> buildErrorResponse(
             HttpStatus status, String code, String message, List<ApiError.FieldError> details, HttpServletRequest request) {
+
+        // every exception handler above funnels through here, so this is the one spot
+        // that needs a logError() call to capture all of them
+        asyncLoggerService.logError(String.format("%s %s -> [%d %s] %s",
+                request.getMethod(), request.getRequestURI(), status.value(), code, message));
 
         ApiResponse<Void> response = new ApiResponse<>();
         response.setSuccess(false);
