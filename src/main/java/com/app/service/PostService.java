@@ -79,8 +79,16 @@ public class PostService implements PostAbstract {
         if (image != null && !image.isEmpty()) {
             validatePostImage(image);
 
-            if (filter != null && filter == 1) {
-                image = imageFilteringService.applyGrayscale(image);
+            if (filter != null && filter > 0) {
+                String filterName = switch (filter) {
+                    case 1 -> "grayscale";
+                    case 2 -> "sepia";
+                    case 3 -> "invert";
+                    default -> throw new IllegalArgumentException("Unknown filter ID selected");
+                };
+
+                // apply corresponding filter by sending the filter name
+                image = imageFilteringService.applyFilter(image, filterName);
             }
 
             String originalFileName = image.getOriginalFilename();

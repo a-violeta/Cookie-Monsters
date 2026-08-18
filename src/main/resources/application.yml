@@ -16,7 +16,7 @@ app:
       read-timeout: 10000
 
   microservices:
-    grayscale-url: http://localhost:5296/grayscale
+    image-filtering-url: http://localhost:5296/filter
 
   storage:
     s3:

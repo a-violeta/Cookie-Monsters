@@ -5,26 +5,40 @@ using SixLabors.ImageSharp.Formats.Jpeg;
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
-app.MapPost("/grayscale", async (IFormFile file) =>
+// dynamic route which accepts filter name as URL parameter
+app.MapPost("/filter/{filterName}", async (string filterName, IFormFile file) =>
 {
     if (file == null || file.Length == 0)
         return Results.BadRequest("No image was found");
 
     try
     {
-        // Read Input File
+        // read input file
         using var stream = file.OpenReadStream();
         using var image = await Image.LoadAsync(stream);
 
-        // Apply the filter to the image
-        image.Mutate(x => x.Grayscale());
+        // apply the filter based on the URL parameter
+        switch (filterName.ToLower())
+        {
+            case "grayscale":
+                image.Mutate(x => x.Grayscale());
+                break;
+            case "sepia":
+                image.Mutate(x => x.Sepia());
+                break;
+            case "invert":
+                image.Mutate(x => x.Invert());
+                break;
+            default:
+                return Results.BadRequest($"Filter '{filterName}' is not supported");
+        }
 
-        // Save in Ram memory for sending
+        // save in memory for sending
         var outStream = new MemoryStream();
         await image.SaveAsync(outStream, new JpegEncoder());
         outStream.Position = 0;
 
-        // Send back the filtered image
+        // send back the filtered image
         return Results.File(outStream, "image/jpeg", "result.jpg");
     }
     catch (UnknownImageFormatException)

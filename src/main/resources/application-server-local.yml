@@ -1,0 +1,26 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/mydb
+    username: postgres
+    password: ${POSTGRES_PASSWORD}
+    driverClassName: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+
+app:
+  microservices:
+    grayscale-url: http://localhost:5296/grayscale
+
+  storage:
+    s3:
+      enabled: false
+
+    local:
+      dir: uploads/
+      base-url: http://localhost:8080/uploads/

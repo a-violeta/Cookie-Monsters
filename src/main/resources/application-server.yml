@@ -15,7 +15,7 @@ spring:
 app:
   microservices:
     # reads variable from docker-compose.yml
-    grayscale-url: ${APP_MICROSERVICES_GRAYSCALE_URL:http://grayscale-service:8080/grayscale}
+    image-filtering-url: ${APP_MICROSERVICES_IMAGEFILTERING_URL:http://image-filtering-service:8080/filter}
 
   storage:
     s3:
