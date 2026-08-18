@@ -8,7 +8,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(exclude = {"author", "post","parent"})
 @Entity

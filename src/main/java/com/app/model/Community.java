@@ -1,15 +1,14 @@
 package com.app.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(exclude = {"communityUsers", "communityPosts"})
 @Entity
@@ -37,7 +36,7 @@ public class Community {
     private List<User> communityUsers;
 
     // fixed mappedBy to match the exact field name 'subreddit' from the Post entity
-    @OneToMany(mappedBy = "subreddit", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "subreddit", cascade = CascadeType.REMOVE)
     // cascade: whatever operation happens to a Community, propagate that same operation to all the Posts in its posts list automatically
     // consequence: deleting a Community also deletes all their Posts
     private List<Post> communityPosts;
