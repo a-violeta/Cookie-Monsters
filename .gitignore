@@ -25,8 +25,8 @@ logs/*.gz
 *.pem
 
 # .NET Core build folders
-src/microservices/GrayscaleMicroservice/[Bb]in/
-src/microservices/GrayscaleMicroservice/[Oo]bj/
+src/microservices/ImageFilteringMicroservice/[Bb]in/
+src/microservices/ImageFilteringMicroservice/[Oo]bj/
 
 # Visual Studio cache
 src/microservices/.vs/

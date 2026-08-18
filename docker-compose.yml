@@ -11,11 +11,11 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/mydb
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
-      APP_MICROSERVICES_GRAYSCALE_URL: http://grayscale-service:8080/grayscale
+      APP_MICROSERVICES_IMAGEFILTERING_URL: http://image-filtering-service:8080/filter
     depends_on:
       db:
         condition: service_healthy
-      grayscale-service:
+      image-filtering-service:
         condition: service_started
 
   db:
@@ -34,11 +34,11 @@ services:
       timeout: 5s
       retries: 5
 
-  grayscale-service:
+  image-filtering-service:
     build:
-      context: ./src/microservices/GrayscaleMicroservice
+      context: src/microservices/ImageFilteringMicroservice
       dockerfile: Dockerfile
-    container_name: grayscale_filter
+    container_name: image_filtering_service
     restart: unless-stopped
 
 volumes:
