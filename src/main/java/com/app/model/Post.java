@@ -1,7 +1,8 @@
 package com.app.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
@@ -9,7 +10,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(exclude = {"subreddit", "author", "commentList", "media"})
 @Entity

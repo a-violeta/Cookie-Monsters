@@ -1,13 +1,15 @@
 package com.app.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(exclude = {"author", "comment"})
 @Entity
