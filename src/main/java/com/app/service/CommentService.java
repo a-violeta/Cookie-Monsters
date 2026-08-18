@@ -18,9 +18,6 @@ import java.util.UUID;
 @ConditionalOnProperty(name = "app.http.client.enabled", havingValue = "false", matchIfMissing = true)
 public class CommentService implements CommentAbstract {
 
-    @jakarta.persistence.PersistenceContext
-    private jakarta.persistence.EntityManager entityManager;
-
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final PostRepository postRepository;

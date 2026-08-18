@@ -61,19 +61,6 @@ public class Community {
         this.communityPosts = communityPosts;
     }
 
-    // changed long to UUID to match Post ID type
-    public Post findPostById(UUID postId) {
-        // if there are any posts at all, we search
-        if (this.getCommunityPosts() != null && !this.getCommunityPosts().isEmpty()) {
-            for (Post p : this.getCommunityPosts()) {
-                if (p.getId().equals(postId)) { // proper object comparison for UUID
-                    return p;
-                }
-            }
-        }
-        return null;
-    }
-
     // changed parameter to Long object wrapper to use .equals() safely
     public User findUserById(Long userId) {
         // if there are any users at all, we search
