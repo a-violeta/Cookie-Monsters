@@ -54,7 +54,7 @@ public class AsyncLoggerService {
     }
 
     private void writeLog(String message) {
-        System.out.println(message + " | (Handled by " + Thread.currentThread().getName() + ")");
+        System.out.println(message);
     }
 
     @PreDestroy
