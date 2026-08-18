@@ -5,6 +5,7 @@ import com.app.dto.PostUpdateRequest;
 import com.app.mapper.PostMapper;
 import com.app.model.Post;
 import com.app.response.ApiResponse;
+import com.app.service.AsyncLoggerService;
 import com.app.service.PostAbstract;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ public class PostController {
 
     private final PostAbstract postService;
     private final PostMapper postMapper;
+    private final AsyncLoggerService asyncLogger;
 
     @GetMapping
     public ApiResponse<List<PostDto>> listAllPosts(@RequestParam(required = false) String subreddit, Authentication authentication) {
@@ -59,6 +61,7 @@ public class PostController {
                 dto.getImage(),
                 dto.getFilter()
         );
+        asyncLogger.logInfo("Post created: " + created.getId() + " by " + authentication.getName());
         return ApiResponse.ok(postMapper.toDto(created));
     }
 
@@ -66,12 +69,14 @@ public class PostController {
     public ApiResponse<PostDto> editPost(@PathVariable UUID id, @Valid @RequestBody PostUpdateRequest dto, Authentication authentication) {
         // authorship check is in PostUseCases
         Post updated = postService.editPost(id, dto.getTitle(), dto.getContent(), authentication.getName());
+        asyncLogger.logInfo("Post edited: " + id + " by " + authentication.getName());
         return ApiResponse.ok(postMapper.toDto(updated));
     }
 
     @DeleteMapping("/{id}")
     public ApiResponse<Void> deletePost(@PathVariable UUID id, Authentication authentication) {
         postService.deletePost(id, authentication.getName());
+        asyncLogger.logInfo("Post deleted: " + id + " by " + authentication.getName());
         return ApiResponse.message("The post was deleted successfully");
     }
 
@@ -79,6 +84,7 @@ public class PostController {
     public ApiResponse<PostDto> votePost(@PathVariable UUID id, @RequestBody Map<String, String> requestBody, Authentication authentication) {
         String voteType = requestBody.get("voteType");
         Post updated = postService.votePost(id, voteType, authentication.getName());
+        asyncLogger.logInfo("Post " + id + " voted " + voteType + " by " + authentication.getName());
         return ApiResponse.ok(postMapper.toDto(updated));
     }
 }

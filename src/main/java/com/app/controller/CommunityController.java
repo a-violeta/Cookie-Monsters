@@ -7,6 +7,7 @@ import com.app.mapper.CommunityMapper;
 import com.app.mapper.PostMapper;
 import com.app.model.Community;
 import com.app.response.ApiResponse;
+import com.app.service.AsyncLoggerService;
 import com.app.service.CommunityAbstract;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class CommunityController {
     private final CommunityAbstract communityService;
     private final CommunityMapper communityMapper;
     private final PostMapper postMapper;
+    private final AsyncLoggerService asyncLogger;
 
     @PostMapping
     public ResponseEntity<ApiResponse<CommunityDto>> createCommunity(
@@ -33,6 +35,7 @@ public class CommunityController {
         Community created = communityService.createCommunity(
                 dto.getName(), dto.getDisplayName(), dto.getDescription(), dto.getIconUrl(),
                 authentication.getName()); // the authenticated username from the validated JWT
+        asyncLogger.logInfo("Community created: " + created.getName() + " by " + authentication.getName());
         return ResponseEntity.ok(ApiResponse.ok(communityMapper.toDto(created)));
     }
 
@@ -71,18 +74,21 @@ public class CommunityController {
             @Valid @RequestBody CommunityUpdateRequest dto,
             Authentication authentication) {
         communityService.editCommunity(name, dto.getDisplayName(), dto.getIconUrl(), dto.getDescription(), authentication.getName());
+        asyncLogger.logInfo("Community edited: " + name + " by " + authentication.getName());
         return ResponseEntity.ok(ApiResponse.message("Community updated successfully"));
     }
 
     @DeleteMapping("/{name}")
     public ResponseEntity<ApiResponse<Void>> deleteCommunity(@PathVariable String name, Authentication authentication) {
         communityService.deleteCommunity(name, authentication.getName());
+        asyncLogger.logInfo("Community deleted: " + name + " by " + authentication.getName());
         return ResponseEntity.ok(ApiResponse.message("Community deleted successfully"));
     }
 
     @DeleteMapping("/{communityId}/members/{userId}")
     public ResponseEntity<ApiResponse<Void>> exitCommunity(@PathVariable UUID communityId, @PathVariable Long userId) {
         communityService.exitCommunity(communityId, userId);
+        asyncLogger.logInfo("User " + userId + " left community " + communityId);
         return ResponseEntity.ok(ApiResponse.message("Left community successfully"));
     }
 
