@@ -24,6 +24,7 @@ public class CommentService implements CommentAbstract {
     private final CommentVoteRepository commentVoteRepository;
     private final CommunityService communityService;
     private final AsyncLoggerService logger;
+    private final CommentGarbageCollectorService garbageCollectorService;
 
 
     public void validateComment(String text) {
@@ -208,21 +209,33 @@ public class CommentService implements CommentAbstract {
             Post post = comment.getPost();
             post.setCommentCount(post.getCommentCount() - 1);
 
-            // Save Post
+            // 1. ORPHAN REMOVAL : On retire l'enfant des listes
+            if (post.getCommentList() != null) {
+                post.getCommentList().remove(comment);
+            }
+
+            Comment parentComment = comment.getParent();
+            if (parentComment != null && parentComment.getReplies() != null) {
+                parentComment.getReplies().remove(comment);
+            }
+
+            if (author.getComments() != null) {
+                author.getComments().remove(comment);
+            }
+
+            // 2. On sauvegarde
             postRepository.save(post);
+            if (parentComment != null) {
+                commentRepository.save(parentComment);
+            }
 
-            // Deletes Votes from the comment
-            commentVoteRepository.deleteAllByComment(comment);
+            logger.logInfo("Comment with id = " + commentId + " hard deleted via Orphan Removal by " + author.getUsername());
 
-            // Hard Delete the comment
-            commentRepository.delete(comment);
-
-            logger.logInfo("Comment with id = " + commentId + " hard deleted by " + author.getUsername());
+            garbageCollectorService.cleanupGhostParentAsync(parentComment);
             return;
         }
 
         comment.setDeleted(true);
-
         logger.logInfo("Comment with id = " + commentId + "soft deleted successfully by " + author.getUsername());
         commentRepository.save(comment);
     }

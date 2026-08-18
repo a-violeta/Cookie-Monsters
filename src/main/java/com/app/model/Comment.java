@@ -18,6 +18,7 @@ public class Comment {
 
     @Id // PK of the table
     @GeneratedValue(strategy = GenerationType.UUID)
+    @EqualsAndHashCode.Include
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -52,8 +53,11 @@ public class Comment {
     @Transient
     private String userVote;
 
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Comment> replies;
+
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<CommentVote> votes;
 
     public Comment(){
         this.content = "";
