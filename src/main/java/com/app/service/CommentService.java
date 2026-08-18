@@ -18,6 +18,9 @@ import java.util.UUID;
 @ConditionalOnProperty(name = "app.http.client.enabled", havingValue = "false", matchIfMissing = true)
 public class CommentService implements CommentAbstract {
 
+    @jakarta.persistence.PersistenceContext
+    private jakarta.persistence.EntityManager entityManager;
+
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
@@ -113,7 +116,11 @@ public class CommentService implements CommentAbstract {
     @Transactional(readOnly = true)
     public Comment findCommentById(UUID commentId, String requesterUsername) {
 
-        Comment comment = getCommentOrThrow(commentId, requesterUsername);
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> {
+                    logger.logError("Comment with id " + commentId + " not found");
+                    return new IllegalArgumentException("Comment with id " + commentId + " not found");
+                });
 
         User requester = null;
 
@@ -198,9 +205,28 @@ public class CommentService implements CommentAbstract {
             throw new IllegalStateException("This comment was not created by " + author);
         }
 
+        // Check if the comment has replies
+        if (comment.getReplies() == null || comment.getReplies().isEmpty()) {
+
+            Post post = comment.getPost();
+            post.setCommentCount(post.getCommentCount() - 1);
+
+            // Save Post
+            postRepository.save(post);
+
+            // Deletes Votes from the comment
+            commentVoteRepository.deleteAllByComment(comment);
+
+            // Hard Delete the comment
+            commentRepository.delete(comment);
+
+            logger.logInfo("Comment with id = " + commentId + " hard deleted by " + author.getUsername());
+            return;
+        }
+
         comment.setDeleted(true);
 
-        logger.logInfo("Comment with id = " + commentId + "removed successfully by " + author.getUsername());
+        logger.logInfo("Comment with id = " + commentId + "soft deleted successfully by " + author.getUsername());
         commentRepository.save(comment);
     }
 
