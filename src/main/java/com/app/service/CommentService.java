@@ -23,12 +23,12 @@ public class CommentService implements CommentAbstract {
     private final PostRepository postRepository;
     private final CommentVoteRepository commentVoteRepository;
     private final CommunityService communityService;
-    private final AsyncLoggerService Logger;
+    private final AsyncLoggerService logger;
 
 
     public void validateComment(String text) {
         if (text == null || text.isBlank()) {
-            Logger.logError("Comment text is null or empty");
+            logger.logError("Comment text is null or empty");
             throw new IllegalArgumentException("Comment text is required");
         }
     }
@@ -51,16 +51,12 @@ public class CommentService implements CommentAbstract {
         validateComment(text);
 
         // Checking if the Logged-in User is authenticated
-        User author = userRepository.findByUsername(requesterUsername)
-                .orElseThrow(() -> {
-                    Logger.logError("Authenticated user not found");
-                    return new IllegalStateException("Authenticated user not found");
-                });
+        User author = getUserOrThrow(requesterUsername);
 
         // Checking if the Post with id exist
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> {
-                    Logger.logError("Post with id " + postId + " not found");
+                    logger.logError("Post with id " + postId + " not found");
                     return new IllegalArgumentException("Post with id " + postId + " not found");
                 });
 
@@ -72,7 +68,7 @@ public class CommentService implements CommentAbstract {
         Community subreddit = post.getSubreddit();
 
         if (subreddit.findUserById(author.getId()) == null) {
-            Logger.logInfo("Added User : " + requesterUsername + " to the community : " + subreddit.getName());
+            logger.logInfo("Added User : " + requesterUsername + " to the community : " + subreddit.getName());
             communityService.joinCommunity(subreddit.getId(), author.getId());
         }
 
@@ -90,7 +86,7 @@ public class CommentService implements CommentAbstract {
 
             // Check that the comment with the parentId as the same postId as the reply
             if (!parent.getPost().getId().equals(postId)) {
-                Logger.logError("Parent comment with id = " + parentId + " does not belong to the post with id = " + postId);
+                logger.logError("Parent comment with id = " + parentId + " does not belong to the post with id = " + postId);
                 throw new IllegalStateException("Parent comment with id = " + parentId + " does not belong to the post with id = " + postId);
             }
             newComment.setParent(parent);
@@ -110,18 +106,14 @@ public class CommentService implements CommentAbstract {
         commentVote.setVoteType(VoteType.UP);
         commentVoteRepository.save(commentVote);
 
-        Logger.logInfo("Comment added successfully by the User : " + author.getUsername());
+        logger.logInfo("Comment added successfully by the User : " + author.getUsername());
         return commentRepository.save(newComment);
     }
 
     @Transactional(readOnly = true)
     public Comment findCommentById(UUID commentId, String requesterUsername) {
 
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> {
-                    Logger.logError("Comment with id " + commentId + " not found");
-                    return new IllegalArgumentException("Comment with id " + commentId + " not found");
-                });
+        Comment comment = getCommentOrThrow(commentId, requesterUsername);
 
         User requester = null;
 
@@ -135,7 +127,7 @@ public class CommentService implements CommentAbstract {
 
         comment.getReplies().size();
 
-        Logger.logInfo("Comment found with Id = " + commentId);
+        logger.logInfo("Comment found with Id = " + commentId);
 
         return comment;
     }
@@ -145,7 +137,7 @@ public class CommentService implements CommentAbstract {
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> {
-                    Logger.logError("Post with id " + postId + " not found");
+                    logger.logError("Post with id " + postId + " not found");
                     return new IllegalArgumentException("Post with id " + postId + " not found");
                 });
 
@@ -169,7 +161,7 @@ public class CommentService implements CommentAbstract {
             comment.getReplies().size();
         });
 
-        Logger.logInfo( post.getCommentCount() + " Comment(s) found by post with id = " + postId );
+        logger.logInfo( post.getCommentCount() + " Comment(s) found by post with id = " + postId );
 
         return comments;
     }
@@ -177,21 +169,12 @@ public class CommentService implements CommentAbstract {
     @Transactional
     public Comment editComment(UUID commentId, String newText, String requesterUsername) {
 
-        Comment comment = findCommentById(commentId, requesterUsername );
+        Comment comment = getCommentOrThrow(commentId, requesterUsername);
 
-        if (comment.isDeleted()) {
-            Logger.logError("Comment with id " + commentId + " is already deleted");
-            throw new IllegalStateException("Comment with id " + commentId + " is already deleted");
-        }
-
-        User author = userRepository.findByUsername(requesterUsername)
-                .orElseThrow(() -> {
-                    Logger.logError( "User : " + requesterUsername + " not found" );
-                    return new IllegalArgumentException( "User " + requesterUsername + " user not found " );
-                });
+        User author = getUserOrThrow(requesterUsername);
 
         if (!Objects.equals(comment.getAuthor(), author)) {
-            Logger.logError(author.getUsername() + " is not the author of this comment");
+            logger.logError(author.getUsername() + " is not the author of this comment");
             throw new IllegalArgumentException("You are not the author of this post");
         }
 
@@ -199,52 +182,34 @@ public class CommentService implements CommentAbstract {
         comment.setUpdatedAt(Instant.now());
         commentRepository.save(comment);
 
-        Logger.logInfo("Comment with id = " + commentId + "edited successfully by " + author.getUsername());
+        logger.logInfo("Comment with id = " + commentId + "edited successfully by " + author.getUsername());
         return comment;
     }
 
     @Transactional
     public void removeComment(UUID commentId, String requesterUsername) {
         // try to find this comment
-        Comment comment = findCommentById(commentId,requesterUsername);
+        Comment comment = getCommentOrThrow(commentId, requesterUsername);
 
-        if (comment.isDeleted()) {
-            Logger.logError("Comment with id " + commentId + " is already deleted");
-            throw new IllegalStateException("Comment with id " + commentId + " is already deleted");
-        }
-
-        User author = userRepository.findByUsername(requesterUsername)
-                .orElseThrow(() -> {
-                    Logger.logError( "User : " + requesterUsername + " user not found" );
-                    return new IllegalStateException( "User : " + requesterUsername + " user not found" );
-                });
+        User author = getUserOrThrow(requesterUsername);
 
         if (!Objects.equals(comment.getAuthor(), author)) {
-            Logger.logError(author.getUsername() + " is not the author of this comment");
+            logger.logError(author.getUsername() + " is not the author of this comment");
             throw new IllegalStateException("This comment was not created by " + author);
         }
 
         comment.setDeleted(true);
 
-        Logger.logInfo("Comment with id = " + commentId + "removed successfully by " + author.getUsername());
+        logger.logInfo("Comment with id = " + commentId + "removed successfully by " + author.getUsername());
         commentRepository.save(comment);
     }
 
     @Transactional
     public Comment voteComment(UUID id, String voteType, String requesterUsername) {
 
-        Comment comment = findCommentById(id,requesterUsername);
+        Comment comment = getCommentOrThrow(id,requesterUsername);
 
-        if (comment.isDeleted()) {
-            Logger.logError("Cannot Vote on deleted Comment with id = " + comment.getId());
-            throw new IllegalStateException("Cannot vote on a deleted comment");
-        }
-
-        User requester = userRepository.findByUsername(requesterUsername)
-                .orElseThrow(() -> {
-                    Logger.logError( "User : " + requesterUsername + " user not found" );
-                    return new IllegalArgumentException("User " + requesterUsername + " not found");
-                });
+        User requester = getUserOrThrow(requesterUsername);
 
         CommentVote commentVote = commentVoteRepository.findByCommentAndAuthor(comment, requester).orElse(null);
 
@@ -294,7 +259,31 @@ public class CommentService implements CommentAbstract {
         commentVoteRepository.save(commentVote);
         commentRepository.save(comment);
 
-        Logger.logInfo(" User = " + requesterUsername + " " + commentVote.getVoteType() +"voted successfully on comment with id = " + comment.getId());
+        logger.logInfo(" User = " + requesterUsername + " " + commentVote.getVoteType() +"voted successfully on comment with id = " + comment.getId());
+        return comment;
+    }
+
+    private User getUserOrThrow(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> {
+                    logger.logError("User : " + username + " not found");
+                    return new IllegalArgumentException("User : " + username + " not found");
+                });
+    }
+
+    private Comment getCommentOrThrow(UUID commentId, String username) {
+
+        Comment comment = findCommentById(commentId, username);
+
+        if  (comment == null) {
+            logger.logError("Comment with id = " + commentId + " not found");
+            throw new IllegalStateException("Comment with id " + commentId + " not found");
+        }
+
+        if (comment.isDeleted()) {
+            logger.logError("Comment with id = " + commentId + " is soft deleted");
+            throw new IllegalStateException("Comment with id = " + commentId + " is soft deleted");
+        }
         return comment;
     }
 }
