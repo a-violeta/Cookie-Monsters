@@ -1,15 +1,14 @@
 package com.app.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(exclude = {"communityUsers", "communityPosts"})
 @Entity
@@ -37,7 +36,7 @@ public class Community {
     private List<User> communityUsers;
 
     // fixed mappedBy to match the exact field name 'subreddit' from the Post entity
-    @OneToMany(mappedBy = "subreddit", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "subreddit", cascade = CascadeType.REMOVE)
     // cascade: whatever operation happens to a Community, propagate that same operation to all the Posts in its posts list automatically
     // consequence: deleting a Community also deletes all their Posts
     private List<Post> communityPosts;
@@ -60,19 +59,6 @@ public class Community {
         this.iconUrl = iconUrl;
         this.communityUsers = communityUsers;
         this.communityPosts = communityPosts;
-    }
-
-    // changed long to UUID to match Post ID type
-    public Post findPostById(UUID postId) {
-        // if there are any posts at all, we search
-        if (this.getCommunityPosts() != null && !this.getCommunityPosts().isEmpty()) {
-            for (Post p : this.getCommunityPosts()) {
-                if (p.getId().equals(postId)) { // proper object comparison for UUID
-                    return p;
-                }
-            }
-        }
-        return null;
     }
 
     // changed parameter to Long object wrapper to use .equals() safely

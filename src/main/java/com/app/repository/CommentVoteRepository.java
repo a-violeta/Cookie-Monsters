@@ -9,4 +9,6 @@ import java.util.Optional;
 public interface CommentVoteRepository {
     CommentVote save(CommentVote vote);
     Optional<CommentVote> findByCommentAndAuthor(Comment comment, User currentUser);
+
+    void deleteAllByComment(Comment comment);
 }

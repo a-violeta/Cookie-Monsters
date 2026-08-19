@@ -24,6 +24,7 @@ public class CommentService implements CommentAbstract {
     private final CommentVoteRepository commentVoteRepository;
     private final CommunityService communityService;
     private final AsyncLoggerService logger;
+    private final CommentGarbageCollectorService garbageCollectorService;
 
 
     public void validateComment(String text) {
@@ -113,7 +114,11 @@ public class CommentService implements CommentAbstract {
     @Transactional(readOnly = true)
     public Comment findCommentById(UUID commentId, String requesterUsername) {
 
-        Comment comment = getCommentOrThrow(commentId, requesterUsername);
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> {
+                    logger.logError("Comment with id " + commentId + " not found");
+                    return new IllegalArgumentException("Comment with id " + commentId + " not found");
+                });
 
         User requester = null;
 
@@ -198,9 +203,41 @@ public class CommentService implements CommentAbstract {
             throw new IllegalStateException("This comment was not created by " + author);
         }
 
-        comment.setDeleted(true);
+        // Check if the comment has replies
+        if (comment.getReplies() == null || comment.getReplies().isEmpty()) {
 
-        logger.logInfo("Comment with id = " + commentId + "removed successfully by " + author.getUsername());
+            Post post = comment.getPost();
+            post.setCommentCount(post.getCommentCount() - 1);
+
+            // Revomed orphan from post CommentList
+            if (post.getCommentList() != null) {
+                post.getCommentList().remove(comment);
+            }
+
+            Comment parentComment = comment.getParent();
+            // Removed Orphan from parent Replies
+            if (parentComment != null && parentComment.getReplies() != null) {
+                parentComment.getReplies().remove(comment);
+            }
+
+            if (author.getComments() != null) {
+                author.getComments().remove(comment);
+            }
+
+            // Save Post and Parent if there is one
+            postRepository.save(post);
+            if (parentComment != null) {
+                commentRepository.save(parentComment);
+            }
+
+            logger.logInfo("Comment with id = " + commentId + " hard deleted via Orphan Removal by " + author.getUsername());
+
+            garbageCollectorService.cleanupGhostParent(parentComment);
+            return;
+        }
+
+        comment.setDeleted(true);
+        logger.logInfo("Comment with id = " + commentId + "soft deleted successfully by " + author.getUsername());
         commentRepository.save(comment);
     }
 

@@ -1,13 +1,15 @@
 package com.app.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.Instant;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 // @ToString(exclude = {"password", "communities", "posts", "comments"})
 @Entity
@@ -50,12 +52,12 @@ public class User {
     @ManyToMany(mappedBy = "communityUsers")
     private List<Community> communities;
 
-    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "author", cascade = CascadeType.REMOVE)
     // cascade: whatever operation happens to a User, propagate that same operation to all the Posts in its posts list automatically
     // consequence: deleting a User also deletes all their Posts
     private List<Post> posts;
 
-    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "author", cascade = CascadeType.REMOVE)
     private List<Comment> comments;
 
     // constructors

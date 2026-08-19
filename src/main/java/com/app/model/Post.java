@@ -1,15 +1,14 @@
 package com.app.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(exclude = {"subreddit", "author", "commentList", "media"})
 @Entity
@@ -48,7 +47,7 @@ public class Post {
     @Transient
     private String userVote;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.REMOVE)
     // cascade: whatever operation happens to a Post, propagate that same operation to the Media automatically
     // consequence: deleting a Post also deletes the Media
     @JoinColumn(name = "media_id")
@@ -57,7 +56,7 @@ public class Post {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<PostVote> votes;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> commentList;
 
     public Post() {
