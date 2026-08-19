@@ -19,20 +19,20 @@ public class CommentGarbageCollectorService {
     private final EntityManager entityManager;
 
     @Transactional
-    public void cleanupGhostParentAsync(Comment parent) {
+    public void cleanupGhostParent(Comment parent) {
 
         if (parent == null || !parent.isDeleted()
                 || parent.getReplies() == null || !parent.getReplies().isEmpty()) {
             return;
         }
 
-        logger.logInfo("Comment Garbage Collector on Thread : " + Thread.currentThread().getName());
+        logger.logInfo("Comment Garbage Collector Started");
 
         Comment grandParent = parent.getParent();
         Post post = parent.getPost();
 
         if (grandParent != null && grandParent.getReplies() != null) {
-            grandParent.getReplies().remove(parent); // remove(Object) plutôt que removeIf sur PersistentBag
+            grandParent.getReplies().remove(parent);
         }
         if (post != null && post.getCommentList() != null) {
             post.getCommentList().remove(parent);
@@ -42,15 +42,14 @@ public class CommentGarbageCollectorService {
         parent.setPost(null);
         parent.setAuthor(null);
 
-        // On flush l'état "isolation" AVANT toute requête de suppression en masse
         entityManager.flush();
 
         commentVoteRepository.deleteAllByComment(parent);
         commentRepository.delete(parent);
-        entityManager.flush(); // on matérialise la suppression avant de récurser
+        entityManager.flush();
 
         logger.logInfo("GC hard deleted comment id = " + parent.getId());
 
-        cleanupGhostParentAsync(grandParent);
+        cleanupGhostParent(grandParent);
     }
 }

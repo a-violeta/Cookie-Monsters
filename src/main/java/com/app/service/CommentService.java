@@ -209,12 +209,13 @@ public class CommentService implements CommentAbstract {
             Post post = comment.getPost();
             post.setCommentCount(post.getCommentCount() - 1);
 
-            // 1. ORPHAN REMOVAL : On retire l'enfant des listes
+            // Revomed orphan from post CommentList
             if (post.getCommentList() != null) {
                 post.getCommentList().remove(comment);
             }
 
             Comment parentComment = comment.getParent();
+            // Removed Orphan from parent Replies
             if (parentComment != null && parentComment.getReplies() != null) {
                 parentComment.getReplies().remove(comment);
             }
@@ -223,7 +224,7 @@ public class CommentService implements CommentAbstract {
                 author.getComments().remove(comment);
             }
 
-            // 2. On sauvegarde
+            // Save Post and Parent if there is one
             postRepository.save(post);
             if (parentComment != null) {
                 commentRepository.save(parentComment);
@@ -231,7 +232,7 @@ public class CommentService implements CommentAbstract {
 
             logger.logInfo("Comment with id = " + commentId + " hard deleted via Orphan Removal by " + author.getUsername());
 
-            garbageCollectorService.cleanupGhostParentAsync(parentComment);
+            garbageCollectorService.cleanupGhostParent(parentComment);
             return;
         }
 
