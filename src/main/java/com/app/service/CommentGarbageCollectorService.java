@@ -35,6 +35,7 @@ public class CommentGarbageCollectorService {
             grandParent.getReplies().remove(parent);
         }
         if (post != null && post.getCommentList() != null) {
+            post.setCommentCount(post.getCommentCount() - 1);
             post.getCommentList().remove(parent);
         }
 
