@@ -1,6 +1,7 @@
 package com.app.service;
 
 import com.app.exception.DuplicateResourceException;
+import com.app.model.Community;
 import com.app.model.User;
 import com.app.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -93,9 +94,17 @@ public class UserService implements UserAbstract {
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new IllegalArgumentException("Incorrect password");
         }
+
+        if (user.getCommunities() != null) {
+            for (Community community : user.getCommunities()) {
+                community.getCommunityUsers().remove(user);
+            }
+        }
+
+        user.setDeleted(true);
         // @SQLDelete on User intercepts this and converts it into
         // "UPDATE app_users SET is_deleted = true" automatically - no manual flag flip needed
-        userRepository.delete(user);
+        userRepository.save(user);
     }
 
     @Override
