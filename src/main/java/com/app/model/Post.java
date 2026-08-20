@@ -47,7 +47,7 @@ public class Post {
     @Transient
     private String userVote;
 
-    @OneToOne(cascade = CascadeType.REMOVE)
+    @OneToOne(cascade = CascadeType.ALL)
     // cascade: whatever operation happens to a Post, propagate that same operation to the Media automatically
     // consequence: deleting a Post also deletes the Media
     @JoinColumn(name = "media_id")
