@@ -2,6 +2,7 @@ package com.app.service;
 
 import com.app.model.Comment;
 import com.app.model.Post;
+import com.app.model.User;
 import com.app.repository.CommentRepository;
 import com.app.repository.CommentVoteRepository;
 import jakarta.persistence.EntityManager;
@@ -13,44 +14,33 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CommentGarbageCollectorService {
 
-    private final CommentRepository commentRepository;
-    private final CommentVoteRepository commentVoteRepository;
     private final AsyncLoggerService logger;
-    private final EntityManager entityManager;
 
     @Transactional
     public void cleanupGhostParent(Comment parent) {
 
-        if (parent == null || !parent.isDeleted()
-                || parent.getReplies() == null || !parent.getReplies().isEmpty()) {
-            return;
+        if (parent != null && parent.isDeleted() && (parent.getReplies() == null || parent.getReplies().isEmpty())) {
+
+            Comment grandParent = parent.getParent();
+            Post post = parent.getPost();
+            User author = parent.getAuthor();
+
+            if (post != null && post.getCommentList() != null) {
+                post.getCommentList().remove(parent);
+                post.setCommentCount(post.getCommentCount() - 1);
+            }
+
+            if (grandParent != null && grandParent.getReplies() != null) {
+                grandParent.getReplies().remove(parent);
+            }
+
+            if (author != null && author.getComments() != null) {
+                author.getComments().remove(parent);
+            }
+
+            logger.logInfo("[GARBAGE COLLECTOR] Fantôme supprimé via Orphan Removal (ID: " + parent.getId() + ")");
+
+            cleanupGhostParent(grandParent);
         }
-
-        logger.logInfo("Comment Garbage Collector Started");
-
-        Comment grandParent = parent.getParent();
-        Post post = parent.getPost();
-
-        if (grandParent != null && grandParent.getReplies() != null) {
-            grandParent.getReplies().remove(parent);
-        }
-        if (post != null && post.getCommentList() != null) {
-            post.setCommentCount(post.getCommentCount() - 1);
-            post.getCommentList().remove(parent);
-        }
-
-        parent.setParent(null);
-        parent.setPost(null);
-        parent.setAuthor(null);
-
-        entityManager.flush();
-
-        commentVoteRepository.deleteAllByComment(parent);
-        commentRepository.delete(parent);
-        entityManager.flush();
-
-        logger.logInfo("GC hard deleted comment id = " + parent.getId());
-
-        cleanupGhostParent(grandParent);
     }
 }
