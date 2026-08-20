@@ -52,12 +52,12 @@ public class User {
     @ManyToMany(mappedBy = "communityUsers")
     private List<Community> communities;
 
-    @OneToMany(mappedBy = "author", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     // cascade: whatever operation happens to a User, propagate that same operation to all the Posts in its posts list automatically
     // consequence: deleting a User also deletes all their Posts
     private List<Post> posts;
 
-    @OneToMany(mappedBy = "author", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     private List<Comment> comments;
 
     // constructors
